@@ -1,0 +1,1221 @@
+/* ============================================
+   DASHBOARD RESPONSIVE CSS - El Misarah
+   Shared responsive styles for BOTH:
+   - Penghuni Dashboard (sidebar, .main, .topbar, .content)
+   - Admin Dashboard (.admin-sidebar, .admin-main, .admin-topbar, .admin-content)
+   ============================================ */
+
+/* ─── MOBILE SIDEBAR BACKDROP ─── */
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.sidebar-backdrop.show {
+    display: block;
+    opacity: 1;
+}
+
+/* ─── HAMBURGER TOGGLE BUTTON ─── */
+.btn-toggle-sidebar {
+    display: none !important;
+    background: none;
+    border: none;
+    color: #1f2937;
+    cursor: pointer;
+    padding: 4px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+.btn-toggle-sidebar:hover {
+    background: #f3f4f6;
+}
+
+/* ─── CLOSE SIDEBAR BUTTON (inside sidebar, mobile only) ─── */
+.sidebar-close-btn {
+    display: none;
+    position: absolute;
+    top: 22px;
+    right: 16px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    z-index: 10;
+}
+.sidebar-close-btn:hover {
+    background: rgba(255,255,255,0.35);
+}
+
+/* ╔══════════════════════════════════════════════╗
+   ║       TABLET BREAKPOINT (≤ 1024px)          ║
+   ╚══════════════════════════════════════════════╝ */
+@media (max-width: 1024px) {
+    /* ── PENGHUNI SIDEBAR ── */
+    .sidebar,
+    .sb {
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 4px 0 25px rgba(0,0,0,0.15);
+    }
+    .sidebar.mobile-open,
+    .sb.mobile-open {
+        transform: translateX(0);
+    }
+
+    /* ── ADMIN SIDEBAR ── */
+    .admin-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 4px 0 25px rgba(0,0,0,0.15);
+    }
+    .admin-sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
+    /* ── MAIN AREA ADJUSTMENTS ── */
+    .main,
+    .admin-main {
+        margin-left: 0 !important;
+        width: 100%;
+    }
+
+    /* ── SHOW HAMBURGER + CLOSE BUTTONS ── */
+    .btn-toggle-sidebar {
+        display: inline-flex !important;
+    }
+    .sidebar-close-btn {
+        display: flex;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar,
+    .admin-topbar {
+        padding: 0 16px;
+        height: 60px;
+    }
+
+    /* ── CONTENT ── */
+    .content,
+    .admin-content {
+        padding: 16px;
+    }
+
+    /* ── PENGHUNI: INFO CARDS ── */
+    .info-cards {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px;
+    }
+
+    /* ── PENGHUNI: STAT GRID ── */
+    .stat-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+    }
+
+    /* ── PENGHUNI: ULASAN GRID ── */
+    .ulasan-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    /* ── PENGHUNI: GRID CONTAINER ── */
+    .grid-container {
+        grid-template-columns: 1fr !important;
+        gap: 15px;
+    }
+
+    /* ── ADMIN STAT CARDS (Bootstrap row) ── */
+    .admin-content .row .col-md-3,
+    .admin-content .row .col-md-4,
+    .admin-content .row .col-md-5,
+    .admin-content .row .col-md-7 {
+        /* Let Bootstrap handle from md- but ensure sm stacks */
+    }
+
+    /* ── TABLES: Horizontal scroll ── */
+    .tw,
+    .bv-table-wrapper,
+    .p-table-card,
+    .glass-card.p-0 {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .tt,
+    .bv-table,
+    .p-table,
+    .glass-card table {
+        min-width: 700px;
+    }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    .filter-bar form {
+        width: 100%;
+    }
+
+    /* ── PROFIL: Edit grid ── */
+    .edit-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* ── PROFIL: prof-card ── */
+    .prof-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px 20px;
+    }
+    .prof-fields {
+        grid-template-columns: 1fr !important;
+        justify-items: center;
+    }
+    .btn-edit {
+        position: static !important;
+        margin-top: 16px;
+    }
+
+    /* ── PROFIL: bottom-grid ── */
+    .bottom-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* ── PAGE TITLE ── */
+    .page-title,
+    .topbar-title,
+    .tp-title {
+        font-size: 16px !important;
+    }
+
+    /* ── USER PROFILE in topbar ── */
+    .user-info .user-name,
+    .topbar-right .user-name,
+    .u-name {
+        font-size: 12px !important;
+    }
+    .user-info .user-role,
+    .topbar-right .user-role,
+    .u-role {
+        font-size: 10px !important;
+    }
+
+    /* ── MODAL OVERLAY ── */
+    .modal-box {
+        margin: 16px;
+        max-width: calc(100vw - 32px);
+    }
+}
+
+/* ╔══════════════════════════════════════════════╗
+   ║       MOBILE BREAKPOINT (≤ 768px)           ║
+   ╚══════════════════════════════════════════════╝ */
+@media (max-width: 768px) {
+    /* ── PENGHUNI: INFO CARDS ── */
+    .info-cards {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* ── ADMIN STAT CARDS ── */
+    .stat-card {
+        padding: 16px 18px;
+    }
+    .sc-val {
+        font-size: 22px !important;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar,
+    .admin-topbar {
+        height: 56px;
+        gap: 8px;
+    }
+
+    /* Hide user info text on very small screens, keep avatar */
+    .topbar-right .user-info,
+    .topbar .user-info {
+        display: none;
+    }
+
+    /* ── CONTENT PADDING ── */
+    .content,
+    .admin-content {
+        padding: 12px;
+    }
+
+    /* ── CARD STYLING ── */
+    .card-box,
+    .glass-card,
+    .dashboard-card,
+    .setting-card,
+    .info-card {
+        padding: 16px !important;
+        border-radius: 12px !important;
+    }
+
+    /* ── PEMBAYARAN ── */
+    .amount-big {
+        font-size: 28px !important;
+    }
+    .timer-circle {
+        width: 80px !important;
+        height: 80px !important;
+    }
+
+    /* ── PENGATURAN ── */
+    .setting-row {
+        padding: 12px 16px;
+    }
+    .setting-row-label {
+        font-size: 12px;
+    }
+    .setting-row-sub {
+        font-size: 11px;
+    }
+    .setting-card-header {
+        padding: 14px 16px 10px;
+    }
+    .save-bar {
+        padding: 10px 16px;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .save-bar .btn-save {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* ── DANGER ZONE ── */
+    .danger-row {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start !important;
+    }
+
+    /* ── ABOUT ROW ── */
+    .about-row {
+        flex-direction: column;
+        gap: 4px;
+        padding: 12px 16px;
+    }
+
+    /* ── SESSION ITEM ── */
+    .session-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px 16px;
+    }
+
+    /* ── ULASAN ── */
+    .review-card,
+    .review-item {
+        padding: 14px !important;
+    }
+
+    /* ── BOOKING TABS ── */
+    .mb-4.d-flex.gap-2 {
+        flex-wrap: wrap;
+    }
+
+    /* ── MODAL ── */
+    .modal-dialog {
+        margin: 8px;
+    }
+    .modal-pesanan .modal-body {
+        padding: 16px !important;
+    }
+
+    /* ── RIWAYAT SEWA ── */
+    .riwayat-card,
+    .sewa-card {
+        padding: 16px !important;
+    }
+
+    /* ── INFORMASI KOST ── */
+    .info-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* ── PENGUMUMAN ── */
+    .pengumuman-item {
+        padding-left: 12px;
+    }
+
+    /* ── ATURAN BOX ── */
+    .aturan-box {
+        padding: 18px !important;
+    }
+
+    /* ── CARD TITLE ── */
+    .card-title {
+        font-size: 14px;
+    }
+
+    /* ── NOTIF ITEM ── */
+    .notif-item {
+        padding: 10px;
+    }
+}
+
+/* ╔══════════════════════════════════════════════╗
+   ║    SMALL MOBILE BREAKPOINT (≤ 480px)        ║
+   ╚══════════════════════════════════════════════╝ */
+@media (max-width: 480px) {
+    /* ── STAT GRID ── */
+    .stat-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* ── INFO CARD ── */
+    .info-card-inner,
+    .info-card {
+        padding: 14px !important;
+    }
+    .info-value {
+        font-size: 14px !important;
+    }
+    .info-label {
+        font-size: 10px !important;
+    }
+    .info-icon {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar h2,
+    .admin-topbar h2 {
+        font-size: 14px !important;
+    }
+
+    /* ── HIDE AVATAR TEXT on topbar ── */
+    .topbar > div:last-child > div:not(.av):not([style*="border-radius:50%"]) {
+        display: none;
+    }
+
+    /* ── PEMBAYARAN AMOUNT ── */
+    .amount-big {
+        font-size: 24px !important;
+    }
+    .timer-circle {
+        width: 70px !important;
+        height: 70px !important;
+    }
+    .timer-circle > div:first-child {
+        font-size: 28px !important;
+    }
+
+    /* ── TABLE FONT SIZE ── */
+    .tt tbody td,
+    .bv-table tbody td {
+        font-size: 12px;
+        padding: 10px 12px;
+    }
+    .tt thead th,
+    .bv-table thead th {
+        font-size: 11px;
+        padding: 10px 12px;
+    }
+
+    /* ── PROFIL: photo ── */
+    .prof-photo {
+        width: 90px !important;
+        height: 90px !important;
+    }
+    .prof-name {
+        font-size: 18px !important;
+    }
+
+    /* ── FORM ROW ── */
+    .form-row {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* ── TOGGLE SWITCH LABEL ── */
+    .setting-row {
+        gap: 8px;
+    }
+}
+
+/* ╔══════════════════════════════════════════════╗
+   ║        LANDSCAPE SAFE AREA                  ║
+   ╚══════════════════════════════════════════════╝ */
+@media (max-height: 500px) and (orientation: landscape) {
+    .sidebar,
+    .sb,
+    .admin-sidebar {
+        overflow-y: auto;
+    }
+}
+
+/* ╔══════════════════════════════════════════════╗
+   ║     RESPONSIVE TABLE CARD VIEW (optional)   ║
+   ╚══════════════════════════════════════════════╝ */
+@media (max-width: 640px) {
+    /* Make tables horizontally scrollable with smooth touch */
+    .table-responsive-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 12px;
+    }
+    .table-responsive-wrapper::-webkit-scrollbar {
+        height: 4px;
+    }
+    .table-responsive-wrapper::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 4px;
+    }
+    .table-responsive-wrapper::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+}
+
+/* ╔══════════════════════════════════════════════╗
+   ║         SMOOTH TRANSITION HELPERS           ║
+   ╚══════════════════════════════════════════════╝ */
+.sidebar,
+.sb,
+.admin-sidebar {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Prevent body scroll when sidebar is open on mobile */
+body.sidebar-open {
+    overflow: hidden;
+}
+
+/* ─── STABILITY & OVERFLOW PREVENTIONS ─── */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden !important;
+}
+
+.main, .admin-main {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* ─── MOBILE TOPBAR OPTIMIZATIONS (≤ 768px) ─── */
+@media (max-width: 768px) {
+    /* Hide name/role text next to avatar to prevent topbar overflow */
+    .topbar div[style*="text-align:right"],
+    .topbar a[href="profil.php"] div[style*="text-align:right"],
+    .topbar .avatar + div,
+    .admin-topbar .avatar + div,
+    .topbar a[href="profil.php"] > div > div:last-child {
+        display: none !important;
+    }
+    
+    /* Truncate titles and greetings to prevent pushing layout width */
+    .topbar h2,
+    .admin-topbar h2,
+    .topbar-title,
+    .page-title {
+        font-size: 14px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 160px !important;
+    }
+    
+    /* Make topbar fit perfectly */
+    .topbar, .admin-topbar {
+        gap: 8px !important;
+    }
+}
+
+/* ─── GLOBAL LAYOUT STABILIZER ─── */
+.main,
+.admin-main,
+.content,
+.admin-content,
+.topbar,
+.admin-topbar {
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.main,
+.admin-main,
+.content,
+.admin-content {
+    width: 100% !important;
+}
+
+/* ─── GLOBAL SIDEBAR STABILIZER (DESKTOP) ─── */
+@media (min-width: 1025px) {
+    .sidebar,
+    .sb,
+    .admin-sidebar {
+        width: 240px !important;
+        min-width: 240px !important;
+        max-width: 240px !important;
+        height: 100vh !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 1000 !important;
+        box-sizing: border-box !important;
+    }
+    
+    .sidebar *,
+    .sb *,
+    .admin-sidebar * {
+        box-sizing: border-box !important;
+    }
+    
+    .main,
+    .admin-main {
+        margin-left: 240px !important;
+        width: calc(100% - 240px) !important;
+        min-width: 0 !important; /* Prevents flex children from stretching the container width */
+        box-sizing: border-box !important;
+    }
+}
+
+/* ─── TABLE RESPONSIVENESS STABILIZER (ALL SCREEN SIZES) ─── */
+.tw,
+.p-table-card,
+.table-responsive-wrapper,
+.table-responsive {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    box-sizing: border-box !important;
+}
+
+.tt,
+.p-table,
+.table-responsive table {
+    min-width: 750px !important; /* Force a minimum width so tables don't get squished and messy */
+    width: 100% !important;
+}
+
+/* ─── PENGUMUMAN RESPONSIVENESS (≤ 768px) ─── */
+@media (max-width: 768px) {
+    .ann-card {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        padding: 16px !important;
+    }
+    
+    .ann-icon {
+        width: 38px !important;
+        height: 38px !important;
+    }
+    
+    .ann-date {
+        align-self: flex-start !important;
+        padding-top: 0 !important;
+        margin-top: 4px !important;
+    }
+}
+
+/* ─── STAT GRID RESPONSIVENESS (≤ 576px) ─── */
+@media (max-width: 576px) {
+    .stat-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+}
+
+/* ─── GLOBAL UNIFIED SIDEBAR SYSTEM (STABILIZER) ─── */
+.sidebar,
+.sb,
+.admin-sidebar {
+    font-family: 'Poppins', sans-serif !important;
+    background: var(--green, #11a654) !important;
+    color: white !important;
+}
+
+/* Sidebar Brand / Header */
+.sidebar-brand,
+.sidebar-header,
+.sb-brand {
+    padding: 24px 20px 20px 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: white !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    font-family: 'Poppins', sans-serif !important;
+    border-bottom: none !important;
+    height: 70px !important;
+}
+
+.sidebar-brand-name,
+.sidebar-header,
+.sb-name,
+.sidebar-brand span,
+.sb-brand span,
+.sidebar-header h1,
+.sidebar-header h2 {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: white !important;
+    font-family: 'Poppins', sans-serif !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+/* Menu list */
+.sidebar-menu,
+.sb-menu {
+    list-style: none !important;
+    padding: 0 14px !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+}
+
+/* Items and links */
+.sidebar-item,
+.sb-item,
+.sidebar-menu li,
+.sb-menu li {
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.sidebar-link,
+.sb-link,
+.sidebar-menu a,
+.sb-menu a {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 11px 16px !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    text-decoration: none !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    border-radius: 12px !important;
+    transition: all 0.2s ease !important;
+    font-family: 'Poppins', sans-serif !important;
+    background: transparent !important;
+}
+
+.sidebar-link:hover,
+.sb-link:hover,
+.sidebar-menu a:hover,
+.sb-menu a:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: white !important;
+}
+
+/* Active links */
+.sidebar-link.active,
+.sb-link.on,
+.sb-link.active,
+.sidebar-link.on,
+.sidebar-menu a.active,
+.sb-menu a.on {
+    background: white !important;
+    color: var(--green, #11a654) !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Icons */
+.sidebar-icon,
+.sb-ic,
+.sidebar-link i,
+.sb-link i,
+.sidebar-menu a i,
+.sb-menu a i,
+.sidebar-link svg,
+.sb-link svg,
+.sidebar-menu a svg,
+.sb-menu a svg {
+    width: 18px !important;
+    height: 18px !important;
+    flex-shrink: 0 !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    color: inherit !important;
+}
+
+/* Footer / Logout */
+.sidebar-footer,
+.sb-foot {
+    padding: 16px 14px 24px 14px !important;
+    margin: 0 !important;
+}
+
+.btn-keluar,
+.btn-out {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: white !important;
+    color: var(--dark, #1f2937) !important;
+    text-decoration: none !important;
+    padding: 10px 22px !important;
+    border-radius: 30px !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.2s ease !important;
+    width: auto !important;
+    justify-content: center !important;
+}
+
+.btn-keluar:hover,
+.btn-out:hover {
+    background: #f3f4f6 !important;
+    color: var(--dark, #1f2937) !important;
+}
+
+/* ╔══════════════════════════════════════════════╗
+   ║   AUTO-LAYOUT FIX: ALL ADMIN & PENGHUNI     ║
+   ║   PAGES RESPONSIVE RULES                     ║
+   ╚══════════════════════════════════════════════╝ */
+
+/* ─── BOOKING TABLE (bv-table) ─── */
+.bv-table-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+.bv-table {
+    min-width: 700px !important;
+}
+
+/* ─── ULASAN: Stat cards row ─── */
+@media (max-width: 768px) {
+    /* Review filter bar */
+    .filter-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+    .search-box,
+    .search-wrap {
+        width: 100% !important;
+    }
+    .search-wrap input,
+    .search-box input {
+        width: 100% !important;
+    }
+    .filter-btn {
+        flex-shrink: 0;
+    }
+
+    /* Review cards */
+    .review-card {
+        padding: 16px !important;
+    }
+    .review-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+    }
+    .review-header > div[style*="margin-left: auto"] {
+        margin-left: 0 !important;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+    .review-actions {
+        flex-wrap: wrap !important;
+    }
+    .review-photo {
+        max-width: 100% !important;
+    }
+
+    /* Stat cards in ulasan */
+    .stat-card {
+        padding: 16px 18px !important;
+    }
+    .stat-card-value {
+        font-size: 22px !important;
+    }
+
+    /* Distribution bars */
+    .dist-row {
+        gap: 6px !important;
+    }
+}
+
+/* ─── PENGUMUMAN: Announcement cards ─── */
+@media (max-width: 768px) {
+    .announcement-card {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+        padding: 16px !important;
+    }
+    .ann-icon-wrap {
+        width: 38px !important;
+        height: 38px !important;
+    }
+    .ann-more {
+        margin-left: 0 !important;
+        align-self: flex-end;
+    }
+    .section-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+    .btn-buat {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ─── TAGIHAN TABLE (tt) ─── */
+@media (max-width: 1024px) {
+    .tw {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    .tt {
+        min-width: 900px !important;
+    }
+    .filter-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+    .filter-bar form {
+        width: 100% !important;
+        flex-wrap: wrap !important;
+    }
+    .btn-genall {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ─── PEMBAYARAN TABLE ─── */
+@media (max-width: 1024px) {
+    .pembayaran-table-wrapper {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    .pembayaran-table {
+        min-width: 800px !important;
+    }
+}
+@media (max-width: 768px) {
+    .search-wrapper {
+        max-width: 100% !important;
+    }
+    .search-wrapper input {
+        width: 100% !important;
+    }
+}
+
+/* ─── PENGADUAN: Complaint cards (Admin) ─── */
+@media (max-width: 768px) {
+    .complaint-card {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+        padding: 16px !important;
+    }
+    .complaint-left {
+        flex-direction: column !important;
+        gap: 12px !important;
+        width: 100%;
+    }
+    .complaint-right {
+        width: 100%;
+        justify-content: space-between !important;
+    }
+    .complaint-icon-wrap {
+        display: none !important;
+    }
+    .complaint-body {
+        width: 100%;
+    }
+    .bukti-timeline {
+        max-width: 100% !important;
+    }
+    .mini-stat-card {
+        padding: 14px 16px !important;
+    }
+    .mini-stat-value {
+        font-size: 22px !important;
+    }
+}
+
+/* ─── RIWAYAT PENGADUAN (Penghuni) ─── */
+@media (max-width: 768px) {
+    .aduan-card {
+        flex-direction: column !important;
+        gap: 12px !important;
+        padding: 16px !important;
+    }
+    .aduan-icon {
+        display: none !important;
+    }
+    .aduan-body {
+        width: 100%;
+    }
+    .aduan-title-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
+    }
+    .aduan-meta {
+        flex-direction: column !important;
+        gap: 6px !important;
+    }
+    .bukti-timeline {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+        padding: 8px 4px !important;
+    }
+    .bukti-step {
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 12px !important;
+        width: 100% !important;
+        min-width: auto !important;
+    }
+    .bukti-dot {
+        margin-bottom: 0 !important;
+        width: 32px !important;
+        height: 32px !important;
+        flex-shrink: 0 !important;
+    }
+    .bukti-label {
+        font-size: 11px !important;
+        margin-bottom: 0 !important;
+        text-align: left !important;
+        flex-grow: 1 !important;
+    }
+    .bukti-link {
+        font-size: 11px !important;
+        white-space: nowrap !important;
+    }
+    .bukti-line {
+        display: none !important;
+    }
+    .top-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+    }
+    .btn-buat {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+/* ─── FORM PENGADUAN (Penghuni) ─── */
+@media (max-width: 768px) {
+    .greeting-card {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+        padding: 16px !important;
+    }
+    .form-card {
+        padding: 16px !important;
+    }
+    .form-footer {
+        justify-content: stretch !important;
+    }
+    .btn-kirim {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+    .field-input,
+    .field-textarea {
+        font-size: 14px !important;
+    }
+    .upload-area {
+        padding: 16px 12px !important;
+    }
+}
+
+/* ─── ADMIN DASHBOARD: Fix unclosed elements + dropdown ─── */
+@media (max-width: 768px) {
+    .dashboard-card {
+        padding: 16px !important;
+    }
+    .stat-value {
+        font-size: 24px !important;
+    }
+    .stat-title {
+        font-size: 12px !important;
+    }
+    .stat-icon-wrapper {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 8px !important;
+    }
+    .booking-item {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+        padding: 12px !important;
+    }
+    .booking-info {
+        width: 100%;
+    }
+    .badge-booking {
+        align-self: flex-start;
+    }
+}
+
+/* ─── PENGHUNI RIWAYAT SEWA: stat grid ─── */
+@media (max-width: 1024px) {
+    .stat-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+    }
+    .transaksi-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+    .search-box {
+        width: 100% !important;
+    }
+    .search-box input {
+        width: 100% !important;
+    }
+    .filter-tabs {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px !important;
+    }
+}
+@media (max-width: 576px) {
+    .stat-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .transaksi-item {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+        padding: 14px !important;
+    }
+    .item-icon {
+        display: none !important;
+    }
+    .item-dates {
+        flex-direction: column !important;
+        gap: 4px !important;
+    }
+}
+
+/* ─── PENGHUNI PEMBAYARAN: glass cards ─── */
+@media (max-width: 768px) {
+    .glass-card {
+        padding: 18px !important;
+    }
+    .amount-big {
+        font-size: 28px !important;
+        word-break: break-all;
+    }
+    .glass-card.p-0 {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    .glass-card.p-0 table {
+        min-width: 500px !important;
+    }
+    .modal-pesanan .modal-body {
+        padding: 16px !important;
+    }
+    .bank-acc {
+        font-size: 18px !important;
+    }
+}
+
+/* ─── DROPDOWN FIXES (All admin pages) ─── */
+.dropdown-menu {
+    z-index: 1060 !important;
+    position: absolute !important;
+}
+.dropdown-menu.show {
+    display: block !important;
+}
+@media (max-width: 768px) {
+    .dropdown-menu {
+        font-size: 13px !important;
+        min-width: 140px !important;
+    }
+}
+
+/* ─── BOOKING TABS RESPONSIVE ─── */
+@media (max-width: 768px) {
+    .mb-4.d-flex.gap-2 {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+    .mb-4.d-flex.gap-2 a {
+        flex: 1 1 auto;
+        text-align: center;
+        font-size: 12px !important;
+        padding: 6px 12px !important;
+    }
+}
+
+/* ─── ULASAN FILTER BUTTONS WRAP ─── */
+@media (max-width: 768px) {
+    .filter-bar {
+        flex-wrap: wrap !important;
+    }
+    .filter-btn {
+        font-size: 11px !important;
+        padding: 6px 12px !important;
+    }
+}
+
+/* ─── MODAL RESPONSIVENESS ─── */
+@media (max-width: 480px) {
+    .modal-box {
+        margin: 8px !important;
+        padding: 16px !important;
+        max-width: calc(100vw - 16px) !important;
+    }
+    .modal-dialog {
+        margin: 8px !important;
+    }
+    .modal-body {
+        padding: 16px !important;
+    }
+}
+
+/* ─── PENGHUNI TOPBAR USER INFO HIDE ON MOBILE ─── */
+@media (max-width: 768px) {
+    .topbar a[href="profil.php"] > div[style*="text-align:right"],
+    .topbar .topbar-right > div > div:not(.avatar),
+    .topbar-right div[style*="text-align:right"] {
+        display: none !important;
+    }
+}
+
