@@ -241,6 +241,7 @@ $progressPersen = $totalBulanIni > 0 ? round(($sudahBayar / $totalBulanIni) * 10
 
 <!-- Sidebar -->
 <aside class="admin-sidebar">
+    <button class="sidebar-close-btn" onclick="closeMobileSidebar()"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
     <div class="sidebar-header">
         <h1 class="sidebar-brand">Elmi Sarah</h1>
     </div>
@@ -311,6 +312,7 @@ $progressPersen = $totalBulanIni > 0 ? round(($sudahBayar / $totalBulanIni) * 10
     <!-- Topbar -->
     <header class="admin-topbar">
         <div class="d-flex align-items-center gap-3">
+            <button class="btn-toggle-sidebar" onclick="openMobileSidebar()"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
             <?php if ($userIdParam): ?>
                 <a href="../kelola_tagihan/list_tagihan.php" class="btn btn-sm btn-outline-secondary" style="border-radius:20px; font-weight:600;"><i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Kembali</a>
             <?php endif; ?>

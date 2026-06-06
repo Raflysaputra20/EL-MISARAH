@@ -217,7 +217,7 @@ $sesiInfo = [
             <button class="notif-btn"><i data-lucide="bell" style="width:20px;height:20px;"></i></button>
             <div class="user-profile">
                 <div class="avatar"></div>
-                <div>
+                <div class="topbar-user-info">
                     <div class="user-name"><?= htmlspecialchars($namaUser) ?></div>
                     <div class="user-role">Penghuni</div>
                 </div>

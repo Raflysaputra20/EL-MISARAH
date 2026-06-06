@@ -218,7 +218,7 @@ try {
                         <?= strtoupper(substr($namaUser, 0, 1)) ?>
                     <?php endif; ?>
                 </div>
-                <div><div class="user-name"><?= htmlspecialchars($namaUser) ?></div><div class="user-role">Penghuni</div></div>
+                <div class="topbar-user-info"><div class="user-name"><?= htmlspecialchars($namaUser) ?></div><div class="user-role">Penghuni</div></div>
             </div>
         </a>
     </header>

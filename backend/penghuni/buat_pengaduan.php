@@ -250,7 +250,7 @@ try {
         </div>
         <div class="topbar-right">
             <a href="profil.php" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:10px;">
-                <div style="text-align:right;">
+                <div class="topbar-user-info" style="text-align:right;">
                     <div class="user-name"><?= htmlspecialchars($namaUser) ?></div>
                     <div class="user-role">Penghuni</div>
                 </div>

@@ -32,17 +32,17 @@ $statusClass = ['baru'=>'badge-baru','diproses'=>'badge-proses','selesai'=>'badg
 :root{--g:#11a654;--gl:#e8f7f0;--bg:#f4f6f8;--dk:#1f2937;--gr:#6b7280;--bd:#e5e7eb}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dk);overflow-x:hidden}
-.sb{width:240px;height:100vh;background:var(--g);position:fixed;top:0;left:0;display:flex;flex-direction:column;border-top-right-radius:20px;border-bottom-right-radius:20px;box-shadow:4px 0 20px rgba(0,0,0,.1);z-index:1000}
-.sb-brand{padding:28px 22px 22px;display:flex;align-items:center;justify-content:space-between}
-.sb-name{font-size:22px;font-weight:800;color:#fff}
-.sb-menu{list-style:none;padding:0 14px;flex-grow:1}
-.sb-item{margin-bottom:4px}
-.sb-link{display:flex;align-items:center;gap:12px;padding:11px 16px;color:rgba(255,255,255,.85);text-decoration:none;font-size:14px;font-weight:500;border-radius:12px;transition:all .2s}
-.sb-link:hover{background:rgba(255,255,255,.15);color:#fff}
-.sb-link.on{background:#fff;color:var(--g);font-weight:700}
-.sb-ic{width:18px;height:18px;flex-shrink:0}
-.sb-foot{padding:16px 14px 24px}
-.btn-out{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--dk);text-decoration:none;padding:10px 22px;border-radius:30px;font-weight:700;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.sidebar{width:240px;height:100vh;background:var(--g);position:fixed;top:0;left:0;display:flex;flex-direction:column;border-top-right-radius:20px;border-bottom-right-radius:20px;box-shadow:4px 0 20px rgba(0,0,0,.1);z-index:1000}
+.sidebar-brand{padding:28px 22px 22px;display:flex;align-items:center;justify-content:space-between}
+.sidebar-brand-name{font-size:22px;font-weight:800;color:#fff}
+.sidebar-menu{list-style:none;padding:0 14px;flex-grow:1}
+.sidebar-item{margin-bottom:4px}
+.sidebar-link{display:flex;align-items:center;gap:12px;padding:11px 16px;color:rgba(255,255,255,.85);text-decoration:none;font-size:14px;font-weight:500;border-radius:12px;transition:all .2s}
+.sidebar-link:hover{background:rgba(255,255,255,.15);color:#fff}
+.sidebar-link.active{background:#fff;color:var(--g);font-weight:700}
+.sidebar-icon{width:18px;height:18px;flex-shrink:0}
+.sidebar-footer{padding:16px 14px 24px}
+.btn-keluar{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--dk);text-decoration:none;padding:10px 22px;border-radius:30px;font-weight:700;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
 .main{margin-left:240px;min-height:100vh;display:flex;flex-direction:column}
 .topbar{height:68px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 30px;border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:100}
 .tp-title{font-size:20px;font-weight:700}
@@ -131,7 +131,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dk);overf
     </div>
     <div style="display:flex;align-items:center;gap:10px">
       <div class="av"><?php if($userFoto):?><img src="../uploads/profil/<?=htmlspecialchars(basename($userFoto))?>" alt=""><?php else:?><?=strtoupper(substr($namaUser,0,1))?><?php endif;?></div>
-      <div><div class="u-name"><?=htmlspecialchars($namaUser)?></div><div class="u-role">Penghuni</div></div>
+      <div class="topbar-user-info"><div class="u-name"><?=htmlspecialchars($namaUser)?></div><div class="u-role">Penghuni</div></div>
     </div>
   </header>
   <main class="content">

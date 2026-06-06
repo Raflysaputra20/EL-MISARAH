@@ -209,6 +209,7 @@ foreach ($ulasans as $u) { $r = (int)$u['rating']; if ($r>=1&&$r<=5) $dist[$r]++
 <body>
 
 <aside class="admin-sidebar">
+    <button class="sidebar-close-btn" onclick="closeMobileSidebar()"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
     <div class="sidebar-header">
         <h1 class="sidebar-brand">Elmi Sarah</h1>
     </div>
@@ -274,7 +275,10 @@ foreach ($ulasans as $u) { $r = (int)$u['rating']; if ($r>=1&&$r<=5) $dist[$r]++
 
 <div class="admin-main">
     <header class="admin-topbar">
-        <h2 style="font-size:20px; font-weight:800; margin:0;">Kelola Ulasan</h2>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button class="btn-toggle-sidebar" onclick="openMobileSidebar()"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
+            <h2 style="font-size:20px; font-weight:800; margin:0;">Kelola Ulasan</h2>
+        </div>
         <div style="display:flex; align-items:center; gap:12px;">
             <div style="text-align:right;">
                 <div style="font-size:13.5px; font-weight:700;"><?= htmlspecialchars($_SESSION['nama'] ?? 'Admin') ?></div>

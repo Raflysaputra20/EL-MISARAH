@@ -680,8 +680,8 @@ body {
 /* Grid 5 kolom */
 .footer-grid {
     display: grid;
-    grid-template-columns: 180px 1fr 1fr 1fr 1fr;
-    gap: 40px;
+    grid-template-columns: 160px repeat(4, 1fr);
+    gap: 32px 28px;
     align-items: flex-start;
 }
 
@@ -803,28 +803,53 @@ body {
 @media (max-width: 900px) {
     .footer-grid {
         grid-template-columns: 1fr 1fr;
-        gap: 32px;
+        gap: 28px 24px;
     }
     .footer-brand {
         grid-column: 1 / -1;
         flex-direction: row;
         align-items: center;
         justify-content: flex-start;
+        gap: 14px;
+    }
+    .footer-logo-wrap {
+        width: 60px;
+        height: 60px;
     }
 }
 
 @media (max-width: 576px) {
+    .app-footer {
+        padding: 40px 0 24px;
+    }
+    .footer-inner {
+        width: calc(100% - 32px);
+    }
     .footer-grid {
         grid-template-columns: 1fr;
+        gap: 24px;
     }
     .footer-brand {
         grid-column: auto;
         flex-direction: column;
         align-items: center;
     }
+    .footer-col-title {
+        margin-bottom: 12px;
+    }
+    .footer-col-list {
+        gap: 10px;
+    }
+    .footer-divider {
+        margin: 28px 0 16px;
+    }
     .footer-bottom {
         flex-direction: column;
         text-align: center;
+        gap: 14px;
+    }
+    .footer-bottom p {
+        font-size: 12px;
     }
 }
 

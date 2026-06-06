@@ -66,23 +66,29 @@
     /* ── PENGHUNI SIDEBAR ── */
     .sidebar,
     .sb {
-        transform: translateX(-100%);
+        transform: translateX(-110%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 4px 0 25px rgba(0,0,0,0.15);
+        box-shadow: none;
+        visibility: hidden;
     }
     .sidebar.mobile-open,
     .sb.mobile-open {
         transform: translateX(0);
+        box-shadow: 4px 0 25px rgba(0,0,0,0.15);
+        visibility: visible;
     }
 
     /* ── ADMIN SIDEBAR ── */
     .admin-sidebar {
-        transform: translateX(-100%);
+        transform: translateX(-110%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 4px 0 25px rgba(0,0,0,0.15);
+        box-shadow: none;
+        visibility: hidden;
     }
     .admin-sidebar.mobile-open {
         transform: translateX(0);
+        box-shadow: 4px 0 25px rgba(0,0,0,0.15);
+        visibility: visible;
     }
 
     /* ── MAIN AREA ADJUSTMENTS ── */
@@ -202,16 +208,23 @@
         font-size: 16px !important;
     }
 
-    /* ── USER PROFILE in topbar ── */
+    /* ── USER PROFILE in topbar: hide name/role text ── */
+    .topbar-user-info,
     .user-info .user-name,
     .topbar-right .user-name,
-    .u-name {
-        font-size: 12px !important;
-    }
+    .u-name,
     .user-info .user-role,
     .topbar-right .user-role,
     .u-role {
-        font-size: 10px !important;
+        display: none !important;
+    }
+
+    /* ── Also hide the wrapper div next to avatar ── */
+    .topbar .av + div:not(.topbar-user-info),
+    .topbar .avatar + div:not(.topbar-user-info),
+    .topbar a[href="profil.php"] > div > div:last-child,
+    .admin-topbar .avatar + div {
+        display: none !important;
     }
 
     /* ── MODAL OVERLAY ── */
@@ -513,25 +526,17 @@ html, body {
 
 /* ─── MOBILE TOPBAR OPTIMIZATIONS (≤ 768px) ─── */
 @media (max-width: 768px) {
-    /* Hide name/role text next to avatar to prevent topbar overflow */
-    .topbar div[style*="text-align:right"],
-    .topbar a[href="profil.php"] div[style*="text-align:right"],
-    .topbar .avatar + div,
-    .admin-topbar .avatar + div,
-    .topbar a[href="profil.php"] > div > div:last-child {
-        display: none !important;
-    }
-    
     /* Truncate titles and greetings to prevent pushing layout width */
     .topbar h2,
     .admin-topbar h2,
     .topbar-title,
+    .tp-title,
     .page-title {
         font-size: 14px !important;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 160px !important;
+        max-width: 200px !important;
     }
     
     /* Make topbar fit perfectly */
@@ -1210,12 +1215,5 @@ html, body {
     }
 }
 
-/* ─── PENGHUNI TOPBAR USER INFO HIDE ON MOBILE ─── */
-@media (max-width: 768px) {
-    .topbar a[href="profil.php"] > div[style*="text-align:right"],
-    .topbar .topbar-right > div > div:not(.avatar),
-    .topbar-right div[style*="text-align:right"] {
-        display: none !important;
-    }
-}
+
 

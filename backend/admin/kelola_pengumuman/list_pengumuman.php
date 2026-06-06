@@ -181,6 +181,7 @@ try {
 
 <!-- Sidebar -->
 <aside class="admin-sidebar">
+    <button class="sidebar-close-btn" onclick="closeMobileSidebar()"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
     <div class="sidebar-header">
         <h1 class="sidebar-brand">Elmi Sarah</h1>
     </div>
@@ -249,7 +250,10 @@ try {
 <div class="admin-main">
     <!-- Topbar -->
     <header class="admin-topbar">
-        <h2 class="page-title">Pengumuman</h2>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button class="btn-toggle-sidebar" onclick="openMobileSidebar()"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
+            <h2 class="page-title">Pengumuman</h2>
+        </div>
         <div class="topbar-right">
             <button class="notification-btn">
                 <i data-lucide="bell" style="width:20px; height:20px;"></i>
