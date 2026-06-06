@@ -2,6 +2,24 @@
 session_start();
 require_once __DIR__ . "/../../config/database.php";
 
+// Auto-create missing columns in kamar table if not exists
+try {
+    $existingKamarCols = [];
+    $colKResult = $conn->query("SHOW COLUMNS FROM kamar");
+    foreach ($colKResult->fetchAll(PDO::FETCH_ASSOC) as $col) {
+        $existingKamarCols[] = $col['Field'];
+    }
+    if (!in_array('harga_3_bulan', $existingKamarCols)) {
+        $conn->exec("ALTER TABLE kamar ADD COLUMN harga_3_bulan INT DEFAULT NULL");
+    }
+    if (!in_array('harga_6_bulan', $existingKamarCols)) {
+        $conn->exec("ALTER TABLE kamar ADD COLUMN harga_6_bulan INT DEFAULT NULL");
+    }
+    if (!in_array('harga_tahun', $existingKamarCols)) {
+        $conn->exec("ALTER TABLE kamar ADD COLUMN harga_tahun INT DEFAULT NULL");
+    }
+} catch (Exception $e) {}
+
 if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "admin") {
     header("Location: ../../api/auth/login.php");
     exit;
@@ -68,9 +86,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
             $base = $stmt->fetch();
             if ($base) {
                 try {
-                    $ins = $conn->prepare("INSERT INTO kamar (nomor_kamar, tipe, harga, fasilitas, deskripsi, foto, foto_2, foto_3, foto_4, foto_5, foto_denah, status) 
-                                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'tersedia')");
-                    $ins->execute([$new_no, $base['tipe'], $base['harga'], $base['fasilitas'], $base['deskripsi'], 
+                    $ins = $conn->prepare("INSERT INTO kamar (nomor_kamar, tipe, harga, harga_3_bulan, harga_6_bulan, harga_tahun, fasilitas, deskripsi, foto, foto_2, foto_3, foto_4, foto_5, foto_denah, status) 
+                                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'tersedia')");
+                    $ins->execute([$new_no, $base['tipe'], $base['harga'], $base['harga_3_bulan'], $base['harga_6_bulan'], $base['harga_tahun'], $base['fasilitas'], $base['deskripsi'], 
                                    $base['foto'], $base['foto_2'], $base['foto_3'], $base['foto_4'], $base['foto_5'], $base['foto_denah']]);
                 } catch (PDOException $e) {
                     if ($e->errorInfo[1] == 1062) $_SESSION['error_msg'] = "Gagal menambah: Nomor kamar '$new_no' sudah ada!";
@@ -95,12 +113,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
 if ($_SERVER["REQUEST_METHOD"] === "POST" && !isset($_POST["action"])) {
     $new_tipe_name = trim($_POST["tipe_name"] ?? "");
     $harga = trim($_POST["harga"] ?? "");
+    $harga_3_bulan = trim($_POST["harga_3_bulan"] ?? "");
+    $harga_6_bulan = trim($_POST["harga_6_bulan"] ?? "");
+    $harga_tahun = trim($_POST["harga_tahun"] ?? "");
     $fasilitas = trim($_POST["fasilitas"] ?? "");
     $deskripsi = trim($_POST["deskripsi"] ?? "");
 
+    $h3 = ($harga_3_bulan === "") ? null : (int)$harga_3_bulan;
+    $h6 = ($harga_6_bulan === "") ? null : (int)$harga_6_bulan;
+    $ht = ($harga_tahun === "") ? null : (int)$harga_tahun;
+
     if ($new_tipe_name !== "" && $harga !== "") {
         $fotoQuery = "";
-        $params = [$new_tipe_name, $harga, $fasilitas, $deskripsi];
+        $params = [$new_tipe_name, $harga, $h3, $h6, $ht, $fasilitas, $deskripsi];
         $uploadDir = __DIR__ . "/../../../frontend/assets/image/";
         if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
         
@@ -119,7 +144,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && !isset($_POST["action"])) {
             }
         }
         $params[] = $tipe_target;
-        $stmt = $conn->prepare("UPDATE kamar SET tipe=?, harga=?, fasilitas=?, deskripsi=? {$fotoQuery} WHERE tipe=?");
+        $stmt = $conn->prepare("UPDATE kamar SET tipe=?, harga=?, harga_3_bulan=?, harga_6_bulan=?, harga_tahun=?, fasilitas=?, deskripsi=? {$fotoQuery} WHERE tipe=?");
         $stmt->execute($params);
 
         if ($new_tipe_name !== $tipe_target) {
@@ -226,7 +251,12 @@ if (!function_exists('renderImagePreview')) {
                         <h5 class="mb-3" style="font-weight:600; border-bottom:2px solid #eee; padding-bottom:8px;">Informasi Dasar</h5>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6"><label class="form-label">Nama Tipe</label><input type="text" name="tipe_name" class="form-control" value="<?= htmlspecialchars($tipe_info['tipe']) ?>" required></div>
-                            <div class="col-md-6"><label class="form-label">Harga (Rp)</label><input type="number" name="harga" class="form-control" value="<?= $tipe_info['harga'] ?>" required></div>
+                            <div class="col-md-6"><label class="form-label">Harga per Bulan (Rp)</label><input type="number" name="harga" class="form-control" value="<?= $tipe_info['harga'] ?>" required></div>
+                            
+                            <div class="col-md-4"><label class="form-label">Harga 3 Bulan (Rp) <span class="text-muted">(Diskon)</span></label><input type="number" name="harga_3_bulan" class="form-control" value="<?= htmlspecialchars($tipe_info['harga_3_bulan'] ?? '') ?>" placeholder="Kosongkan untuk normal"></div>
+                            <div class="col-md-4"><label class="form-label">Harga 6 Bulan (Rp) <span class="text-muted">(Diskon)</span></label><input type="number" name="harga_6_bulan" class="form-control" value="<?= htmlspecialchars($tipe_info['harga_6_bulan'] ?? '') ?>" placeholder="Kosongkan untuk normal"></div>
+                            <div class="col-md-4"><label class="form-label">Harga Setahun (Rp) <span class="text-muted">(Diskon)</span></label><input type="number" name="harga_tahun" class="form-control" value="<?= htmlspecialchars($tipe_info['harga_tahun'] ?? '') ?>" placeholder="Kosongkan untuk normal"></div>
+
                             <div class="col-md-12"><label class="form-label">Fasilitas</label><input type="text" name="fasilitas" class="form-control" value="<?= htmlspecialchars($tipe_info['fasilitas']) ?>"></div>
                             <div class="col-md-12"><label class="form-label">Deskripsi</label><textarea name="deskripsi" class="form-control" rows="2"><?= htmlspecialchars($tipe_info['deskripsi'] ?? '') ?></textarea></div>
                         </div>

@@ -12,7 +12,7 @@ if (!$bookingId) {
 
 // Fetch booking data
 $stmt = $conn->prepare("
-    SELECT b.*, k.harga as harga_per_bulan, k.tipe
+    SELECT b.*, k.harga as harga_per_bulan, k.tipe, k.harga, k.harga_3_bulan, k.harga_6_bulan, k.harga_tahun
     FROM booking b
     JOIN kamar k ON b.kamar_id = k.id
     WHERE b.id = ? AND b.user_id = ?
@@ -39,7 +39,7 @@ if ($stmtCheckPay->fetch()) {
     exit;
 }
 
-$totalHarga = $booking['harga_per_bulan'] * $booking['durasi_bulan'];
+$totalHarga = hitung_total_harga($booking, $booking['durasi_bulan']);
 $dpHarga = $totalHarga * 0.3;
 
 $errorMsg = "";

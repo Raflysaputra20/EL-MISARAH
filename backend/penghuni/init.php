@@ -78,6 +78,22 @@ try {
     if (!in_array('jenis_pembayaran', $existingPayCols)) {
         $conn->exec("ALTER TABLE pembayaran ADD COLUMN jenis_pembayaran VARCHAR(50) DEFAULT NULL");
     }
+
+    // 3. Tambah kolom harga_3_bulan, harga_6_bulan, harga_tahun di kamar
+    $existingKamarCols = [];
+    $colKResult = $conn->query("SHOW COLUMNS FROM kamar");
+    foreach ($colKResult->fetchAll(PDO::FETCH_ASSOC) as $col) {
+        $existingKamarCols[] = $col['Field'];
+    }
+    if (!in_array('harga_3_bulan', $existingKamarCols)) {
+        $conn->exec("ALTER TABLE kamar ADD COLUMN harga_3_bulan INT DEFAULT NULL");
+    }
+    if (!in_array('harga_6_bulan', $existingKamarCols)) {
+        $conn->exec("ALTER TABLE kamar ADD COLUMN harga_6_bulan INT DEFAULT NULL");
+    }
+    if (!in_array('harga_tahun', $existingKamarCols)) {
+        $conn->exec("ALTER TABLE kamar ADD COLUMN harga_tahun INT DEFAULT NULL");
+    }
 } catch (Exception $e) { /* silent */ }
 
 // ===== FIX TABEL YANG KURANG =====
@@ -97,6 +113,9 @@ $tables = [
         nomor_kamar VARCHAR(10) NOT NULL,
         tipe VARCHAR(50) DEFAULT NULL,
         harga INT DEFAULT 0,
+        harga_3_bulan INT DEFAULT NULL,
+        harga_6_bulan INT DEFAULT NULL,
+        harga_tahun INT DEFAULT NULL,
         status ENUM('tersedia','dihuni','maintenance') DEFAULT 'tersedia',
         fasilitas TEXT DEFAULT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -180,6 +199,15 @@ $tables = [
         privasi_profil TINYINT(1) DEFAULT 0,
         sesi_aktif_notif TINYINT(1) DEFAULT 1,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+    "galeri" => "CREATE TABLE IF NOT EXISTS galeri (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        kategori VARCHAR(50) NOT NULL,
+        tipe_file ENUM('foto', 'video') NOT NULL DEFAULT 'foto',
+        file_path VARCHAR(255) NOT NULL,
+        caption VARCHAR(255) DEFAULT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
 ];
 

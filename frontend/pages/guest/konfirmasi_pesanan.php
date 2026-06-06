@@ -13,7 +13,7 @@ if (!$bookingId) {
 try {
     $sql = "
         SELECT b.*, u.nama, u.no_hp, u.email, u.alamat, u.no_ktp, 
-               k.tipe, k.harga as harga_per_bulan
+               k.tipe, k.harga as harga_per_bulan, k.harga, k.harga_3_bulan, k.harga_6_bulan, k.harga_tahun
         FROM booking b
         JOIN users u ON b.user_id = u.id
         JOIN kamar k ON b.kamar_id = k.id
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-$totalHarga = $booking['harga_per_bulan'] * $booking['durasi_bulan'];
+$totalHarga = hitung_total_harga($booking, $booking['durasi_bulan']);
 
 // Extract note and emergency contact if formatted like "Kontak Darurat: XXX\nNotes"
 $rawCatatan = $booking['catatan'] ?? '-';

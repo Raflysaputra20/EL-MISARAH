@@ -690,40 +690,55 @@ $denahPath = getImgPath($room['foto_denah'] ?? null) ?? 'frontend/assets/image/d
             </div>
 
             <!-- Harga & Denah -->
-            <div class="dk-price-denah">
+             <div class="dk-price-denah">
+                 <?php
+                 $harga_3 = !empty($room['harga_3_bulan']) ? (float)$room['harga_3_bulan'] : $harga * 3;
+                 $harga_6 = !empty($room['harga_6_bulan']) ? (float)$room['harga_6_bulan'] : $harga * 6;
+                 $harga_tahun = !empty($room['harga_tahun']) ? (float)$room['harga_tahun'] : $harga * 12;
 
-                <!-- Card Harga -->
-                <div class="dk-price-cards">
-                    <div class="dk-pcard active" data-price="Rp <?= number_format($harga, 0, ',', '.') ?>" data-label="Harga Perbulan">
-                        <p class="dk-pcard-label">perbulan</p>
-                        <p class="dk-pcard-price">Rp <?= number_format($harga, 0, ',', '.') ?></p>
-                    </div>
-                    <div class="dk-pcard" data-price="Rp <?= number_format($harga * 3, 0, ',', '.') ?>" data-label="Harga per 3 Bulan">
-                        <p class="dk-pcard-label">per 3 bulan</p>
-                        <p class="dk-pcard-price">Rp <?= number_format($harga * 3, 0, ',', '.') ?></p>
-                        <p class="dk-pcard-hemat">Hemat 10%</p>
-                    </div>
-                    <div class="dk-pcard" data-price="Rp <?= number_format($harga * 6, 0, ',', '.') ?>" data-label="Harga per 6 Bulan">
-                        <p class="dk-pcard-label">per 6 bulan</p>
-                        <p class="dk-pcard-price">Rp <?= number_format($harga * 6, 0, ',', '.') ?></p>
-                        <p class="dk-pcard-hemat">Hemat 10%</p>
-                    </div>
-                    <div class="dk-pcard" data-price="Rp <?= number_format($harga * 12, 0, ',', '.') ?>" data-label="Harga Pertahun">
-                        <span class="dk-pcard-badge">Populer</span>
-                        <p class="dk-pcard-label">pertahun</p>
-                        <p class="dk-pcard-price">Rp <?= number_format($harga * 12, 0, ',', '.') ?></p>
-                        <p class="dk-pcard-hemat">Hemat 10%</p>
-                    </div>
-                </div>
+                 $disc_3 = round((1 - ($harga_3 / ($harga * 3))) * 100);
+                 $disc_6 = round((1 - ($harga_6 / ($harga * 6))) * 100);
+                 $disc_tahun = round((1 - ($harga_tahun / ($harga * 12))) * 100);
+                 ?>
 
-                <!-- Denah Kamar -->
-                <div class="dk-denah">
-                    <img src="<?= htmlspecialchars($denahPath) ?>" alt="Denah Kamar">
-                    <p class="dk-denah-label">DENAH KAMAR KOS</p>
-                </div>
+                 <!-- Card Harga -->
+                 <div class="dk-price-cards">
+                     <div class="dk-pcard active" data-price="Rp <?= number_format($harga, 0, ',', '.') ?>" data-label="Harga Perbulan">
+                         <p class="dk-pcard-label">perbulan</p>
+                         <p class="dk-pcard-price">Rp <?= number_format($harga, 0, ',', '.') ?></p>
+                     </div>
+                     <div class="dk-pcard" data-price="Rp <?= number_format($harga_3, 0, ',', '.') ?>" data-label="Harga per 3 Bulan">
+                         <p class="dk-pcard-label">per 3 bulan</p>
+                         <p class="dk-pcard-price">Rp <?= number_format($harga_3, 0, ',', '.') ?></p>
+                         <?php if ($disc_3 > 0): ?>
+                             <p class="dk-pcard-hemat">Hemat <?= $disc_3 ?>%</p>
+                         <?php endif; ?>
+                     </div>
+                     <div class="dk-pcard" data-price="Rp <?= number_format($harga_6, 0, ',', '.') ?>" data-label="Harga per 6 Bulan">
+                         <p class="dk-pcard-label">per 6 bulan</p>
+                         <p class="dk-pcard-price">Rp <?= number_format($harga_6, 0, ',', '.') ?></p>
+                         <?php if ($disc_6 > 0): ?>
+                             <p class="dk-pcard-hemat">Hemat <?= $disc_6 ?>%</p>
+                         <?php endif; ?>
+                     </div>
+                     <div class="dk-pcard" data-price="Rp <?= number_format($harga_tahun, 0, ',', '.') ?>" data-label="Harga Pertahun">
+                         <span class="dk-pcard-badge">Populer</span>
+                         <p class="dk-pcard-label">pertahun</p>
+                         <p class="dk-pcard-price">Rp <?= number_format($harga_tahun, 0, ',', '.') ?></p>
+                         <?php if ($disc_tahun > 0): ?>
+                             <p class="dk-pcard-hemat">Hemat <?= $disc_tahun ?>%</p>
+                         <?php endif; ?>
+                     </div>
+                 </div>
 
-            </div>
-        </div><!-- /dk-right -->
+                 <!-- Denah Kamar -->
+                 <div class="dk-denah">
+                     <img src="<?= htmlspecialchars($denahPath) ?>" alt="Denah Kamar">
+                     <p class="dk-denah-label">DENAH KAMAR KOS</p>
+                 </div>
+
+             </div>
+         </div><!-- /dk-right -->
 
     </div><!-- /dk-info -->
 

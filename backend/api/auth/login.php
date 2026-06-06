@@ -414,7 +414,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <span>Ingat saya</span>
                     </label>
 
-                    <a href="#" class="forgot-link">Lupa kata sandi?</a>
+                    <a href="lupa_password.php" class="forgot-link">Lupa kata sandi?</a>
                 </div>
 
                 <button type="submit" class="submit-btn">Masuk</button>

@@ -2,6 +2,24 @@
 session_start();
 require_once __DIR__ . "/../../config/database.php";
 
+// Auto-create missing columns in kamar table if not exists
+try {
+    $existingKamarCols = [];
+    $colKResult = $conn->query("SHOW COLUMNS FROM kamar");
+    foreach ($colKResult->fetchAll(PDO::FETCH_ASSOC) as $col) {
+        $existingKamarCols[] = $col['Field'];
+    }
+    if (!in_array('harga_3_bulan', $existingKamarCols)) {
+        $conn->exec("ALTER TABLE kamar ADD COLUMN harga_3_bulan INT DEFAULT NULL");
+    }
+    if (!in_array('harga_6_bulan', $existingKamarCols)) {
+        $conn->exec("ALTER TABLE kamar ADD COLUMN harga_6_bulan INT DEFAULT NULL");
+    }
+    if (!in_array('harga_tahun', $existingKamarCols)) {
+        $conn->exec("ALTER TABLE kamar ADD COLUMN harga_tahun INT DEFAULT NULL");
+    }
+} catch (Exception $e) {}
+
 if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "admin") {
     header("Location: ../../api/auth/login.php");
     exit;
@@ -305,63 +323,20 @@ function getIcon($fasilitas, $iconMap) {
         <h1 class="sidebar-brand">Elmi Sarah</h1>
     </div>
     <ul class="sidebar-menu">
-        <li class="sidebar-item">
-            <a href="../dashboard.php" class="sidebar-link">
-                <i data-lucide="layout-dashboard" class="sidebar-icon"></i> Dashboard
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="../kelola_penghuni/list_penghuni.php" class="sidebar-link">
-                <i data-lucide="users" class="sidebar-icon"></i> Penghuni Kost
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="../kelola_user/list_user.php" class="sidebar-link">
-                <i data-lucide="user-cog" class="sidebar-icon"></i> Kelola User
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="list_kamar.php" class="sidebar-link active">
-                <i data-lucide="box" class="sidebar-icon"></i> Menejemen Kamar
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="../kelola_tagihan/list_tagihan.php" class="sidebar-link">
-                <i data-lucide="receipt" class="sidebar-icon"></i> Tagihan & Pembayaran
-            </a>
-        </li>
-        
-        <li class="sidebar-item">
-            <a href="../kelola_pengaduan/list_pengaduan.php" class="sidebar-link">
-                <i data-lucide="alert-triangle" class="sidebar-icon"></i> Pengaduan
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="../kelola_booking/list_booking.php" class="sidebar-link">
-                <i data-lucide="calendar-check" class="sidebar-icon"></i> Kelola Booking
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="../kelola_pengumuman/list_pengumuman.php" class="sidebar-link">
-                <i data-lucide="megaphone" class="sidebar-icon"></i> Pengumuman
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="../kelola_ulasan/list_ulasan.php" class="sidebar-link">
-                <i data-lucide="star" class="sidebar-icon"></i> Kelola Ulasan
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="../pengaturan.php" class="sidebar-link">
-                <i data-lucide="settings" class="sidebar-icon"></i> Pengaturan
-            </a>
-        </li>
+        <li class="sidebar-item"><a href="../dashboard.php" class="sidebar-link "><i data-lucide="layout-dashboard" class="sidebar-icon"></i> Dashboard</a></li>
+        <li class="sidebar-item"><a href="../kelola_penghuni/list_penghuni.php" class="sidebar-link "><i data-lucide="users" class="sidebar-icon"></i> Penghuni Kost</a></li>
+        <li class="sidebar-item"><a href="../kelola_user/list_user.php" class="sidebar-link "><i data-lucide="user-cog" class="sidebar-icon"></i> Kelola User</a></li>
+        <li class="sidebar-item"><a href="../kelola_kamar/list_kamar.php" class="sidebar-link active"><i data-lucide="box" class="sidebar-icon"></i> Menejemen Kamar</a></li>
+        <li class="sidebar-item"><a href="../kelola_tagihan/list_tagihan.php" class="sidebar-link "><i data-lucide="receipt" class="sidebar-icon"></i> Tagihan & Pembayaran</a></li>
+        <li class="sidebar-item"><a href="../kelola_pengaduan/list_pengaduan.php" class="sidebar-link "><i data-lucide="alert-triangle" class="sidebar-icon"></i> Pengaduan</a></li>
+        <li class="sidebar-item"><a href="../kelola_booking/list_booking.php" class="sidebar-link "><i data-lucide="calendar-check" class="sidebar-icon"></i> Kelola Booking</a></li>
+        <li class="sidebar-item"><a href="../kelola_pengumuman/list_pengumuman.php" class="sidebar-link "><i data-lucide="megaphone" class="sidebar-icon"></i> Pengumuman</a></li>
+        <li class="sidebar-item"><a href="../kelola_ulasan/list_ulasan.php" class="sidebar-link "><i data-lucide="star" class="sidebar-icon"></i> Kelola Ulasan</a></li>
+        <li class="sidebar-item"><a href="../kelola_galeri/list_galeri.php" class="sidebar-link "><i data-lucide="image" class="sidebar-icon"></i> Kelola Galeri</a></li>
+        <li class="sidebar-item"><a href="../pengaturan.php" class="sidebar-link "><i data-lucide="settings" class="sidebar-icon"></i> Pengaturan</a></li>
     </ul>
     <div class="sidebar-footer">
-        <a href="../../logout.php" class="btn-keluar">
-            <i data-lucide="log-out" class="sidebar-icon" style="color:#1f2937; margin-right:8px;"></i>
-            Keluar
-        </a>
+        <a href="../../logout.php" class="btn-keluar"><i data-lucide="log-out" class="sidebar-icon" style="color:#1f2937; margin-right:8px;"></i> Keluar</a>
     </div>
 </aside>
 

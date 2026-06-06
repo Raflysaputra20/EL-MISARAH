@@ -214,62 +214,20 @@ foreach ($ulasans as $u) { $r = (int)$u['rating']; if ($r>=1&&$r<=5) $dist[$r]++
         <h1 class="sidebar-brand">Elmi Sarah</h1>
     </div>
     <ul class="sidebar-menu">
-        <li class="sidebar-item">
-            <a href="../dashboard.php" class="sidebar-link">
-                <i data-lucide="layout-dashboard" class="sidebar-icon"></i> Dashboard
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="../kelola_penghuni/list_penghuni.php" class="sidebar-link">
-                <i data-lucide="users" class="sidebar-icon"></i> Penghuni Kost
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="../kelola_user/list_user.php" class="sidebar-link">
-                <i data-lucide="user-cog" class="sidebar-icon"></i> Kelola User
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="../kelola_kamar/list_kamar.php" class="sidebar-link">
-                <i data-lucide="box" class="sidebar-icon"></i> Menejemen Kamar
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="../kelola_tagihan/list_tagihan.php" class="sidebar-link">
-                <i data-lucide="receipt" class="sidebar-icon"></i> Tagihan & Pembayaran
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="../kelola_pengaduan/list_pengaduan.php" class="sidebar-link">
-                <i data-lucide="alert-triangle" class="sidebar-icon"></i> Pengaduan
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="../kelola_booking/list_booking.php" class="sidebar-link">
-                <i data-lucide="calendar-check" class="sidebar-icon"></i> Kelola Booking
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="../kelola_pengumuman/list_pengumuman.php" class="sidebar-link">
-                <i data-lucide="megaphone" class="sidebar-icon"></i> Pengumuman
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="list_ulasan.php" class="sidebar-link active">
-                <i data-lucide="star" class="sidebar-icon"></i> Kelola Ulasan
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="../pengaturan.php" class="sidebar-link">
-                <i data-lucide="settings" class="sidebar-icon"></i> Pengaturan
-            </a>
-        </li>
+        <li class="sidebar-item"><a href="../dashboard.php" class="sidebar-link "><i data-lucide="layout-dashboard" class="sidebar-icon"></i> Dashboard</a></li>
+        <li class="sidebar-item"><a href="../kelola_penghuni/list_penghuni.php" class="sidebar-link "><i data-lucide="users" class="sidebar-icon"></i> Penghuni Kost</a></li>
+        <li class="sidebar-item"><a href="../kelola_user/list_user.php" class="sidebar-link "><i data-lucide="user-cog" class="sidebar-icon"></i> Kelola User</a></li>
+        <li class="sidebar-item"><a href="../kelola_kamar/list_kamar.php" class="sidebar-link "><i data-lucide="box" class="sidebar-icon"></i> Menejemen Kamar</a></li>
+        <li class="sidebar-item"><a href="../kelola_tagihan/list_tagihan.php" class="sidebar-link "><i data-lucide="receipt" class="sidebar-icon"></i> Tagihan & Pembayaran</a></li>
+        <li class="sidebar-item"><a href="../kelola_pengaduan/list_pengaduan.php" class="sidebar-link "><i data-lucide="alert-triangle" class="sidebar-icon"></i> Pengaduan</a></li>
+        <li class="sidebar-item"><a href="../kelola_booking/list_booking.php" class="sidebar-link "><i data-lucide="calendar-check" class="sidebar-icon"></i> Kelola Booking</a></li>
+        <li class="sidebar-item"><a href="../kelola_pengumuman/list_pengumuman.php" class="sidebar-link "><i data-lucide="megaphone" class="sidebar-icon"></i> Pengumuman</a></li>
+        <li class="sidebar-item"><a href="../kelola_ulasan/list_ulasan.php" class="sidebar-link active"><i data-lucide="star" class="sidebar-icon"></i> Kelola Ulasan</a></li>
+        <li class="sidebar-item"><a href="../kelola_galeri/list_galeri.php" class="sidebar-link "><i data-lucide="image" class="sidebar-icon"></i> Kelola Galeri</a></li>
+        <li class="sidebar-item"><a href="../pengaturan.php" class="sidebar-link "><i data-lucide="settings" class="sidebar-icon"></i> Pengaturan</a></li>
     </ul>
     <div class="sidebar-footer">
-        <a href="../../logout.php" class="btn-exit">
-            <i data-lucide="log-out" class="sidebar-icon" style="color:var(--admin-text-dark); margin-right: 10px;"></i>
-            Keluar
-        </a>
+        <a href="../../logout.php" class="btn-keluar"><i data-lucide="log-out" class="sidebar-icon" style="color:#1f2937; margin-right:8px;"></i> Keluar</a>
     </div>
 </aside>
 

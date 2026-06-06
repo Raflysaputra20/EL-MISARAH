@@ -373,6 +373,91 @@
 }
 </style>
 
+<?php
+// Auto-create galeri table if not exists
+try {
+    $conn->exec("CREATE TABLE IF NOT EXISTS galeri (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        kategori VARCHAR(50) NOT NULL,
+        tipe_file ENUM('foto', 'video') NOT NULL DEFAULT 'foto',
+        file_path VARCHAR(255) NOT NULL,
+        caption VARCHAR(255) DEFAULT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+} catch (Exception $e) {}
+
+// Auto-seed galeri if empty
+$checkGal = $conn->query("SELECT COUNT(*) FROM galeri")->fetchColumn();
+if ($checkGal == 0) {
+    $initial_items = [
+        ['suasana_lokasi', 'video', 'suasana lokasi kost/IMG_3801.mp4', 'Suasana Lokasi Kost'],
+        ['suasana_lantai_1', 'foto', 'suasana lantai satu/IMG_3859.jpg', 'Suasana Lantai Satu - Depan'],
+        ['suasana_lantai_1', 'foto', 'suasana lantai satu/IMG_3869.jpg', 'Suasana Lantai Satu - Lorong'],
+        ['suasana_lantai_1', 'foto', 'suasana lantai satu/IMG_3875.jpg', 'Suasana Lantai Satu - Tangga'],
+        ['suasana_lantai_1', 'foto', 'suasana lantai satu/IMG_3885.jpg', 'Suasana Lantai Satu - Pintu'],
+        ['suasana_lantai_2', 'foto', 'suasana lantai dua/IMG_3898.jpg', 'Suasana Lantai Dua - Balkon'],
+        ['suasana_lantai_2', 'foto', 'suasana lantai dua/IMG_3899.jpg', 'Suasana Lantai Dua - Lorong'],
+        ['suasana_lantai_2', 'foto', 'suasana lantai dua/IMG_4062.jpg', 'Suasana Lantai Dua - Tangga'],
+        ['suasana_lantai_2', 'foto', 'suasana lantai dua/IMG_4066.jpg', 'Suasana Lantai Dua - Teras'],
+        ['suasana_kamar', 'foto', 'Suasana Kamar/IMG_4438.jpg', 'Suasana Kamar - Kasur'],
+        ['suasana_kamar', 'video', 'Suasana Kamar/VIDEO-2026-04-21-13-10-25.mp4', 'Suasana Kamar - Video Cuplikan'],
+        ['suasana_kamar', 'foto', 'Suasana Kamar/IMG_4441.jpg', 'Suasana Kamar - Meja Belajar'],
+        ['suasana_kamar', 'foto', 'Suasana Kamar/IMG_4444.jpg', 'Suasana Kamar - Lemari'],
+        ['suasana_kamar', 'video', 'Suasana Kamar/VIDEO-2026-04-21-13-10-25 (1).mp4', 'Suasana Kamar - Detail Kamar Mandi'],
+        ['suasana_kamar', 'foto', 'Suasana Kamar/IMG_4445.jpg', 'Suasana Kamar - Kamar Mandi'],
+        ['parkir', 'foto', 'fasilitas parkir/IMG_3887.jpg', 'Fasilitas Parkir - Motor'],
+        ['parkir', 'foto', 'fasilitas parkir/IMG_3897.jpg', 'Fasilitas Parkir - Depan'],
+        ['parkir', 'foto', 'fasilitas parkir/IMG_4455.jpg', 'Fasilitas Parkir - Luas'],
+        ['parkir', 'foto', 'fasilitas parkir/IMG_4457.jpg', 'Fasilitas Parkir - Pintu Masuk'],
+        ['dapur', 'foto', 'fasilitas dapur/IMG_3849.jpg', 'Fasilitas Dapur - Kompor'],
+        ['dapur', 'video', 'fasilitas dapur/IMG_3850.mp4', 'Fasilitas Dapur - Suasana Memasak'],
+        ['dapur', 'foto', 'fasilitas dapur/IMG_3864.jpg', 'Fasilitas Dapur - Wastafel'],
+        ['dapur', 'foto', 'fasilitas dapur/IMG_3865.jpg', 'Fasilitas Dapur - Lemari Es'],
+        ['lainnya', 'foto', 'fasilitas lainnya/IMG_3861.jpg', 'Fasilitas Lainnya - Tempat Jemuran'],
+        ['lainnya', 'foto', 'fasilitas lainnya/IMG_3894.jpg', 'Fasilitas Lainnya - Ruang Santai'],
+        ['lainnya', 'foto', 'fasilitas lainnya/IMG_3896.jpg', 'Fasilitas Lainnya - Korong Belakang'],
+        ['lainnya', 'foto', 'fasilitas lainnya/IMG_4449.jpg', 'Fasilitas Lainnya - Ruang Cuci'],
+        ['lainnya', 'foto', 'fasilitas lainnya/IMG_4456.jpg', 'Fasilitas Lainnya - CCTV & Keamanan'],
+    ];
+
+    $insGal = $conn->prepare("INSERT INTO galeri (kategori, tipe_file, file_path, caption) VALUES (?, ?, ?, ?)");
+    foreach ($initial_items as $item) {
+        $insGal->execute($item);
+    }
+}
+
+// Fetch all gallery items
+$stmtG = $conn->query("SELECT * FROM galeri ORDER BY id ASC");
+$allItems = $stmtG->fetchAll(PDO::FETCH_ASSOC);
+
+$galByCat = [];
+foreach ($allItems as $g) {
+    $galByCat[$g['kategori']][] = $g;
+}
+
+if (!function_exists('renderGalleryItem')) {
+    function renderGalleryItem($item) {
+        if (!$item) {
+            return '<div class="ph-empty" style="padding: 20px; text-align: center; color: #999;">Belum ada media</div>';
+        }
+        $filePath = $item['file_path'];
+        if (strpos($filePath, '/') === false) {
+            // Uploaded via admin
+            $path = "frontend/assets/image/uploads/" . $filePath;
+        } else {
+            // Seeded/existing
+            $path = "frontend/assets/image/" . $filePath;
+        }
+        
+        if ($item['tipe_file'] === 'video') {
+            return '<video src="' . htmlspecialchars($path) . '" autoplay loop muted playsinline></video>';
+        } else {
+            return '<img src="' . htmlspecialchars($path) . '" alt="' . htmlspecialchars($item['caption'] ?? '') . '">';
+        }
+    }
+}
+?>
+
 <div class="gl-page">
 
     <!-- ═══ HERO ═══════════════════════════════════ -->
@@ -392,10 +477,26 @@
         <div class="gl-section">
             <h2 class="gl-section-title" style="text-align: center;">Suasana Lokasi Kost</h2>
             <div class="gl-single-video-wrapper">
-                <div class="ph" style="height: 100%;">
-                    <video src="frontend/assets/image/suasana%20lokasi%20kost/IMG_3801.mp4" autoplay loop muted playsinline controls class="gl-single-video"></video>
-                </div>
+                <?php
+                $item = $galByCat['suasana_lokasi'][0] ?? null;
+                if ($item):
+                ?>
+                    <div class="ph" style="height: 100%;">
+                        <?= renderGalleryItem($item) ?>
+                    </div>
+                <?php else: ?>
+                    <div class="ph" style="height: 100%; min-height: 400px; display:flex; align-items:center; justify-content:center;">Belum ada video</div>
+                <?php endif; ?>
             </div>
+            <?php if (count($galByCat['suasana_lokasi'] ?? []) > 1): ?>
+                <div class="row g-2 mt-3 justify-content-center">
+                    <?php for ($i = 1; $i < count($galByCat['suasana_lokasi']); $i++): ?>
+                        <div class="col-md-3 col-6">
+                            <div class="ph" style="height: 150px;"><?= renderGalleryItem($galByCat['suasana_lokasi'][$i]) ?></div>
+                        </div>
+                    <?php endfor; ?>
+                </div>
+            <?php endif; ?>
         </div>
 
         <hr class="gl-divider">
@@ -404,11 +505,20 @@
         <div class="gl-section">
             <h2 class="gl-section-title">Suasana Lantai Satu</h2>
             <div class="gl-suasana-grid">
-                <div class="ph ph-main"><img src="frontend/assets/image/suasana%20lantai%20satu/IMG_3859.jpg" alt="Suasana Lantai Satu"></div>
-                <div class="ph ph-tr-1"><img src="frontend/assets/image/suasana%20lantai%20satu/IMG_3869.jpg" alt="Suasana Lantai Satu"></div>
-                <div class="ph ph-tr-2"><img src="frontend/assets/image/suasana%20lantai%20satu/IMG_3875.jpg" alt="Suasana Lantai Satu"></div>
-                <div class="ph ph-br"><img src="frontend/assets/image/suasana%20lantai%20satu/IMG_3885.jpg" alt="Suasana Lantai Satu"></div>
+                <div class="ph ph-main"><?= renderGalleryItem($galByCat['suasana_lantai_1'][0] ?? null) ?></div>
+                <div class="ph ph-tr-1"><?= renderGalleryItem($galByCat['suasana_lantai_1'][1] ?? null) ?></div>
+                <div class="ph ph-tr-2"><?= renderGalleryItem($galByCat['suasana_lantai_1'][2] ?? null) ?></div>
+                <div class="ph ph-br"><?= renderGalleryItem($galByCat['suasana_lantai_1'][3] ?? null) ?></div>
             </div>
+            <?php if (count($galByCat['suasana_lantai_1'] ?? []) > 4): ?>
+                <div class="row g-2 mt-2">
+                    <?php for ($i = 4; $i < count($galByCat['suasana_lantai_1']); $i++): ?>
+                        <div class="col-md-3 col-6">
+                            <div class="ph" style="height: 150px;"><?= renderGalleryItem($galByCat['suasana_lantai_1'][$i]) ?></div>
+                        </div>
+                    <?php endfor; ?>
+                </div>
+            <?php endif; ?>
         </div>
 
         <hr class="gl-divider">
@@ -417,11 +527,20 @@
         <div class="gl-section">
             <h2 class="gl-section-title">Suasana Lantai Dua</h2>
             <div class="gl-suasana-grid">
-                <div class="ph ph-main"><img src="frontend/assets/image/suasana%20lantai%20dua/IMG_3898.jpg" alt="Suasana Lantai Dua"></div>
-                <div class="ph ph-tr-1"><img src="frontend/assets/image/suasana%20lantai%20dua/IMG_3899.jpg" alt="Suasana Lantai Dua"></div>
-                <div class="ph ph-tr-2"><img src="frontend/assets/image/suasana%20lantai%20dua/IMG_4062.jpg" alt="Suasana Lantai Dua"></div>
-                <div class="ph ph-br"><img src="frontend/assets/image/suasana%20lantai%20dua/IMG_4066.jpg" alt="Suasana Lantai Dua"></div>
+                <div class="ph ph-main"><?= renderGalleryItem($galByCat['suasana_lantai_2'][0] ?? null) ?></div>
+                <div class="ph ph-tr-1"><?= renderGalleryItem($galByCat['suasana_lantai_2'][1] ?? null) ?></div>
+                <div class="ph ph-tr-2"><?= renderGalleryItem($galByCat['suasana_lantai_2'][2] ?? null) ?></div>
+                <div class="ph ph-br"><?= renderGalleryItem($galByCat['suasana_lantai_2'][3] ?? null) ?></div>
             </div>
+            <?php if (count($galByCat['suasana_lantai_2'] ?? []) > 4): ?>
+                <div class="row g-2 mt-2">
+                    <?php for ($i = 4; $i < count($galByCat['suasana_lantai_2']); $i++): ?>
+                        <div class="col-md-3 col-6">
+                            <div class="ph" style="height: 150px;"><?= renderGalleryItem($galByCat['suasana_lantai_2'][$i]) ?></div>
+                        </div>
+                    <?php endfor; ?>
+                </div>
+            <?php endif; ?>
         </div>
 
         <hr class="gl-divider">
@@ -430,14 +549,22 @@
         <div class="gl-section">
             <h2 class="gl-section-title">Suasana Kamar</h2>
             <div class="gl-kamar-grid">
-                <div class="ph km-1"><img src="frontend/assets/image/Suasana%20Kamar/IMG_4438.jpg" alt="Suasana Kamar"></div>
-                <div class="ph km-2"><video src="frontend/assets/image/Suasana%20Kamar/VIDEO-2026-04-21-13-10-25.mp4" autoplay loop muted playsinline></video></div>
-                <div class="ph km-3"><img src="frontend/assets/image/Suasana%20Kamar/IMG_4441.jpg" alt="Suasana Kamar"></div>
-                
-                <div class="ph km-4"><img src="frontend/assets/image/Suasana%20Kamar/IMG_4444.jpg" alt="Suasana Kamar"></div>
-                <div class="ph km-5"><video src="frontend/assets/image/Suasana%20Kamar/VIDEO-2026-04-21-13-10-25%20(1).mp4" autoplay loop muted playsinline></video></div>
-                <div class="ph km-6"><img src="frontend/assets/image/Suasana%20Kamar/IMG_4445.jpg" alt="Suasana Kamar"></div>
+                <div class="ph km-1"><?= renderGalleryItem($galByCat['suasana_kamar'][0] ?? null) ?></div>
+                <div class="ph km-2"><?= renderGalleryItem($galByCat['suasana_kamar'][1] ?? null) ?></div>
+                <div class="ph km-3"><?= renderGalleryItem($galByCat['suasana_kamar'][2] ?? null) ?></div>
+                <div class="ph km-4"><?= renderGalleryItem($galByCat['suasana_kamar'][3] ?? null) ?></div>
+                <div class="ph km-5"><?= renderGalleryItem($galByCat['suasana_kamar'][4] ?? null) ?></div>
+                <div class="ph km-6"><?= renderGalleryItem($galByCat['suasana_kamar'][5] ?? null) ?></div>
             </div>
+            <?php if (count($galByCat['suasana_kamar'] ?? []) > 6): ?>
+                <div class="row g-2 mt-2">
+                    <?php for ($i = 6; $i < count($galByCat['suasana_kamar']); $i++): ?>
+                        <div class="col-md-3 col-6">
+                            <div class="ph" style="height: 150px;"><?= renderGalleryItem($galByCat['suasana_kamar'][$i]) ?></div>
+                        </div>
+                    <?php endfor; ?>
+                </div>
+            <?php endif; ?>
         </div>
 
         <hr class="gl-divider">
@@ -449,34 +576,61 @@
             <!-- Fasilitas Parkir -->
             <p class="gl-sub-label">Fasilitas Parkir</p>
             <div class="gl-parkir-grid" style="margin-bottom:28px;">
-                <div class="ph pk-1"><img src="frontend/assets/image/fasilitas%20parkir/IMG_3887.jpg" alt="Fasilitas Parkir"></div>
-                <div class="ph pk-2"><img src="frontend/assets/image/fasilitas%20parkir/IMG_3897.jpg" alt="Fasilitas Parkir"></div>
-                <div class="ph pk-3"><img src="frontend/assets/image/fasilitas%20parkir/IMG_4455.jpg" alt="Fasilitas Parkir"></div>
-                <div class="ph pk-4"><img src="frontend/assets/image/fasilitas%20parkir/IMG_4457.jpg" alt="Fasilitas Parkir"></div>
+                <div class="ph pk-1"><?= renderGalleryItem($galByCat['parkir'][0] ?? null) ?></div>
+                <div class="ph pk-2"><?= renderGalleryItem($galByCat['parkir'][1] ?? null) ?></div>
+                <div class="ph pk-3"><?= renderGalleryItem($galByCat['parkir'][2] ?? null) ?></div>
+                <div class="ph pk-4"><?= renderGalleryItem($galByCat['parkir'][3] ?? null) ?></div>
             </div>
+            <?php if (count($galByCat['parkir'] ?? []) > 4): ?>
+                <div class="row g-2 mt-2" style="margin-bottom:28px;">
+                    <?php for ($i = 4; $i < count($galByCat['parkir']); $i++): ?>
+                        <div class="col-md-3 col-6">
+                            <div class="ph" style="height: 150px;"><?= renderGalleryItem($galByCat['parkir'][$i]) ?></div>
+                        </div>
+                    <?php endfor; ?>
+                </div>
+            <?php endif; ?>
 
             <!-- Fasilitas Dapur -->
             <p class="gl-sub-label">Fasilitas Dapur</p>
             <div class="gl-dapur-grid" style="margin-bottom:28px;">
-                <div class="ph"><img src="frontend/assets/image/fasilitas%20dapur/IMG_3849.jpg" alt="Fasilitas Dapur"></div>
-                <div class="ph"><video src="frontend/assets/image/fasilitas%20dapur/IMG_3850.mp4" autoplay loop muted playsinline></video></div>
-                <div class="ph"><img src="frontend/assets/image/fasilitas%20dapur/IMG_3864.jpg" alt="Fasilitas Dapur"></div>
-                <div class="ph"><img src="frontend/assets/image/fasilitas%20dapur/IMG_3865.jpg" alt="Fasilitas Dapur"></div>
+                <div class="ph"><?= renderGalleryItem($galByCat['dapur'][0] ?? null) ?></div>
+                <div class="ph"><?= renderGalleryItem($galByCat['dapur'][1] ?? null) ?></div>
+                <div class="ph"><?= renderGalleryItem($galByCat['dapur'][2] ?? null) ?></div>
+                <div class="ph"><?= renderGalleryItem($galByCat['dapur'][3] ?? null) ?></div>
             </div>
+            <?php if (count($galByCat['dapur'] ?? []) > 4): ?>
+                <div class="row g-2 mt-2" style="margin-bottom:28px;">
+                    <?php for ($i = 4; $i < count($galByCat['dapur']); $i++): ?>
+                        <div class="col-md-3 col-6">
+                            <div class="ph" style="height: 150px;"><?= renderGalleryItem($galByCat['dapur'][$i]) ?></div>
+                        </div>
+                    <?php endfor; ?>
+                </div>
+            <?php endif; ?>
 
             <!-- Fasilitas Lainnya -->
             <p class="gl-sub-label">Fasilitas Lainnya</p>
             <div class="gl-lainnya-grid">
-                <div class="ph ln-left"><img src="frontend/assets/image/fasilitas%20lainnya/IMG_3861.jpg" alt="Fasilitas Lainnya"></div>
+                <div class="ph ln-left"><?= renderGalleryItem($galByCat['lainnya'][0] ?? null) ?></div>
                 <div class="ln-rt">
-                    <div class="ph"><img src="frontend/assets/image/fasilitas%20lainnya/IMG_3894.jpg" alt="Fasilitas Lainnya"></div>
-                    <div class="ph"><img src="frontend/assets/image/fasilitas%20lainnya/IMG_3896.jpg" alt="Fasilitas Lainnya"></div>
+                    <div class="ph"><?= renderGalleryItem($galByCat['lainnya'][1] ?? null) ?></div>
+                    <div class="ph"><?= renderGalleryItem($galByCat['lainnya'][2] ?? null) ?></div>
                 </div>
                 <div class="ln-rb">
-                    <div class="ph"><img src="frontend/assets/image/fasilitas%20lainnya/IMG_4449.jpg" alt="Fasilitas Lainnya"></div>
-                    <div class="ph"><img src="frontend/assets/image/fasilitas%20lainnya/IMG_4456.jpg" alt="Fasilitas Lainnya"></div>
+                    <div class="ph"><?= renderGalleryItem($galByCat['lainnya'][3] ?? null) ?></div>
+                    <div class="ph"><?= renderGalleryItem($galByCat['lainnya'][4] ?? null) ?></div>
                 </div>
             </div>
+            <?php if (count($galByCat['lainnya'] ?? []) > 5): ?>
+                <div class="row g-2 mt-2">
+                    <?php for ($i = 5; $i < count($galByCat['lainnya']); $i++): ?>
+                        <div class="col-md-3 col-6">
+                            <div class="ph" style="height: 150px;"><?= renderGalleryItem($galByCat['lainnya'][$i]) ?></div>
+                        </div>
+                    <?php endfor; ?>
+                </div>
+            <?php endif; ?>
 
         </div><!-- /Fasilitas Bersama -->
 

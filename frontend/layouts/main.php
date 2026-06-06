@@ -148,7 +148,7 @@
                                 <input type="checkbox" name="remember" checked>
                                 <span>Ingat saya</span>
                             </label>
-                            <a href="#" class="forgot-link-modal">Lupa kata sandi?</a>
+                            <a href="backend/api/auth/lupa_password.php" class="forgot-link-modal">Lupa kata sandi?</a>
                         </div>
                         
                         <button type="submit" class="submit-btn-modal" id="loginBtnSubmit">Masuk</button>
