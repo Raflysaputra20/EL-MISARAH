@@ -188,21 +188,28 @@ $totalNonaktif = $totalUser - $totalAktif;
                         <td><span class="badge-status <?= $u['status'] === 'aktif' ? 'status-aktif' : 'status-nonaktif' ?>"><?= strtoupper($u['status']) ?></span></td>
                         <td style="font-size:12px; color:#9ca3af;"><?= date('j M Y', strtotime($u['created_at'])) ?></td>
                         <td>
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-light border dropdown-toggle fw-bold" data-bs-toggle="dropdown" style="font-size:12px;">Opsi</button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="../kelola_penghuni/detail_penghuni.php?id=<?= $u['id'] ?>"><i data-lucide="eye" style="width:14px; margin-right:8px;"></i> Lihat Detail</a></li>
-                                    <li><a class="dropdown-item" href="../kelola_penghuni/edit_penghuni.php?id=<?= $u['id'] ?>"><i data-lucide="edit-3" style="width:14px; margin-right:8px;"></i> Edit Profil</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <?php if ($u['status'] === 'aktif'): ?>
-                                        <li><a class="dropdown-item text-warning" href="list_user.php?action=deactivate&id=<?= $u['id'] ?>" onclick="return confirm('Nonaktifkan akun ini?')"><i data-lucide="user-x" style="width:14px; margin-right:8px;"></i> Nonaktifkan</a></li>
-                                    <?php else: ?>
-                                        <li><a class="dropdown-item text-success" href="list_user.php?action=activate&id=<?= $u['id'] ?>" onclick="return confirm('Aktifkan kembali akun ini?')"><i data-lucide="user-check" style="width:14px; margin-right:8px;"></i> Aktifkan</a></li>
-                                    <?php endif; ?>
-                                    <li><a class="dropdown-item text-info" href="list_user.php?action=reset_password&id=<?= $u['id'] ?>" onclick="return confirm('Reset password user ini ke 123456?')"><i data-lucide="key" style="width:14px; margin-right:8px;"></i> Reset Password</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item text-danger" href="list_user.php?action=delete&id=<?= $u['id'] ?>" onclick="return confirm('Hapus permanen akun ini? Data tidak bisa dikembalikan!')"><i data-lucide="trash-2" style="width:14px; margin-right:8px;"></i> Hapus Akun</a></li>
-                                </ul>
+                            <div class="d-flex gap-1">
+                                <a href="../kelola_penghuni/detail_penghuni.php?id=<?= $u['id'] ?>" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center justify-content-center" title="Lihat Detail" style="width: 32px; height: 32px; border-radius: 8px;">
+                                    <i data-lucide="eye" style="width:16px; height:16px;"></i>
+                                </a>
+                                <a href="../kelola_penghuni/edit_penghuni.php?id=<?= $u['id'] ?>" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center justify-content-center" title="Edit Profil" style="width: 32px; height: 32px; border-radius: 8px;">
+                                    <i data-lucide="edit-3" style="width:16px; height:16px;"></i>
+                                </a>
+                                <?php if ($u['status'] === 'aktif'): ?>
+                                    <a href="list_user.php?action=deactivate&id=<?= $u['id'] ?>" onclick="return confirm('Nonaktifkan akun ini?')" class="btn btn-sm btn-outline-warning d-inline-flex align-items-center justify-content-center" title="Nonaktifkan" style="width: 32px; height: 32px; border-radius: 8px;">
+                                        <i data-lucide="user-x" style="width:16px; height:16px;"></i>
+                                    </a>
+                                <?php else: ?>
+                                    <a href="list_user.php?action=activate&id=<?= $u['id'] ?>" onclick="return confirm('Aktifkan kembali akun ini?')" class="btn btn-sm btn-outline-success d-inline-flex align-items-center justify-content-center" title="Aktifkan" style="width: 32px; height: 32px; border-radius: 8px;">
+                                        <i data-lucide="user-check" style="width:16px; height:16px;"></i>
+                                    </a>
+                                <?php endif; ?>
+                                <a href="list_user.php?action=reset_password&id=<?= $u['id'] ?>" onclick="return confirm('Reset password user ini ke 123456?')" class="btn btn-sm btn-outline-info d-inline-flex align-items-center justify-content-center" title="Reset Password" style="width: 32px; height: 32px; border-radius: 8px;">
+                                    <i data-lucide="key" style="width:16px; height:16px;"></i>
+                                </a>
+                                <a href="list_user.php?action=delete&id=<?= $u['id'] ?>" onclick="return confirm('Hapus permanen akun ini? Data tidak bisa dikembalikan!')" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center" title="Hapus Akun" style="width: 32px; height: 32px; border-radius: 8px;">
+                                    <i data-lucide="trash-2" style="width:16px; height:16px;"></i>
+                                </a>
                             </div>
                         </td>
                     </tr>

@@ -8,7 +8,7 @@
 if (isset($_SESSION["user_id"])) {
     $checkUserId = $_SESSION["user_id"];
     try {
-        $stmtCheck = $conn->prepare("SELECT role, status FROM users WHERE id = ?");
+        $stmtCheck = $conn->prepare("SELECT role, status, nama, foto FROM users WHERE id = ?");
         $stmtCheck->execute([$checkUserId]);
         $dbUser = $stmtCheck->fetch(PDO::FETCH_ASSOC);
         if (!$dbUser || $dbUser['role'] !== 'penghuni' || $dbUser['status'] !== 'aktif') {
@@ -23,6 +23,9 @@ if (isset($_SESSION["user_id"])) {
             session_destroy();
             header("Location: ../api/auth/login.php?error=" . urlencode("Sesi Anda telah berakhir atau Anda telah checkout."));
             exit;
+        } else {
+            $_SESSION['nama'] = $dbUser['nama'];
+            $_SESSION['foto'] = $dbUser['foto'];
         }
     } catch (Exception $e) {
         // Silent fallback

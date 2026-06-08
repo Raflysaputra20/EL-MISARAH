@@ -24,20 +24,39 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['tab'])) {
         if (!empty($_FILES['foto']['name'])) {
             $ext=strtolower(pathinfo($_FILES['foto']['name'],PATHINFO_EXTENSION));
             if (in_array($ext,['jpg','jpeg','png','webp'])) {
-                $dir=__DIR__.'/../../uploads/profil/';
-                if(!is_dir($dir)) mkdir($dir,0755,true);
+                // Upload to both backend and root uploads directories for absolute compatibility
+                $dir1 = __DIR__ . '/../uploads/profil/';
+                $dir2 = __DIR__ . '/../../uploads/profil/';
+                if(!is_dir($dir1)) mkdir($dir1,0755,true);
+                if(!is_dir($dir2)) mkdir($dir2,0755,true);
                 $fn='user_'.$userId.'_'.time().'.'.$ext;
-                if(move_uploaded_file($_FILES['foto']['tmp_name'],$dir.$fn)) $foto=$fn;
+                if(move_uploaded_file($_FILES['foto']['tmp_name'],$dir1.$fn)) {
+                    copy($dir1.$fn, $dir2.$fn);
+                    $foto=$fn;
+                }
             }
         }
         $pekerjaan = trim($_POST['pekerjaan'] ?? '');
-        try {
-            $upd=$conn->prepare("UPDATE users SET nama=?,no_hp=?,alamat=?,foto=?,tanggal_lahir=?,pekerjaan=? WHERE id=?");
-            $upd->execute([$nama,$hp,$al,$foto,$tl,$pekerjaan,$userId]);
-            $_SESSION['nama']=$nama; $namaUser=$nama;
-            $user=array_merge($user,['nama'=>$nama,'no_hp'=>$hp,'alamat'=>$al,'foto'=>$foto,'tanggal_lahir'=>$tl,'pekerjaan'=>$pekerjaan]);
-            $success='Profil berhasil diperbarui!'; $activeTab='info';
-        } catch(Exception $e){ $error='Gagal: '.$e->getMessage(); $activeTab='info'; }
+
+        if (empty($nama)) {
+            $error = 'Nama tidak boleh kosong.';
+            $activeTab = 'info';
+        } else {
+            // Convert empty values to NULL for MySQL compatibility
+            $hpVal = !empty($hp) ? $hp : null;
+            $alVal = !empty($al) ? $al : null;
+            $fotoVal = !empty($foto) ? $foto : null;
+            $tlVal = !empty($tl) ? $tl : null;
+            $pekerjaanVal = !empty($pekerjaan) ? $pekerjaan : null;
+
+            try {
+                $upd=$conn->prepare("UPDATE users SET nama=?,no_hp=?,alamat=?,foto=?,tanggal_lahir=?,pekerjaan=? WHERE id=?");
+                $upd->execute([$nama,$hpVal,$alVal,$fotoVal,$tlVal,$pekerjaanVal,$userId]);
+                $_SESSION['nama']=$nama; $namaUser=$nama;
+                $user=array_merge($user,['nama'=>$nama,'no_hp'=>$hpVal,'alamat'=>$alVal,'foto'=>$fotoVal,'tanggal_lahir'=>$tlVal,'pekerjaan'=>$pekerjaanVal]);
+                $success='Profil berhasil diperbarui!'; $activeTab='info';
+            } catch(Exception $e){ $error='Gagal: '.$e->getMessage(); $activeTab='info'; }
+        }
     } elseif ($_POST['tab']==='password') {
         $old=$_POST['old_password']??''; $new=$_POST['new_password']??''; $conf=$_POST['confirm_password']??'';
         if (!password_verify($old,$user['password']??'')) $error='Kata sandi lama salah.';
@@ -320,7 +339,26 @@ lucide.createIcons();
 function previewFoto(input) {
     if (!input.files||!input.files[0]) return;
     const r=new FileReader();
-    r.onload=e=>{document.getElementById('fotoPreview').innerHTML=`<img src="${e.target.result}" alt="" id="fotoImg">`;input.closest('form').submit();};
+    r.onload=e=>{
+        document.getElementById('fotoPreview').innerHTML=`<img src="${e.target.result}" alt="" id="fotoImg">`;
+        const formRight = document.querySelector('.edit-right form');
+        if (formRight && formRight.querySelector('input[name="tab"]').value === 'info') {
+            const fotoForm = document.getElementById('fotoForm');
+            formRight.querySelectorAll('input[type="text"], input[type="date"], input[type="email"]').forEach(inp => {
+                if (inp.name) {
+                    let hidden = fotoForm.querySelector(`input[name="${inp.name}"]`);
+                    if (!hidden) {
+                        hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = inp.name;
+                        fotoForm.appendChild(hidden);
+                    }
+                    hidden.value = inp.value;
+                }
+            });
+        }
+        document.getElementById('fotoForm').submit();
+    };
     r.readAsDataURL(input.files[0]);
 }
 function togglePw(id,btn) {

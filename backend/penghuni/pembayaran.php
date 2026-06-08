@@ -318,7 +318,18 @@ try {
                     <div class="ringkasan-row"><span>Jenis</span><span class="ringkasan-val">Penuh</span></div>
                     <div class="total-box"><div style="color:#9ca3af;font-size:12px;margin-bottom:5px;">Total Bayar</div><div class="total-val">Rp <?= number_format($tagihanBulanIni, 0, ',', '.') ?></div></div>
                 </div>
-                <div class="bank-box"><div style="font-size:12px;color:#6b7280;margin-bottom:8px;">Transfer ke Rekening BCA</div><div class="bank-acc">8293712948</div><div style="font-size:13px;color:#6b7280;">a/n Kost Elmi Sarah</div></div>
+                <div class="bank-box" style="text-align: left; padding: 16px;">
+                    <div style="border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 10px;">
+                        <div style="font-size:11px;color:#6b7280;margin-bottom:4px;text-transform:uppercase;font-weight:600;">Transfer Bank BRI</div>
+                        <div class="bank-acc" style="font-size:20px;color:#1f2937;margin-bottom:2px;">152401000931531</div>
+                        <div style="font-size:12px;color:#6b7280;">a/n ABD KHOLIK</div>
+                    </div>
+                    <div>
+                        <div style="font-size:11px;color:#6b7280;margin-bottom:4px;text-transform:uppercase;font-weight:600;">E-Wallet DANA</div>
+                        <div class="bank-acc" style="font-size:20px;color:#1f2937;margin-bottom:2px;">085933675790</div>
+                        <div style="font-size:12px;color:#6b7280;">a/n ABD KHOLIK</div>
+                    </div>
+                </div>
                 <div class="upload-dashed"><div style="font-size:12px;color:#9ca3af;margin-bottom:15px;">Silakan unggah bukti transfer Anda</div><input type="file" id="buktiI" class="d-none" onchange="document.getElementById('pv').innerText='✓ '+this.files[0].name"><button type="button" class="btn btn-dark btn-sm rounded-pill px-3 fw-bold" onclick="document.getElementById('buktiI').click()">Unggah Bukti</button><div id="pv" style="font-size:11px;color:#11a654;margin-top:8px;"></div></div>
                 <button onclick="kirimBayarWA()" class="btn-confirm-wa"><i data-lucide="message-circle"></i> Konfirmasi via WhatsApp</button>
             </div>
@@ -334,7 +345,18 @@ try {
             <div class="modal-body">
                 <div class="mb-4"><label style="font-size:12px;color:#9ca3af;margin-bottom:8px;display:block;">Pilih Durasi</label><select id="durI" class="form-select bg-dark text-white border-secondary rounded-3" onchange="uT()"><option value="1">1 Bulan</option><option value="3">3 Bulan</option><option value="6">6 Bulan</option><option value="12">12 Bulan</option></select></div>
                 <div class="total-box" style="border:none;padding:0;margin-bottom:20px;"><div style="color:#9ca3af;font-size:12px;margin-bottom:5px;">Total Biaya Baru</div><div class="total-val" id="tV">Rp <?= number_format($hargaSewa, 0, ',', '.') ?></div></div>
-                <div class="bank-box"><div style="font-size:12px;color:#6b7280;margin-bottom:8px;">Transfer ke Rekening BCA</div><div class="bank-acc">8293712948</div><div style="font-size:13px;color:#6b7280;">a/n Kost Elmi Sarah</div></div>
+                <div class="bank-box" style="text-align: left; padding: 16px;">
+                    <div style="border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 10px;">
+                        <div style="font-size:11px;color:#6b7280;margin-bottom:4px;text-transform:uppercase;font-weight:600;">Transfer Bank BRI</div>
+                        <div class="bank-acc" style="font-size:20px;color:#1f2937;margin-bottom:2px;">152401000931531</div>
+                        <div style="font-size:12px;color:#6b7280;">a/n ABD KHOLIK</div>
+                    </div>
+                    <div>
+                        <div style="font-size:11px;color:#6b7280;margin-bottom:4px;text-transform:uppercase;font-weight:600;">E-Wallet DANA</div>
+                        <div class="bank-acc" style="font-size:20px;color:#1f2937;margin-bottom:2px;">085933675790</div>
+                        <div style="font-size:12px;color:#6b7280;">a/n ABD KHOLIK</div>
+                    </div>
+                </div>
                 <div class="upload-dashed"><div style="font-size:12px;color:#9ca3af;margin-bottom:15px;">Silakan unggah bukti transfer perpanjangan</div><input type="file" id="buktiExt" class="d-none" onchange="document.getElementById('pvExt').innerText='✓ '+this.files[0].name"><button type="button" class="btn btn-dark btn-sm rounded-pill px-3 fw-bold" onclick="document.getElementById('buktiExt').click()">Unggah Bukti</button><div id="pvExt" style="font-size:11px;color:#11a654;margin-top:8px;"></div></div>
                 <button onclick="prosesPerpanjang()" id="btnSubmitExt" class="btn-confirm-wa"><i data-lucide="send"></i> Ajukan & Konfirmasi</button>
             </div>

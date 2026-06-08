@@ -176,6 +176,7 @@ unset($p);
             <div class="col-md-4"><div class="stat-card"><div class="stat-card-title">Jatuh Tempo (<= 5 Hari)</div><div class="stat-card-value" style="color:#ef4444;"><?= $totalJatuhTempo ?></div></div></div>
         </div>
 
+
         <div class="d-flex justify-content-between align-items-end mb-3">
             <h5 style="font-weight: 700; color: #1f2937; margin: 0;">Data Penghuni Aktif</h5>
             <a href="riwayat_penghuni.php" class="btn btn-sm text-white" style="background-color: var(--admin-green); border-radius: 8px; font-weight: 600; padding: 8px 16px;">
@@ -220,14 +221,16 @@ unset($p);
                             </div>
                         </td>
                         <td>
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-light border dropdown-toggle fw-bold" data-bs-toggle="dropdown" style="font-size:12px;">Opsi</button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="detail_penghuni.php?id=<?= $p['id'] ?>"><i data-lucide="eye" style="width:14px; margin-right:8px;"></i> Lihat Detail</a></li>
-                                    <li><a class="dropdown-item" href="edit_penghuni.php?id=<?= $p['id'] ?>"><i data-lucide="edit-3" style="width:14px; margin-right:8px;"></i> Edit Profil</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item text-danger" href="hapus_penghuni.php?id=<?= $p['id'] ?>" onclick="return confirm('Proses checkout penghuni ini?')"><i data-lucide="log-out" style="width:14px; margin-right:8px;"></i> Checkout</a></li>
-                                </ul>
+                            <div class="d-flex gap-1">
+                                <a href="detail_penghuni.php?id=<?= $p['id'] ?>" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center justify-content-center" title="Lihat Detail" style="width: 32px; height: 32px; border-radius: 8px;">
+                                    <i data-lucide="eye" style="width:16px; height:16px;"></i>
+                                </a>
+                                <a href="edit_penghuni.php?id=<?= $p['id'] ?>" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center justify-content-center" title="Edit Profil" style="width: 32px; height: 32px; border-radius: 8px;">
+                                    <i data-lucide="edit-3" style="width:16px; height:16px;"></i>
+                                </a>
+                                <a href="hapus_penghuni.php?id=<?= $p['id'] ?>" onclick="return confirm('Proses checkout penghuni ini?')" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center" title="Checkout" style="width: 32px; height: 32px; border-radius: 8px;">
+                                    <i data-lucide="log-out" style="width:16px; height:16px;"></i>
+                                </a>
                             </div>
                         </td>
                     </tr>

@@ -208,7 +208,7 @@ function getStatusBadge($status, $buktiBayar = null) {
                             <div class="action-icons">
                                 <a href="edit_booking.php?id=<?= $b['id'] ?>" class="action-btn" title="Edit"><i data-lucide="pencil" style="width:15px; height:15px;"></i></a>
                                 <div class="dropdown">
-                                    <button class="action-btn" data-bs-toggle="dropdown"><i data-lucide="more-vertical" style="width:15px; height:15px;"></i></button>
+                                    <button class="action-btn" data-bs-toggle="dropdown" data-bs-popper-config='{"strategy":"fixed"}'><i data-lucide="more-vertical" style="width:15px; height:15px;"></i></button>
                                     <ul class="dropdown-menu dropdown-menu-end" style="font-size:13px;">
                                         <?php 
                                         $statusLow = strtolower($b['status']);

@@ -481,10 +481,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <img src="frontend/assets/image/barcode.jpg" alt="QRIS Barcode">
                 </div>
                 
+                <div class="sum-timer" id="dana_info" style="display:none; text-align: center; flex-direction:column; background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; color: #1f2937;">
+                    <div style="font-size: 14px; margin-bottom: 5px; font-weight: 600;">Transfer ke DANA</div>
+                    <div style="font-size: 20px; font-weight: 800; letter-spacing: 1px;">085933675790</div>
+                    <div style="font-size: 13px; margin-top: 5px; color: #6b7280;">a/n ABD KHOLIK</div>
+                </div>
+
                 <div class="sum-timer" id="bank_info" style="display:none; text-align: center; flex-direction:column; background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; color: #1f2937;">
-                    <div style="font-size: 14px; margin-bottom: 5px;">Transfer ke Rekening BCA</div>
-                    <div style="font-size: 20px; font-weight: 800; letter-spacing: 1px;">8293712948</div>
-                    <div style="font-size: 13px; margin-top: 5px; color: #6b7280;">a/n Kost Elmi Sarah</div>
+                    <div style="font-size: 14px; margin-bottom: 5px; font-weight: 600;">Transfer ke Rekening BRI</div>
+                    <div style="font-size: 20px; font-weight: 800; letter-spacing: 1px;">152401000931531</div>
+                    <div style="font-size: 13px; margin-top: 5px; color: #6b7280;">a/n ABD KHOLIK</div>
                 </div>
 
                 <!-- Info Tambahan -->
@@ -568,11 +574,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         el.classList.add('active');
         el.style.background = '#c3bca8';
 
-        if (metode === 'QRIS' || metode === 'E-Wallet') {
+        if (metode === 'QRIS') {
             document.getElementById('qr_box').style.display = 'block';
+            document.getElementById('dana_info').style.display = 'none';
+            document.getElementById('bank_info').style.display = 'none';
+        } else if (metode === 'E-Wallet') {
+            document.getElementById('qr_box').style.display = 'none';
+            document.getElementById('dana_info').style.display = 'flex';
             document.getElementById('bank_info').style.display = 'none';
         } else {
             document.getElementById('qr_box').style.display = 'none';
+            document.getElementById('dana_info').style.display = 'none';
             document.getElementById('bank_info').style.display = 'flex';
         }
     }
