@@ -1,3 +1,8 @@
+<!-- Import Google Fonts Outfit -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
 <style>
 /* ═══════════════════════════════════════════════════
    GLOBAL & NAVBAR OVERRIDES
@@ -12,17 +17,17 @@
 .dropdown-menu { border: 1px solid #e5e7eb; }
 
 /* ═══════════════════════════════════════════════════
-   DESIGN SYSTEM VARIABLES
+   DESIGN SYSTEM VARIABLES (RUKITA THEME MATCH)
    ═══════════════════════════════════════════════════ */
 :root {
-    --green-primary: #11a654;
-    --green-dark: #0b8e47;
-    --green-light: #e8f7f0;
+    --rukita-teal: #0F9D9A;
+    --rukita-teal-dark: #0b8986;
+    --rukita-teal-light: #e6f5f5;
     --bg-light: #ffffff;
-    --bg-cream: #faf8f4;
-    --bg-cream-dark: #eeeadf;
-    --dark-text: #1f2937;
-    --muted-text: #6b7280;
+    --bg-cream: #f7f4eb;
+    --bg-cream-light: #faf8f4;
+    --dark-text: #1a1a1a;
+    --muted-text: #555555;
     --border-color: #e5e7eb;
 }
 
@@ -32,8 +37,9 @@
 .tt-page {
     background-color: var(--bg-light);
     color: var(--dark-text);
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Outfit', sans-serif;
     padding-bottom: 0;
+    overflow-x: hidden;
 }
 .tt-container {
     max-width: 1140px;
@@ -44,334 +50,454 @@
     padding: 80px 0;
 }
 .tt-section.alternate {
-    background-color: var(--bg-cream);
+    background-color: var(--bg-cream-light);
 }
 
 /* Typography */
 .tt-section-header {
-    text-align: center;
+    text-align: left;
     margin-bottom: 48px;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
 }
 .tt-section-title {
-    font-size: 32px;
+    font-size: 38px;
     font-weight: 800;
     color: var(--dark-text);
-    margin-bottom: 16px;
-    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
 }
 .tt-section-sub {
-    font-size: 15px;
+    font-size: 16px;
     color: var(--muted-text);
     line-height: 1.6;
 }
 
 /* ═══════════════════════════════════════════════════
-   1. HERO SECTION (Full-Width Banner)
+   1. HERO SECTION (Identical to Rukita Screenshot)
    ═══════════════════════════════════════════════════ */
-.tt-hero-section {
-    position: relative;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.65) 100%), url('frontend/assets/image/tentang.png') no-repeat center center;
-    background-size: cover;
-    height: 500px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: #fff;
-    padding: 0 24px;
+.tt-hero-wrapper {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    min-height: 520px;
+    margin-bottom: 80px;
+    background: #ffffff;
 }
-.tt-hero-content {
-    max-width: 760px;
-    z-index: 2;
+.tt-hero-left {
+    background-color: var(--bg-cream);
+    border-top-left-radius: 160px;
+    padding: 80px 60px 80px calc((100vw - 1140px) / 2 + 24px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
 }
 .tt-hero-title {
-    font-size: 52px;
-    font-weight: 900;
-    line-height: 1.2;
-    margin-bottom: 16px;
-    letter-spacing: -1px;
-    text-transform: capitalize;
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--dark-text);
+    margin-bottom: 24px;
+    letter-spacing: -1.5px;
 }
 .tt-hero-sub {
     font-size: 17px;
     line-height: 1.6;
-    margin-bottom: 32px;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--muted-text);
+    margin-bottom: 36px;
 }
 .tt-hero-btn {
     display: inline-block;
-    background: var(--green-primary);
+    background: #1f2937; /* Solid Dark */
     color: #fff;
-    padding: 14px 38px;
-    border-radius: 30px;
+    padding: 15px 36px;
+    border-radius: 8px;
     font-weight: 700;
     text-decoration: none;
-    font-size: 15px;
+    font-size: 16px;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(17, 166, 84, 0.3);
 }
 .tt-hero-btn:hover {
-    background: var(--green-dark);
+    background: #000;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(17, 166, 84, 0.4);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
     color: #fff;
+}
+.tt-hero-right {
+    background: url('frontend/assets/image/tentang.png') no-repeat center center;
+    background-size: cover;
+}
+
+@media (max-width: 1200px) {
+    .tt-hero-left {
+        padding-left: 40px;
+        border-top-left-radius: 80px;
+    }
+}
+@media (max-width: 992px) {
+    .tt-hero-wrapper {
+        grid-template-columns: 1fr;
+    }
+    .tt-hero-left {
+        padding: 60px 24px;
+        border-top-left-radius: 40px;
+    }
+    .tt-hero-right {
+        min-height: 300px;
+    }
 }
 
 /* ═══════════════════════════════════════════════════
-   2. SEKILAS & STATS SECTION
+   2. EKOSISTEM PRODUK RUKITA STYLE (5 Columns)
    ═══════════════════════════════════════════════════ */
-.tt-split-section {
+.tt-eco-grid {
     display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 60px;
-    align-items: center;
-}
-.tt-split-left h2 {
-    font-size: 32px;
-    font-weight: 800;
-    margin-bottom: 24px;
-    color: var(--dark-text);
-    letter-spacing: -0.5px;
-}
-.tt-split-left p {
-    font-size: 14.5px;
-    line-height: 1.75;
-    color: var(--muted-text);
-    margin-bottom: 20px;
-    text-align: justify;
-}
-.tt-stats-grid {
-    display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(5, 1fr);
     gap: 20px;
 }
-.tt-stat-card {
-    background: #fff;
-    border: 1px solid var(--border-color);
-    padding: 24px 28px;
-    border-radius: 18px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+.tt-eco-card {
+    background-color: var(--bg-cream-light);
+    border-radius: 16px;
+    overflow: hidden;
+    text-align: center;
+    padding-bottom: 24px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
 }
-.tt-stat-num {
-    font-size: 42px;
-    font-weight: 900;
-    color: var(--green-primary);
-    line-height: 1;
-    margin-bottom: 6px;
+.tt-eco-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(15, 157, 154, 0.08);
+    border-color: var(--rukita-teal);
 }
-.tt-stat-label {
-    font-size: 14.5px;
-    font-weight: 700;
+.tt-eco-img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+}
+.tt-eco-logo {
+    font-weight: 800;
+    font-size: 16px;
     color: var(--dark-text);
+    margin: 20px 0 8px;
+    letter-spacing: -0.5px;
 }
-.tt-stat-desc {
-    font-size: 12.5px;
+.tt-eco-logo span {
+    color: var(--rukita-teal);
+}
+.tt-eco-desc {
+    font-size: 13px;
     color: var(--muted-text);
-    margin-top: 2px;
+    padding: 0 16px;
+    line-height: 1.5;
+    flex-grow: 1;
+}
+
+@media (max-width: 992px) {
+    .tt-eco-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+@media (max-width: 600px) {
+    .tt-eco-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ═══════════════════════════════════════════════════
-   3. DYNAMIC TABS (FASILITAS KOST)
-   ═══════════════════════════════════════════════════ */
-.tt-tabs-container {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 40px;
-    flex-wrap: wrap;
-}
-.tt-tab-btn {
-    border: none;
-    background: var(--bg-cream-dark);
-    color: var(--dark-text);
-    padding: 12px 26px;
-    border-radius: 30px;
-    font-size: 13.5px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: 'Poppins', sans-serif;
-}
-.tt-tab-btn:hover {
-    background: var(--green-light);
-    color: var(--green-primary);
-}
-.tt-tab-btn.active {
-    background: var(--green-primary);
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(17, 166, 84, 0.25);
-}
-.tt-tab-content {
-    display: none;
-}
-.tt-tab-content.active {
-    display: block;
-    animation: tabFadeIn 0.4s ease forwards;
-}
-@keyframes tabFadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.tt-fas-grid-modern {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
-.tt-fas-item-modern {
-    background: #fff;
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 20px 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
-    transition: all 0.2s ease;
-}
-.tt-fas-item-modern:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
-}
-.tt-fas-item-modern i {
-    color: var(--green-primary);
-    width: 22px;
-    height: 22px;
-    flex-shrink: 0;
-}
-.tt-fas-item-modern span {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--dark-text);
-}
-
-/* ═══════════════════════════════════════════════════
-   4. KEUNTUNGAN TINGGAL (Rukita Card Grid)
+   3. KEUNTUNGAN TINGGAL (Rukita Layout: Image + Text)
    ═══════════════════════════════════════════════════ */
 .tt-keuntungan-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
+    gap: 40px 30px;
 }
-.tt-k-card {
-    background: #fff;
-    border-radius: 20px;
-    border: 1px solid var(--border-color);
-    padding: 36px 28px;
+.tt-k-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.tt-k-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 16px;
+    margin-bottom: 16px;
+}
+.tt-k-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 8px;
+}
+.tt-k-desc {
+    font-size: 14px;
+    color: var(--muted-text);
+    line-height: 1.6;
+}
+
+@media (max-width: 992px) {
+    .tt-keuntungan-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 600px) {
+    .tt-keuntungan-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ═══════════════════════════════════════════════════
+   4. PENCAPAIAN KAMI
+   ═══════════════════════════════════════════════════ */
+.tt-stats-container {
+    background-color: var(--bg-cream);
+    border-radius: 24px;
+    padding: 50px 40px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
     text-align: center;
-    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.02);
-    transition: all 0.3s ease;
+}
+.tt-stat-item {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.tt-k-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.05);
+.tt-stat-num {
+    font-size: 46px;
+    font-weight: 800;
+    color: var(--rukita-teal);
+    margin-bottom: 10px;
+    line-height: 1;
 }
-.tt-k-icon-circle {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: var(--green-light);
-    color: var(--green-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 12px rgba(17, 166, 84, 0.1);
-}
-.tt-k-icon-circle i {
-    width: 26px;
-    height: 26px;
-}
-.tt-k-card h4 {
-    font-size: 16.5px;
+.tt-stat-label {
+    font-size: 16px;
     font-weight: 700;
-    margin: 0 0 12px;
     color: var(--dark-text);
+    margin-bottom: 6px;
 }
-.tt-k-card p {
+.tt-stat-desc {
     font-size: 13px;
     color: var(--muted-text);
-    line-height: 1.6;
-    margin: 0;
+    line-height: 1.5;
+    max-width: 200px;
+}
+
+@media (max-width: 992px) {
+    .tt-stats-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 600px) {
+    .tt-stats-container {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ═══════════════════════════════════════════════════
-   5. TARGET PENGHUNI (2-Column Values List)
+   5. KATA PENGHUNI (Rukita Testimoni Box & Slider)
    ═══════════════════════════════════════════════════ */
-.tt-target-section {
+.tt-testi-box {
+    background-color: var(--bg-cream);
+    border-radius: 32px;
+    border-top-right-radius: 120px;
+    border-bottom-left-radius: 120px;
+    padding: 60px;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 50px;
+    align-items: center;
+}
+.tt-testi-img-wrapper {
+    position: relative;
+    width: 100%;
+    height: 360px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+.tt-testi-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.tt-testi-badge {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background-color: rgba(26, 26, 26, 0.85);
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+}
+.tt-testi-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.tt-testi-quote {
+    color: var(--rukita-teal);
+    font-size: 80px;
+    line-height: 1;
+    margin-bottom: -10px;
+    font-family: Georgia, serif;
+}
+.tt-testi-heading {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: var(--dark-text);
+}
+.tt-testi-text {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--muted-text);
+    margin-bottom: 24px;
+    font-style: italic;
+}
+.tt-testi-profile {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 30px;
+}
+.tt-testi-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.tt-testi-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin: 0 0 2px;
+}
+.tt-testi-role {
+    font-size: 13px;
+    color: var(--muted-text);
+    margin: 0;
+}
+.tt-testi-nav {
+    display: flex;
+    gap: 12px;
+}
+.tt-testi-nav-btn {
+    width: 44px;
+    height: 44px;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.tt-testi-nav-btn:hover {
+    background-color: var(--rukita-teal);
+    transform: translateY(-2px);
+}
+.tt-testi-nav-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+@media (max-width: 992px) {
+    .tt-testi-box {
+        grid-template-columns: 1fr;
+        padding: 40px 24px;
+        border-top-right-radius: 60px;
+        border-bottom-left-radius: 60px;
+    }
+    .tt-testi-img-wrapper {
+        height: 280px;
+    }
+}
+
+/* ═══════════════════════════════════════════════════
+   6. SEKILAS & CORE VALUES
+   ═══════════════════════════════════════════════════ */
+.tt-value-section {
     display: grid;
     grid-template-columns: 0.9fr 1.1fr;
     gap: 60px;
     align-items: center;
 }
-.tt-target-left h2 {
-    font-size: 32px;
+.tt-value-left h2 {
+    font-size: 36px;
     font-weight: 800;
     color: var(--dark-text);
     margin-bottom: 20px;
     letter-spacing: -0.5px;
 }
-.tt-target-left p {
-    font-size: 14.5px;
+.tt-value-left p {
+    font-size: 16px;
     color: var(--muted-text);
     line-height: 1.7;
+    margin-bottom: 24px;
 }
-.tt-target-card-list {
+.tt-value-list {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
 }
-.tt-target-card {
+.tt-value-card {
     display: flex;
     gap: 20px;
     background: #fff;
     padding: 24px;
     border-radius: 18px;
     border: 1px solid var(--border-color);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
     transition: all 0.3s ease;
 }
-.tt-target-card:hover {
+.tt-value-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 8px 30px rgba(15, 157, 154, 0.08);
+    border-color: var(--rukita-teal);
 }
-.tt-target-icon {
+.tt-value-card-icon {
     width: 48px;
     height: 48px;
     border-radius: 14px;
-    background: var(--green-light);
-    color: var(--green-primary);
+    background: var(--rukita-teal-light);
+    color: var(--rukita-teal);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
 }
-.tt-target-icon i {
+.tt-value-card-icon i {
     width: 22px;
     height: 22px;
 }
-.tt-target-info h4 {
-    font-size: 16px;
+.tt-value-info h4 {
+    font-size: 18px;
     font-weight: 700;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     color: var(--dark-text);
 }
-.tt-target-info p {
-    font-size: 13px;
+.tt-value-info p {
+    font-size: 13.5px;
     color: var(--muted-text);
     line-height: 1.6;
     margin: 0;
 }
 
+@media (max-width: 992px) {
+    .tt-value-section {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
 /* ═══════════════════════════════════════════════════
-   6. ATURAN KOST
+   8. ATURAN KOST
    ═══════════════════════════════════════════════════ */
 .tt-aturan-grid {
     display: grid;
@@ -383,22 +509,22 @@
     border-radius: 18px;
     border: 1px solid var(--border-color);
     padding: 32px 26px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
     transition: all 0.2s ease;
 }
 .tt-aturan-card:hover {
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.03);
 }
 .tt-aturan-card h4 {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
     margin: 0 0 18px;
     color: var(--dark-text);
-    border-left: 4px solid var(--green-primary);
+    border-left: 4px solid var(--rukita-teal);
     padding-left: 12px;
 }
 .tt-aturan-card p, .tt-aturan-card li {
-    font-size: 13px;
+    font-size: 13.5px;
     color: var(--muted-text);
     line-height: 1.6;
     margin-bottom: 12px;
@@ -408,94 +534,22 @@
     margin: 0;
 }
 
-/* ═══════════════════════════════════════════════════
-   7. KATA PENGHUNI (TESTIMONI SLIDER)
-   ═══════════════════════════════════════════════════ */
-.tt-testi-wrap {
-    display: grid;
-    grid-template-columns: 1fr 1.1fr;
-    gap: 60px;
-    align-items: center;
-}
-.tt-testi-img {
-    width: 100%;
-    border-radius: 24px;
-    object-fit: cover;
-    height: 380px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-}
-.tt-testi-content h2 {
-    font-size: 32px;
-    font-weight: 800;
-    margin: 0 0 24px;
-    letter-spacing: -0.5px;
-}
-.tt-testi-content p {
-    font-size: 14.5px;
-    color: var(--muted-text);
-    line-height: 1.8;
-    margin: 0 0 32px;
-    font-style: italic;
-}
-.tt-testi-user {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 32px;
-}
-.tt-testi-user img {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    object-fit: cover;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-.tt-testi-user-info h5 {
-    margin: 0 0 4px;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--dark-text);
-}
-.tt-testi-user-info span {
-    font-size: 12.5px;
-    color: var(--muted-text);
-}
-.tt-testi-nav {
-    display: flex;
-    gap: 12px;
-}
-.tt-testi-btn {
-    width: 46px;
-    height: 46px;
-    background: var(--dark-text);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-.tt-testi-btn:hover {
-    background: var(--green-primary);
-    transform: translateY(-1px);
-}
-.tt-testi-btn i {
-    width: 20px;
-    height: 20px;
+@media (max-width: 992px) {
+    .tt-aturan-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ═══════════════════════════════════════════════════
-   8. BOTTOM CTA (Green Gradient Banner)
+   9. BOTTOM CTA (Teal Gradient Banner)
    ═══════════════════════════════════════════════════ */
 .tt-cta-box-modern {
-    background: linear-gradient(135deg, var(--green-primary) 0%, var(--green-dark) 100%);
+    background: linear-gradient(135deg, var(--rukita-teal) 0%, var(--rukita-teal-dark) 100%);
     border-radius: 24px;
     padding: 64px 40px;
     text-align: center;
     color: #fff;
-    box-shadow: 0 12px 35px rgba(17, 166, 84, 0.25);
+    box-shadow: 0 12px 35px rgba(15, 157, 154, 0.25);
 }
 .tt-cta-box-modern h2 {
     font-size: 38px;
@@ -511,9 +565,9 @@
 .tt-cta-btn-modern {
     display: inline-block;
     background: #fff;
-    color: var(--green-primary);
+    color: var(--rukita-teal);
     padding: 14px 40px;
-    border-radius: 30px;
+    border-radius: 8px;
     font-weight: 700;
     text-decoration: none;
     font-size: 15px;
@@ -523,212 +577,249 @@
 .tt-cta-btn-modern:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-    background: var(--green-light);
-    color: var(--green-primary);
-}
-
-/* ═══════════════════════════════════════════════════
-   RESPONSIVE LAYOUTS
-   ═══════════════════════════════════════════════════ */
-@media (max-width: 992px) {
-    .tt-hero-title { font-size: 42px; }
-    .tt-split-section, .tt-target-section, .tt-testi-wrap {
-        grid-template-columns: 1fr;
-        gap: 40px;
-    }
-    .tt-keuntungan-grid, .tt-aturan-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-    .tt-fas-grid-modern {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-@media (max-width: 600px) {
-    .tt-hero-title { font-size: 32px; }
-    .tt-section { padding: 60px 0; }
-    .tt-keuntungan-grid, .tt-aturan-grid, .tt-fas-grid-modern {
-        grid-template-columns: 1fr;
-    }
-    .tt-cta-box-modern { padding: 48px 24px; }
-    .tt-cta-box-modern h2 { font-size: 28px; }
+    background: var(--rukita-teal-light);
+    color: var(--rukita-teal);
 }
 </style>
 
 <div class="tt-page">
 
     <!-- 1. HERO SECTION -->
-    <section class="tt-hero-section">
-        <div class="tt-hero-content">
-            <h1 class="tt-hero-title">Kost That Grows With You</h1>
-            <p class="tt-hero-sub">Mewujudkan hunian berkualitas, aman, dan nyaman khusus mahasiswi selama menempuh masa studi perkuliahan.</p>
+    <div class="tt-hero-wrapper">
+        <div class="tt-hero-left">
+            <h1 class="tt-hero-title">Home That Grows With You</h1>
+            <p class="tt-hero-sub">Mewujudkan hunian berkualitas dan terjangkau untuk semua orang, di setiap fase kehidupan.</p>
             <a href="?page=rooms" class="tt-hero-btn">Cari Hunian Sekarang</a>
         </div>
-    </section>
+        <div class="tt-hero-right"></div>
+    </div>
 
-    <!-- 2. SEKILAS & STATS SECTION -->
+    <!-- 2. EKOSISTEM PRODUK (5 Columns, Center Text) -->
     <section class="tt-section">
-        <div class="tt-container tt-split-section">
-            <div class="tt-split-left">
-                <h2>Sekilas Tentang Elmi Sarah</h2>
-                <p>Nama "Elmi Sarah" diambil dari gabungan nama Bapak dan Ibu, pengelola dan pemilik kost ini. "Elmi" dari nama Bapak, sedangkan "Sarah" dari nama Ibu. Bapak dan Ibu mendirikan kost ini dengan tujuan memberikan tempat tinggal yang nyaman dan aman bagi para pendatang, khususnya mahasiswa dan pekerja yang merantau.</p>
-                <p>Awal mula berdirinya kost ini dari sebuah rumah tua yang kami renovasi dan dikembangkan menjadi bangunan kost dengan beberapa kamar. Seiring berjalannya waktu, melihat antusiasme dan kebutuhan masyarakat akan tempat tinggal yang berkualitas, kami terus melakukan renovasi dan penambahan fasilitas.</p>
-                <p>Kami berkomitmen untuk terus menjaga kualitas hunian kami, kebersihan, dan keamanan demi kenyamanan seluruh penghuni. Kami berharap Elmi Sarah bisa menjadi "rumah kedua" bagi siapapun yang tinggal di sini, memberikan kedamaian dan ketenangan untuk beristirahat setelah aktivitas padat sehari-hari.</p>
-            </div>
-            
-            <div class="tt-split-right">
-                <div class="tt-stats-grid">
-                    <div class="tt-stat-card">
-                        <span class="tt-stat-num">100+</span>
-                        <span class="tt-stat-label">Mahasiswi Aktif</span>
-                        <span class="tt-stat-desc">Mahasiswi dari berbagai universitas yang mempercayakan huniannya pada kami.</span>
-                    </div>
-                    <div class="tt-stat-card">
-                        <span class="tt-stat-num">30+</span>
-                        <span class="tt-stat-label">Pilihan Kamar Siap Huni</span>
-                        <span class="tt-stat-desc">Tipe kamar bervariasi khusus putri dengan fasilitas lengkap dan AC dingin.</span>
-                    </div>
-                    <div class="tt-stat-card">
-                        <span class="tt-stat-num">4.8 ★</span>
-                        <span class="tt-stat-label">Rating Kepuasan</span>
-                        <span class="tt-stat-desc">Berdasarkan ulasan asli mahasiswi mengenai kebersihan, kenyamanan, dan pelayanan.</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 3. FASILITAS KOST (DYNAMIC TABS) -->
-    <section class="tt-section alternate">
         <div class="tt-container">
             <div class="tt-section-header">
-                <h2 class="tt-section-title">Fasilitas Kost Elmi Sarah</h2>
-                <p class="tt-section-sub">Nikmati berbagai kemudahan hidup sehari-hari dengan ragam fasilitas pendukung terlengkap di kelasnya.</p>
+                <h2 class="tt-section-title">Ekosistem Produk Elmi Sarah</h2>
+                <p class="tt-section-sub">Solusi ekosistem hunian mahasiswi putri terpadu untuk kebutuhan harian, jangka pendek, maupun jangka panjang.</p>
             </div>
-
-            <!-- Tab Switcher -->
-            <div class="tt-tabs-container">
-                <button class="tt-tab-btn active" onclick="switchTab(event, 'tab-kamar')">Fasilitas Kamar</button>
-                <button class="tt-tab-btn" onclick="switchTab(event, 'tab-kamarmandi')">Kamar Mandi</button>
-                <button class="tt-tab-btn" onclick="switchTab(event, 'tab-bersama')">Fasilitas Bersama</button>
-                <button class="tt-tab-btn" onclick="switchTab(event, 'tab-parkir')">Area Parkir</button>
-            </div>
-
-            <!-- Tab Contents -->
-            <div id="tab-kamar" class="tt-tab-content active">
-                <div class="tt-fas-grid-modern">
-                    <div class="tt-fas-item-modern"><i data-lucide="bed"></i><span>Kasur Busa Tebal</span></div>
-                    <div class="tt-fas-item-modern"><i data-lucide="door-closed"></i><span>Lemari Pakaian</span></div>
-                    <div class="tt-fas-item-modern"><i data-lucide="layout-grid"></i><span>Meja Belajar/Kerja</span></div>
-                    <div class="tt-fas-item-modern"><i data-lucide="armchair"></i><span>Kursi Duduk</span></div>
-                    <div class="tt-fas-item-modern"><i data-lucide="snowflake"></i><span>Air Conditioner (AC)</span></div>
-                    <div class="tt-fas-item-modern"><i data-lucide="bed-single"></i><span>Tempat Tidur Kokoh</span></div>
+            <div class="tt-eco-grid">
+                <div class="tt-eco-card">
+                    <img src="frontend/assets/image/demo_kamar_1.png" alt="Elmi Sarah Apartment" class="tt-eco-img">
+                    <div class="tt-eco-logo">Elmi Sarah <span>Apartment</span></div>
+                    <p class="tt-eco-desc">Serviced apartment dengan furnitur lengkap dan layanan menyeluruh.</p>
                 </div>
-            </div>
-
-            <div id="tab-kamarmandi" class="tt-tab-content">
-                <div class="tt-fas-grid-modern">
-                    <div class="tt-fas-item-modern"><i data-lucide="bath"></i><span>Kloset Duduk Modern</span></div>
-                    <div class="tt-fas-item-modern"><i data-lucide="droplet"></i><span>Bak Ember Mandi</span></div>
-                    <div class="tt-fas-item-modern"><i data-lucide="droplets"></i><span>Gayung Air</span></div>
+                <div class="tt-eco-card">
+                    <img src="frontend/assets/image/demo_kamar_2.png" alt="Elmi Sarah CoLiving" class="tt-eco-img">
+                    <div class="tt-eco-logo">Elmi Sarah <span>CoLiving</span></div>
+                    <p class="tt-eco-desc">Coliving eksklusif dengan fasilitas bintang lima di lokasi strategis.</p>
                 </div>
-            </div>
-
-            <div id="tab-bersama" class="tt-tab-content">
-                <div class="tt-fas-grid-modern">
-                    <div class="tt-fas-item-modern"><i data-lucide="sofa"></i><span>Ruang Tamu & Bersantai</span></div>
-                    <div class="tt-fas-item-modern"><i data-lucide="chef-hat"></i><span>Dapur & Peralatan Masak</span></div>
-                    <div class="tt-fas-item-modern"><i data-lucide="sun"></i><span>Area Jemur Pakaian</span></div>
-                    <div class="tt-fas-item-modern"><i data-lucide="refrigerator"></i><span>Kulkas Penyimpan</span></div>
-                    <div class="tt-fas-item-modern"><i data-lucide="cctv"></i><span>Pantauan CCTV 24 Jam</span></div>
-                    <div class="tt-fas-item-modern"><i data-lucide="shield-check"></i><span>Keamanan Lingkungan</span></div>
-                    <div class="tt-fas-item-modern"><i data-lucide="cup-soda"></i><span>Dispenser Air Bersih</span></div>
-                    <div class="tt-fas-item-modern"><i data-lucide="wifi"></i><span>Wi-Fi Internet Cepat</span></div>
-                    <div class="tt-fas-item-modern"><i data-lucide="landmark"></i><span>Mushola Sholat</span></div>
+                <div class="tt-eco-card">
+                    <img src="frontend/assets/image/demo_kamar_3.png" alt="Elmi Sarah Residence" class="tt-eco-img">
+                    <div class="tt-eco-logo">Elmi Sarah <span>Residence</span></div>
+                    <p class="tt-eco-desc">Hunian kost harian, mingguan, atau bulanan dengan kemudahan akses penuh.</p>
                 </div>
-            </div>
-
-            <div id="tab-parkir" class="tt-tab-content">
-                <div class="tt-fas-grid-modern">
-                    <div class="tt-fas-item-modern"><i data-lucide="car"></i><span>Parkir Mobil Aman</span></div>
-                    <div class="tt-fas-item-modern"><i data-lucide="bike"></i><span>Parkir Motor & Sepeda</span></div>
+                <div class="tt-eco-card">
+                    <img src="frontend/assets/image/desain_kamar1.png" alt="Elmi Sarah Partner" class="tt-eco-img">
+                    <div class="tt-eco-logo">Elmi Sarah <span>Partner</span></div>
+                    <p class="tt-eco-desc">Layanan pemasaran untuk apartemen dan kost eksklusif putri di Indonesia.</p>
+                </div>
+                <div class="tt-eco-card">
+                    <img src="frontend/assets/image/desain_kamar2.png" alt="Elmi Sarah Finance" class="tt-eco-img">
+                    <div class="tt-eco-logo">Elmi Sarah <span>Finance</span></div>
+                    <p class="tt-eco-desc">Bantuan pembiayaan dan transaksi digital aman untuk ekspansi sewa properti.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 4. KEUNTUNGAN TINGGAL (RUKITA STYLE) -->
-    <section class="tt-section">
+    <!-- 3. KEUNTUNGAN TINGGAL (Rukita Layout: Image + Text) -->
+    <section class="tt-section alternate">
         <div class="tt-container">
             <div class="tt-section-header">
                 <h2 class="tt-section-title">Keuntungan Tinggal di Elmi Sarah</h2>
-                <p class="tt-section-sub">Kami memberikan lebih dari sekadar kamar tidur. Rasakan pengalaman tinggal yang dirancang demi produktivitas Anda.</p>
+                <p class="tt-section-sub">Kami memberikan kenyamanan dan fasilitas yang terintegrasi demi kelancaran aktivitas harian Anda.</p>
             </div>
 
             <div class="tt-keuntungan-grid">
-                <div class="tt-k-card">
-                    <div class="tt-k-icon-circle"><i data-lucide="shield-check"></i></div>
-                    <h4>Lingkungan Aman & Nyaman</h4>
-                    <p>Fasilitas lengkap terawat, pantauan CCTV, dan sistem penguncian gerbang yang aman untuk ketenangan istirahat.</p>
+                <div class="tt-k-item">
+                    <img src="frontend/assets/image/demo_kamar_1.png" alt="Fully Furnished" class="tt-k-img">
+                    <h4 class="tt-k-title">Fully furnished</h4>
+                    <p class="tt-k-desc">Hunian dilengkapi furniture lengkap termasuk AC, Wi-Fi berkecepatan tinggi, dan fasilitas air mandi hangat.</p>
                 </div>
-                <div class="tt-k-card">
-                    <div class="tt-k-icon-circle"><i data-lucide="map-pin"></i></div>
-                    <h4>Lokasi Sangat Strategis</h4>
-                    <p>Berada di zona strategis, dekat dengan beberapa universitas ternama, pusat kuliner, dan transportasi umum.</p>
+                <div class="tt-k-item">
+                    <img src="frontend/assets/image/demo_kamar_2.png" alt="Layanan Menyeluruh" class="tt-k-img">
+                    <h4 class="tt-k-title">Layanan Menyeluruh</h4>
+                    <p class="tt-k-desc">Pembersihan area bersama secara rutin, laundry, pemeliharaan fasilitas, dan pengelola yang siap membantu.</p>
                 </div>
-                <div class="tt-k-card">
-                    <div class="tt-k-icon-circle"><i data-lucide="sparkles"></i></div>
-                    <h4>Fasilitas Siap Pakai</h4>
-                    <p>Kamar ber-AC dan fully furnished. Anda cukup membawa pakaian dan perlengkapan pribadi saja saat check-in.</p>
+                <div class="tt-k-item">
+                    <img src="frontend/assets/image/demo_kamar_3.png" alt="Pembayaran Bulanan" class="tt-k-img">
+                    <h4 class="tt-k-title">Pembayaran Bulanan</h4>
+                    <p class="tt-k-desc">Lebih ringan dengan pembayaran sewa bulanan terpadu yang praktis lewat Aplikasi Portal Elmi Sarah.</p>
                 </div>
-                <div class="tt-k-card">
-                    <div class="tt-k-icon-circle"><i data-lucide="heart-handshake"></i></div>
-                    <h4>Pelayanan Responsif</h4>
-                    <p>Admin dan pengelola kost siap sedia membantu menangani masalah pemeliharaan kamar dan keluhan dengan sigap.</p>
+                <div class="tt-k-item">
+                    <img src="frontend/assets/image/desain_kamar1.png" alt="Lokasi Strategis" class="tt-k-img">
+                    <h4 class="tt-k-title">Lokasi Strategis</h4>
+                    <p class="tt-k-desc">Dekat dengan berbagai universitas ternama, pusat kuliner mahasiswi, jalan utama, dan fasilitas umum lainnya.</p>
                 </div>
-                <div class="tt-k-card">
-                    <div class="tt-k-icon-circle"><i data-lucide="coins"></i></div>
-                    <h4>Harga Jujur & Terjangkau</h4>
-                    <p>Harga sewa bulanan bersaing tanpa biaya tambahan tersembunyi, pas untuk anggaran mahasiswi.</p>
+                <div class="tt-k-item">
+                    <img src="frontend/assets/image/desain_kamar2.png" alt="Keamanan Terjamin" class="tt-k-img">
+                    <h4 class="tt-k-title">Keamanan 24 Jam</h4>
+                    <p class="tt-k-desc">Area kost putri aman terkendali dengan kamera pengawas CCTV 24 jam serta gerbang lingkungan yang kondusif.</p>
                 </div>
-                <div class="tt-k-card">
-                    <div class="tt-k-icon-circle"><i data-lucide="moon"></i></div>
-                    <h4>Suasana Tenang & Fokus</h4>
-                    <p>Kawasan kost tenang dan kondusif, cocok bagi Anda yang membutuhkan konsentrasi belajar.</p>
+                <div class="tt-k-item">
+                    <img src="frontend/assets/image/kost.png" alt="Komunitas Terbuka" class="tt-k-img">
+                    <h4 class="tt-k-title">Komunitas Hangat</h4>
+                    <p class="tt-k-desc">Membangun interaksi sosial yang guyub, harmonis, serta saling mendukung antarsesama mahasiswi perantau.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 5. TARGET PENGHUNI (2-COLUMN VALUES LIST) -->
+    <!-- 4. PENCAPAIAN KAMI -->
+    <section class="tt-section">
+        <div class="tt-container">
+            <div class="tt-stats-container">
+                <div class="tt-stat-item">
+                    <span class="tt-stat-num">100+</span>
+                    <span class="tt-stat-label">Mahasiswi Aktif</span>
+                    <span class="tt-stat-desc">Mahasiswi dari berbagai universitas yang mempercayakan huniannya pada kami.</span>
+                </div>
+                <div class="tt-stat-item">
+                    <span class="tt-stat-num">30+</span>
+                    <span class="tt-stat-label">Pilihan Kamar</span>
+                    <span class="tt-stat-desc">Variasi tipe kamar khusus putri yang terawat dan siap huni.</span>
+                </div>
+                <div class="tt-stat-item">
+                    <span class="tt-stat-num">4.8 ★</span>
+                    <span class="tt-stat-label">Rating Kepuasan</span>
+                    <span class="tt-stat-desc">Penilaian berdasarkan ulasan asli mahasiswi mengenai kebersihan & pelayanan.</span>
+                </div>
+                <div class="tt-stat-item">
+                    <span class="tt-stat-num">100%</span>
+                    <span class="tt-stat-label">Terpercaya</span>
+                    <span class="tt-stat-desc">Berkomitmen menjaga keamanan, ketertiban, dan transparansi administrasi.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. KATA PENGHUNI (RUKITA TESTIMONI SLIDER) -->
+    <?php
+    $stmtUlasan = $conn->query("
+        SELECT u.rating, u.komentar, u.foto_ulasan, u.created_at, usr.nama, usr.foto
+        FROM ulasan u
+        JOIN users usr ON u.user_id = usr.id
+        WHERE u.tampilkan = 1
+        ORDER BY u.created_at DESC
+    ");
+    $ulasan_data = $stmtUlasan->fetchAll(PDO::FETCH_ASSOC);
+
+    if (empty($ulasan_data)) {
+        $ulasan_data = [
+            [
+                'nama' => 'Rere Kucing',
+                'komentar' => 'Kost ini sangat nyaman dan bersih. Fasilitasnya lengkap seperti AC dingin, WiFi cepat, dan kamar yang sudah fully furnished sehingga praktis tinggal bawa baju. Rekomendasi sekali!',
+                'foto' => '',
+                'foto_ulasan' => '',
+                'rating' => 5
+            ]
+        ];
+    }
+    ?>
+    <?php 
+    $ulasan_foto_url = !empty($ulasan_data[0]['foto_ulasan']) && file_exists(__DIR__ . '/../../../uploads/ulasan/' . $ulasan_data[0]['foto_ulasan']) 
+        ? 'uploads/ulasan/' . htmlspecialchars($ulasan_data[0]['foto_ulasan']) 
+        : 'frontend/assets/image/kost.png';
+    ?>
     <section class="tt-section alternate">
-        <div class="tt-container tt-target-section">
-            <div class="tt-target-left">
-                <h2>Target Penghuni (Kost Putri)</h2>
-                <p>Kost Elmi Sarah merupakan hunian khusus putri eksklusif yang dikhususkan hanya untuk **mahasiswi (perempuan)**. Kami menghadirkan hunian yang aman, tertib, dan kondusif untuk mendukung kelancaran masa studi akademis Anda.</p>
+        <div class="tt-container">
+            <div class="tt-testi-box">
+                <!-- Sisi Kiri: Foto kamar dengan badge -->
+                <div class="tt-testi-img-wrapper">
+                    <img id="testi-ulasan-img" src="<?= $ulasan_foto_url ?>" alt="Kamar Kost" class="tt-testi-img">
+                    <div class="tt-testi-badge">Elmi Sarah Premium Room</div>
+                </div>
+
+                <!-- Sisi Kanan: Ulasan -->
+                <div class="tt-testi-right">
+                    <div class="tt-testi-quote">“</div>
+                    <h2 class="tt-testi-heading">Kata Penghuni</h2>
+                    
+                    <p id="testi-text">"<?= htmlspecialchars($ulasan_data[0]['komentar']) ?>"</p>
+                    
+                    <div class="tt-testi-profile">
+                        <?php 
+                        $foto_url = !empty($ulasan_data[0]['foto']) && file_exists(__DIR__ . '/../../../uploads/profil/' . $ulasan_data[0]['foto']) 
+                            ? 'uploads/profil/' . htmlspecialchars($ulasan_data[0]['foto']) 
+                            : 'https://ui-avatars.com/api/?name=' . urlencode($ulasan_data[0]['nama']) . '&background=random&color=fff';
+                        ?>
+                        <img id="testi-img" src="<?= $foto_url ?>" alt="Profil" class="tt-testi-avatar">
+                        <div class="tt-testi-user-info">
+                            <h5 id="testi-name" class="tt-testi-name"><?= htmlspecialchars($ulasan_data[0]['nama']) ?></h5>
+                            <span class="tt-testi-role">Penghuni Kost Elmi Sarah</span>
+                            <div id="testi-rating" style="color: var(--rukita-teal); font-size: 14px; margin-top: 4px; letter-spacing: 2px;">
+                                <?php 
+                                $rating = isset($ulasan_data[0]['rating']) ? (int)$ulasan_data[0]['rating'] : 5;
+                                for ($i = 1; $i <= 5; $i++) {
+                                    echo $i <= $rating ? '★' : '☆';
+                                }
+                                ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <?php if (count($ulasan_data) > 1): ?>
+                    <div class="tt-testi-nav">
+                        <button class="tt-testi-nav-btn" onclick="prevTesti()">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <button class="tt-testi-nav-btn" onclick="nextTesti()">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. SEKILAS & CORE VALUES -->
+    <section class="tt-section">
+        <div class="tt-container tt-value-section">
+            <div class="tt-value-left">
+                <h2>Sekilas Tentang Elmi Sarah</h2>
+                <p>Nama <strong>"Elmi Sarah"</strong> diambil dari gabungan nama pengelola dan pemilik kost ini. Didirikan dengan komitmen kuat untuk memberikan kenyamanan, kedamaian, dan perlindungan bagi mahasiswi yang menempuh masa studi perkuliahan.</p>
+                <p>Kami meyakini bahwa lingkungan hunian yang sehat, teratur, dan penuh rasa kekeluargaan merupakan fondasi utama bagi pencapaian akademis yang cemerlang. Oleh karena itu, kami merancang layanan hunian terintegrasi dengan berpegang teguh pada tiga nilai inti kami.</p>
             </div>
             
-            <div class="tt-split-right">
-                <div class="tt-target-card-list">
-                    <div class="tt-target-card">
-                        <div class="tt-target-icon"><i data-lucide="graduation-cap"></i></div>
-                        <div class="tt-target-info">
-                            <h4>Mahasiswi Aktif</h4>
-                            <p>Hunian yang dikhususkan bagi mahasiswi untuk kelancaran perkuliahan dengan dukungan Wi-Fi cepat dan lingkungan belajar yang tenang.</p>
-                        </div>
+            <div class="tt-value-list">
+                <div class="tt-value-card">
+                    <div class="tt-value-card-icon"><i data-lucide="smile"></i></div>
+                    <div class="tt-value-info">
+                        <h4>Kenyamanan (Comfort)</h4>
+                        <p>Menyediakan kamar siap huni (fully furnished) dengan sirkulasi udara baik, AC dingin, fasilitas bersama lengkap, serta suasana belajar yang tenang dan bebas gangguan.</p>
                     </div>
-                    <div class="tt-target-card">
-                        <div class="tt-target-icon"><i data-lucide="shield-check"></i></div>
-                        <div class="tt-target-info">
-                            <h4>Keamanan & Privasi Khusus Putri</h4>
-                            <p>Area kost aman, terjaga privasinya, memberikan ketenangan penuh bagi mahasiswi maupun orang tua di rumah.</p>
-                        </div>
+                </div>
+                <div class="tt-value-card">
+                    <div class="tt-value-card-icon"><i data-lucide="shield-check"></i></div>
+                    <div class="tt-value-info">
+                        <h4>Keamanan & Privasi (Safety)</h4>
+                        <p>Mengutamakan rasa aman penghuni melalui sistem satu pintu gerbang khusus putri, pemantauan CCTV 24 jam di koridor, dan lingkungan perumahan yang aman.</p>
+                    </div>
+                </div>
+                <div class="tt-value-card">
+                    <div class="tt-value-card-icon"><i data-lucide="heart-handshake"></i></div>
+                    <div class="tt-value-info">
+                        <h4>Keramahan Pelayanan (Hospitality)</h4>
+                        <p>Pengelola kost yang responsif dan tinggal dekat lokasi untuk membantu menangani pemeliharaan fasilitas, kebutuhan darurat, serta keluhan penghuni kapan pun diperlukan.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 6. ATURAN KOST -->
+
+
+    <!-- 8. ATURAN KOST -->
     <section class="tt-section">
         <div class="tt-container">
             <div class="tt-section-header">
@@ -758,77 +849,8 @@
         </div>
     </section>
 
-    <!-- 7. KATA PENGHUNI (TESTIMONIALS SLIDER) -->
-    <?php
-    $stmtUlasan = $conn->query("
-        SELECT u.rating, u.komentar, u.foto_ulasan, u.created_at, usr.nama, usr.foto
-        FROM ulasan u
-        JOIN users usr ON u.user_id = usr.id
-        WHERE u.tampilkan = 1
-        ORDER BY u.created_at DESC
-    ");
-    $ulasan_data = $stmtUlasan->fetchAll(PDO::FETCH_ASSOC);
-
-    if (empty($ulasan_data)) {
-        $ulasan_data = [
-            [
-                'nama' => 'Rere Kucing',
-                'komentar' => 'Kost ini sangat nyaman dan bersih. Fasilitasnya lengkap seperti AC dingin, WiFi cepat, dan kamar yang sudah fully furnished sehingga praktis tinggal bawa baju. Rekomendasi sekali!',
-                'foto' => '',
-                'foto_ulasan' => '',
-                'rating' => 5
-            ]
-        ];
-    }
-    ?>
-    <?php 
-    $ulasan_foto_url = !empty($ulasan_data[0]['foto_ulasan']) && file_exists(__DIR__ . '/../../../uploads/ulasan/' . $ulasan_data[0]['foto_ulasan']) 
-        ? 'uploads/ulasan/' . htmlspecialchars($ulasan_data[0]['foto_ulasan']) 
-        : 'frontend/assets/image/kost.png';
-    ?>
+    <!-- 9. BOTTOM CTA -->
     <section class="tt-section alternate">
-        <div class="tt-container tt-testi-wrap">
-            <img id="testi-ulasan-img" src="<?= $ulasan_foto_url ?>" alt="Kata Penghuni" class="tt-testi-img">
-            <div class="tt-testi-content">
-                <h2>Kata Penghuni</h2>
-                
-                <div id="testi-container">
-                    <p id="testi-text">"<?= htmlspecialchars($ulasan_data[0]['komentar']) ?>"</p>
-                    
-                    <div class="tt-testi-user">
-                        <?php 
-                        $foto_url = !empty($ulasan_data[0]['foto']) && file_exists(__DIR__ . '/../../../uploads/profil/' . $ulasan_data[0]['foto']) 
-                            ? 'uploads/profil/' . htmlspecialchars($ulasan_data[0]['foto']) 
-                            : 'https://ui-avatars.com/api/?name=' . urlencode($ulasan_data[0]['nama']) . '&background=random&color=fff';
-                        ?>
-                        <img id="testi-img" src="<?= $foto_url ?>" alt="Profil">
-                        <div class="tt-testi-user-info">
-                            <h5 id="testi-name"><?= htmlspecialchars($ulasan_data[0]['nama']) ?></h5>
-                            <span>Penghuni Kost</span>
-                            <div id="testi-rating" style="color: #facc15; font-size: 14px; margin-top: 4px; letter-spacing: 2px;">
-                                <?php 
-                                $rating = isset($ulasan_data[0]['rating']) ? (int)$ulasan_data[0]['rating'] : 5;
-                                for ($i = 1; $i <= 5; $i++) {
-                                    echo $i <= $rating ? '★' : '☆';
-                                }
-                                ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <?php if (count($ulasan_data) > 1): ?>
-                <div class="tt-testi-nav">
-                    <button class="tt-testi-btn" onclick="prevTesti()"><i data-lucide="chevron-left"></i></button>
-                    <button class="tt-testi-btn" onclick="nextTesti()"><i data-lucide="chevron-right"></i></button>
-                </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </section>
-
-    <!-- 8. BOTTOM CTA (Green Gradient Banner) -->
-    <section class="tt-section">
         <div class="tt-container">
             <div class="tt-cta-box-modern">
                 <h2>Yuk, Cari Hunian Idealmu Sekarang!</h2>
@@ -841,18 +863,6 @@
 </div> <!-- /tt-page -->
 
 <script>
-// Dynamic Tabs Switcher Function
-function switchTab(evt, tabId) {
-    const contents = document.querySelectorAll('.tt-tab-content');
-    contents.forEach(content => content.classList.remove('active'));
-
-    const buttons = document.querySelectorAll('.tt-tab-btn');
-    buttons.forEach(btn => btn.classList.remove('active'));
-
-    document.getElementById(tabId).classList.add('active');
-    evt.currentTarget.classList.add('active');
-}
-
 // Testimonials Slider JS
 const ulasanData = <?= json_encode($ulasan_data) ?>;
 let currentTesti = 0;

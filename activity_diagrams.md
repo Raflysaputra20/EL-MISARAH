@@ -1,95 +1,137 @@
 # Dokumen Activity Diagram - EL-MISARAH Kost Management System
 
-Dokumen ini berisi pemetaan alur aktivitas (**Activity Diagram**) untuk sistem manajemen kost **EL-MISARAH**. Diagram di bawah didefinisikan menggunakan notasi **Mermaid** yang dapat dirender secara visual. Alur aktivitas disesuaikan dengan database schema dan alur logika aplikasi yang ada di folder [backend/](file:///d:/laragon/www/EL-MISARAH-main/backend) dan [frontend/](file:///d:/laragon/www/EL-MISARAH-main/frontend).
+Dokumen ini berisi pemetaan alur aktivitas (**Activity Diagram**) dengan format **Swimlane (Aktor, Sistem, Database)** untuk sistem manajemen kost **EL-MISARAH**. Diagram di bawah didefinisikan menggunakan notasi **Mermaid** yang memisahkan tanggung jawab antara:
+1. **Aktor** (Admin, Penghuni, atau Calon Penyewa)
+2. **Sistem (Aplikasi)** (Logika backend dan frontend)
+3. **Database** (Operasi penyimpanan, pembaruan, dan pengambilan data)
 
 ---
 
 ## Ringkasan Aktor dan Fitur Utama
 Sistem ini membagi hak akses menjadi 3 jenis aktor utama:
-1. **Admin**: Bertanggung jawab mengelola seluruh data master kost (kamar, user, pengumuman), memproses transaksi (booking, pembayaran, tagihan), dan menindaklanjuti pengaduan serta ulasan.
-2. **Penghuni (Resident)**: Pengguna yang sudah aktif menempati kamar kost. Fitur utamanya mencakup pembayaran tagihan bulanan, pengajuan pengaduan kerusakan fasilitas, melihat pengumuman internal, dan menulis ulasan kost.
-3. **User (Guest / Calon Penyewa)**: Pengguna umum atau calon penyewa yang melakukan eksplorasi kamar, melakukan registrasi akun, mengajukan pemesanan (booking), serta mengunggah bukti pembayaran DP booking awal.
+1. **Admin**: Mengelola data master kost (kamar, user), memproses transaksi (booking, sewa, tagihan), dan menindaklanjuti pengaduan serta ulasan.
+2. **Penghuni (Resident)**: Pengguna aktif kost yang melakukan pembayaran tagihan, pengaduan kerusakan fasilitas, dan menulis ulasan kost.
+3. **User (Guest / Calon Penyewa)**: Pengguna umum yang mendaftar akun, mencari kamar tersedia, mengajukan booking sewa, dan membayar uang muka (DP).
 
 ---
 
 ## 1. Activity Diagram - Admin Per-Fitur
 
 ### 1.1. Kelola Data Kamar (CRUD Kamar)
-Diagram ini menjelaskan alur admin saat menambah, memperbarui, atau menghapus data kamar pada menu `backend/admin/kelola_kamar`.
+Diagram ini menjelaskan alur admin saat mengelola data kamar kost pada menu `backend/admin/kelola_kamar`.
 
 ```mermaid
-flowchart TD
-    Start([Mulai]) --> Login{Sudah Login Admin?}
-    Login -- Tidak --> PageLogin[Halaman Login Admin] --> AuthAdmin[Autentikasi Kredensial] --> Login
-    Login -- Ya --> MenuKamar[Buka Halaman Kelola Kamar]
+flowchart TB
+    subgraph Aktor ["Aktor: Admin"]
+        Start1_1([Mulai]) --> BukaMenu1_1[Buka Halaman Kelola Kamar]
+        BukaMenu1_1 --> PilihAksi1_1{Pilih Aksi CRUD}
+        
+        %% Tambah Kamar
+        PilihAksi1_1 -- Tambah Kamar --> FormTambah1_1[Isi Form Kamar & Upload Foto/Denah]
+        FormTambah1_1 --> SubmitTambah1_1[Klik Simpan Kamar]
+        
+        %% Edit Kamar
+        PilihAksi1_1 -- Edit Kamar --> PilihKamar1_1[Pilih Kamar dari Daftar]
+        PilihKamar1_1 --> FormEdit1_1[Ubah Data & Upload Foto Baru]
+        FormEdit1_1 --> SubmitEdit1_1[Klik Update Kamar]
+        
+        %% Hapus Kamar
+        PilihAksi1_1 -- Hapus Kamar --> PilihKamarHapus1_1[Pilih Kamar]
+        PilihKamarHapus1_1 --> KonfirmasiHapus1_1{Konfirmasi Hapus?}
+        KonfirmasiHapus1_1 -- Batal --> BukaMenu1_1
+    end
     
-    MenuKamar --> PilihAksi{Pilih Aksi}
+    subgraph Sistem ["Sistem (Aplikasi)"]
+        BukaMenu1_1 --> TampilkanPage1_1[Memuat Form dan Daftar Kamar]
+        SubmitTambah1_1 --> ValidasiTambah1_1{Validasi Input & Foto?}
+        ValidasiTambah1_1 -- Invalid --> FormTambah1_1
+        
+        SubmitEdit1_1 --> ValidasiEdit1_1{Validasi Input?}
+        ValidasiEdit1_1 -- Invalid --> FormEdit1_1
+        
+        KonfirmasiHapus1_1 -- Ya --> CekRelasi1_1{Apakah Kamar Terisi / Dibooking?}
+        CekRelasi1_1 -- Ya --> GagalHapus1_1[Tampilkan Error: Kamar sedang aktif dihuni]
+        GagalHapus1_1 --> BukaMenu1_1
+        
+        ValidasiTambah1_1 -- Valid --> UploadFoto1_1[Simpan Foto ke /uploads/kamar/]
+        UploadFoto1_1 --> PemicuDBTambah1_1[Kirim Query Insert Kamar]
+        
+        ValidasiEdit1_1 -- Valid --> UploadFotoEdit1_1[Simpan Foto Baru jika Ada]
+        UploadFotoEdit1_1 --> PemicuDBEdit1_1[Kirim Query Update Kamar]
+        
+        CekRelasi1_1 -- Tidak --> PemicuDBHapus1_1[Kirim Query Delete Kamar]
+        
+        ResponDB1_1[Proses Respon Database] --> SuksesPesan1_1[Tampilkan Pesan Sukses]
+        SuksesPesan1_1 --> BukaMenu1_1
+    end
     
-    %% Tambah Kamar
-    PilihAksi -- Tambah Kamar --> FormTambah[Isi Form Kamar & Upload Foto/Denah]
-    FormTambah --> SubmitTambah[Klik Simpan]
-    SubmitTambah --> ValidasiTambah{Validasi Input & File?}
-    ValidasiTambah -- Invalid --> FormTambah
-    ValidasiTambah -- Valid --> SimpanDB[Simpan Data Kamar Baru ke DB]
-    SimpanDB --> UploadFile[Upload Foto ke /uploads/kamar/]
-    UploadFile --> SuksesTambah[Tampilkan Pesan Sukses] --> MenuKamar
-    
-    %% Edit Kamar
-    PilihAksi -- Edit Kamar --> PilihKamar[Pilih Kamar dari Daftar]
-    PilihKamar --> FormEdit[Ubah Data & Upload Foto Baru jika ada]
-    FormEdit --> SubmitEdit[Klik Update]
-    SubmitEdit --> ValidasiEdit{Validasi Input?}
-    ValidasiEdit -- Invalid --> FormEdit
-    ValidasiEdit -- Valid --> UpdateDB[Update Database Kamar]
-    UpdateDB --> SuksesEdit[Tampilkan Pesan Sukses] --> MenuKamar
-    
-    %% Hapus Kamar
-    PilihAksi -- Hapus Kamar --> PilihKamarHapus[Pilih Kamar dari Daftar]
-    PilihKamarHapus --> KonfirmasiHapus{Konfirmasi Hapus?}
-    KonfirmasiHapus -- Batal --> MenuKamar
-    KonfirmasiHapus -- Ya --> CekRelasi{Apakah Kamar Terisi / Dibooking?}
-    CekRelasi -- Ya --> GagalHapus[Tampilkan Pesan: Kamar sedang aktif dihuni/dipesan] --> MenuKamar
-    CekRelasi -- Tidak --> DeleteDB[Hapus Data Kamar dari DB]
-    DeleteDB --> SuksesHapus[Tampilkan Pesan Sukses] --> MenuKamar
-    
-    PilihAksi -- Selesai --> End([Selesai])
+    subgraph Database ["Database MySQL"]
+        TampilkanPage1_1 --> SelectKamar1_1[("SELECT * FROM kamar")]
+        PemicuDBTambah1_1 --> DBInsert1_1[("INSERT INTO kamar (...)")]
+        PemicuDBEdit1_1 --> DBUpdate1_1[("UPDATE kamar SET ... WHERE id")]
+        PemicuDBHapus1_1 --> DBDelete1_1[("DELETE FROM kamar WHERE id")]
+        
+        DBInsert1_1 --> ResponDB1_1
+        DBUpdate1_1 --> ResponDB1_1
+        DBDelete1_1 --> ResponDB1_1
+    end
 ```
 
 ---
 
 ### 1.2. Kelola Booking & Pembayaran DP
-Alur pemrosesan pengajuan sewa kamar oleh calon penyewa (status `pending` -> `menunggu_dp` -> `disetujui`) yang diakses pada menu `backend/admin/kelola_booking` dan `backend/admin/kelola_pembayaran`.
+Alur pemrosesan pengajuan sewa kamar oleh calon penyewa (status `pending` -> `menunggu_dp` -> `disetujui`) yang diakses pada menu `backend/admin/kelola_booking`.
 
 ```mermaid
-flowchart TD
-    Start([Mulai]) --> BukaBooking[Admin Buka Menu Kelola Booking]
-    BukaBooking --> PilihBooking[Pilih Pengajuan Booking Status 'pending']
-    PilihBooking --> AksiBooking{Aksi Admin}
+flowchart TB
+    subgraph Aktor ["Aktor: Admin"]
+        Start1_2([Mulai]) --> BukaBooking1_2[Buka Menu Kelola Booking]
+        BukaBooking1_2 --> PilihBooking1_2[Pilih Pengajuan Booking status 'pending']
+        PilihBooking1_2 --> AksiBooking1_2{Aksi Persetujuan}
+        
+        %% Tolak
+        AksiBooking1_2 -- Tolak --> FormTolak1_2[Masukkan Alasan Penolakan]
+        FormTolak1_2 --> SubmitTolak1_2[Klik Kirim Penolakan]
+        
+        %% Terima
+        AksiBooking1_2 -- Terima --> SubmitTerima1_2[Klik Setujui Awal]
+        
+        %% Verifikasi DP
+        BukaPembayaran1_2[Buka Menu Kelola Pembayaran] --> PilihBukti1_2[Pilih Bukti DP Calon Penyewa]
+        PilihBukti1_2 --> CekBukti1_2[Periksa Validitas Foto Bukti & Nominal]
+        CekBukti1_2 --> VerifikasiDP1_2{Bukti DP Valid?}
+        VerifikasiDP1_2 -- Tidak --> KlikTolakDP1_2[Klik Tolak Pembayaran DP]
+        VerifikasiDP1_2 -- Ya --> KlikTerimaDP1_2[Klik Setujui Pembayaran DP]
+    end
     
-    %% Tolak Booking
-    AksiBooking -- Tolak --> FormTolak[Masukkan Alasan Penolakan]
-    FormTolak --> UpdateTolak[Update Booking: status 'ditolak' & Kamar: status 'tersedia']
-    UpdateTolak --> KirimNotifTolak[Kirim Status Penolakan ke Calon Penyewa] --> End([Selesai])
+    subgraph Sistem ["Sistem (Aplikasi)"]
+        BukaBooking1_2 --> TampilkanBooking1_2[Tampilkan Daftar Pemesanan Kamar]
+        SubmitTolak1_2 --> ProsesTolak1_2[Set Status Ditolak & Kirim Notif]
+        SubmitTerima1_2 --> ProsesTerima1_2[Set Status Menunggu DP & Kirim Invoice]
+        
+        ProsesTerima1_2 -.-> CalonPenyewaBayar[Calon Penyewa Transfer & Upload Bukti DP]
+        CalonPenyewaBayar -.-> BukaPembayaran1_2
+        
+        KlikTolakDP1_2 --> ProsesTolakDP1_2[Update Pembayaran & Kirim Notif Upload Ulang]
+        ProsesTolakDP1_2 --> BukaPembayaran1_2
+        
+        KlikTerimaDP1_2 --> ProsesTerimaDP1_2[Buat Akun Penghuni Baru & Set Kamar Terisi]
+        ProsesTerimaDP1_2 --> SuksesVerif1_2[Tampilkan Sukses & Selesai]
+    end
     
-    %% Terima Booking Tahap 1
-    AksiBooking -- Terima --> UpdateTerima[Update Booking: status 'menunggu_dp' & Kamar: status 'dibooking']
-    UpdateTerima --> KirimNotifDP[Kirim Notifikasi ke Calon Penyewa untuk Bayar DP]
-    
-    %% Calon Penyewa Melakukan Pembayaran
-    KirimNotifDP -.-> UserUploadDP[Calon Penyewa Upload Bukti Pembayaran DP]
-    
-    %% Verifikasi DP oleh Admin
-    UserUploadDP --> BukaPembayaran[Admin Buka Menu Kelola Pembayaran]
-    BukaPembayaran --> CekBukti[Periksa Validitas Foto Bukti & Jumlah Nominal]
-    CekBukti --> Verifikasi{Bukti Pembayaran Valid?}
-    
-    Verifikasi -- Tidak Valid --> UpdateBayarGagal[Update Pembayaran: 'tidak_valid' & Booking: 'menunggu_dp']
-    UpdateBayarGagal --> MintaBayarUlang[Notifikasi ke Penyewa untuk Upload Ulang] --> UserUploadDP
-    
-    Verifikasi -- Valid --> UpdateBayarSukses[Update Pembayaran: 'valid' & Booking: 'disetujui']
-    UpdateBayarSukses --> BuatPenghuni[Sistem Otomatis Membuat Akun Penghuni Baru]
-    BuatPenghuni --> KamarTerisi[Update Kamar: status 'terisi']
-    KamarTerisi --> End
+    subgraph Database ["Database MySQL"]
+        TampilkanBooking1_2 --> QueryBooking1_2[("SELECT * FROM booking WHERE status='pending'")]
+        ProsesTolak1_2 --> DBUpdateTolak1_2[("UPDATE booking SET status='ditolak'<br/>UPDATE kamar SET status='tersedia'")]
+        ProsesTerima1_2 --> DBUpdateTerima1_2[("UPDATE booking SET status='menunggu_dp'<br/>UPDATE kamar SET status='dibooking'")]
+        
+        ProsesTolakDP1_2 --> DBUpdateTolakDP1_2[("UPDATE pembayaran SET status='tidak_valid'<br/>UPDATE booking SET status='menunggu_dp'")]
+        ProsesTerimaDP1_2 --> DBUpdateTerimaDP1_2[("UPDATE pembayaran SET status='valid'<br/>UPDATE booking SET status='disetujui'<br/>UPDATE kamar SET status='terisi'<br/>INSERT INTO users (role='penghuni')")]
+        
+        DBUpdateTolak1_2 --> BukaBooking1_2
+        DBUpdateTerima1_2 --> BukaBooking1_2
+        DBUpdateTolakDP1_2 --> BukaPembayaran1_2
+        DBUpdateTerimaDP1_2 --> SuksesVerif1_2
+    end
 ```
 
 ---
@@ -98,19 +140,34 @@ flowchart TD
 Alur respon admin terhadap laporan kerusakan fasilitas yang dikirim oleh Penghuni di menu `backend/admin/kelola_pengaduan`.
 
 ```mermaid
-flowchart TD
-    Start([Mulai]) --> BukaPengaduan[Admin Buka Menu Kelola Pengaduan]
-    BukaPengaduan --> DaftarAduan[Tampilkan Daftar Pengaduan dengan status 'masuk' / 'baru']
-    DaftarAduan --> PilihAduan[Pilih Detail Pengaduan]
+flowchart TB
+    subgraph Aktor ["Aktor: Admin"]
+        Start1_3([Mulai]) --> BukaPengaduan1_3[Buka Menu Kelola Pengaduan]
+        BukaPengaduan1_3 --> PilihAduan1_3[Pilih Laporan Baru dengan status 'masuk']
+        PilihAduan1_3 --> KlikProses1_3[Klik Mulai Proses Perbaikan]
+        
+        KlikProses1_3 --> PetugasPerbaikan1_3[Petugas Memperbaiki Fasilitas]
+        PetugasPerbaikan1_3 --> UploadProgres1_3[Upload Foto Progres Perbaikan & Klik Update]
+        UploadProgres1_3 --> KlikSelesai1_3[Klik Selesai & Upload Foto Hasil Perbaikan]
+    end
     
-    PilihAduan --> UbahProses[Ubah Status Pengaduan: 'diproses']
-    UbahProses --> UploadFotoProses[Upload Foto Progres Kerusakan Sedang Diperbaiki]
-    UploadFotoProses --> ProsesPerbaikan[Petugas/Teknisi Memperbaiki Fasilitas]
+    subgraph Sistem ["Sistem (Aplikasi)"]
+        BukaPengaduan1_3 --> TampilkanAduan1_3[Tampilkan Daftar Laporan Kerusakan]
+        KlikProses1_3 --> SetProses1_3[Ubah Status Laporan menjadi 'diproses']
+        UploadProgres1_3 --> SaveProgres1_3[Simpan Foto Progres ke /uploads/pengaduan/]
+        KlikSelesai1_3 --> SaveSelesai1_3[Simpan Foto Selesai ke /uploads/pengaduan/ & Set status 'selesai']
+        SaveSelesai1_3 --> KirimNotif1_3[Tampilkan Status Selesai di Halaman Penghuni]
+    end
     
-    ProsesPerbaikan --> SelesaiPerbaikan[Ubah Status Pengaduan: 'selesai']
-    SelesaiPerbaikan --> UploadFotoSelesai[Upload Foto Hasil Perbaikan Selesai]
-    UploadFotoSelesai --> SimpanAduanDB[Simpan Status Terakhir di Database]
-    SimpanAduanDB --> KirimNotif[Penghuni Menerima Status Pengaduan Selesai] --> End([Selesai])
+    subgraph Database ["Database MySQL"]
+        TampilkanAduan1_3 --> QueryAduan1_3[("SELECT * FROM pengaduan")]
+        SetProses1_3 --> DBUpdateProses1_3[("UPDATE pengaduan SET status='diproses'")]
+        SaveProgres1_3 --> DBUpdateFotoProgres1_3[("UPDATE pengaduan SET foto_progres=path")]
+        SaveSelesai1_3 --> DBUpdateSelesai1_3[("UPDATE pengaduan SET status='selesai', foto_selesai=path")]
+        
+        DBUpdateProses1_3 --> BukaPengaduan1_3
+        DBUpdateSelesai1_3 --> KirimNotif1_3
+    end
 ```
 
 ---
@@ -119,27 +176,44 @@ flowchart TD
 Alur pembuatan tagihan periodik sewa kost dan verifikasi pembayarannya di menu `backend/admin/kelola_tagihan`.
 
 ```mermaid
-flowchart TD
-    Start([Mulai]) --> BukaTagihan[Admin Buka Menu Kelola Tagihan]
-    BukaTagihan --> PilihPenghuni[Pilih Penghuni Aktif yang Akan Ditagih]
-    PilihPenghuni --> InputForm[Input Jumlah Tagihan Sewa & Tanggal Jatuh Tempo]
-    InputForm --> SimpanTagihan[Sistem Simpan Tagihan: status 'belum_bayar']
-    SimpanTagihan --> KirimNotif[Penghuni Menerima Notifikasi Tagihan Baru]
+flowchart TB
+    subgraph Aktor ["Aktor: Admin"]
+        Start1_4([Mulai]) --> BukaTagihan1_4[Buka Menu Kelola Tagihan]
+        BukaTagihan1_4 --> PilihPenghuni1_4[Pilih Penghuni Kost Aktif]
+        PilihPenghuni1_4 --> InputTagihan1_4[Input Jumlah Tagihan Sewa & Jatuh Tempo]
+        InputTagihan1_4 --> KlikBuat1_4[Klik Kirim Laporan Tagihan]
+        
+        %% Verifikasi
+        BukaVerifikasi1_4[Buka Menu Kelola Pembayaran Tagihan] --> PilihBayar1_4[Pilih Bukti Pembayaran Bulanan]
+        PilihBayar1_4 --> CekBukti1_4[Periksa Bukti Transfer Bank/E-Wallet]
+        CekBukti1_4 --> Validitas1_4{Bukti Pembayaran Valid?}
+        Validitas1_4 -- Tidak --> KlikTolak1_4[Klik Tolak Pembayaran]
+        Validitas1_4 -- Ya --> KlikTerima1_4[Klik Setujui & Lunas]
+    end
     
-    %% Proses Pembayaran oleh Penghuni
-    KirimNotif -.-> PenghuniBayar[Penghuni Transfer & Upload Bukti Pembayaran Tagihan]
+    subgraph Sistem ["Sistem (Aplikasi)"]
+        BukaTagihan1_4 --> TampilkanPenghuni1_4[Tampilkan Daftar Penghuni Aktif]
+        KlikBuat1_4 --> ProsesBuat1_4[Buat Tagihan Baru & Notifikasi ke Penghuni]
+        
+        ProsesBuat1_4 -.-> PenghuniBayar1_4[Penghuni Transfer & Upload Bukti Pembayaran]
+        PenghuniBayar1_4 -.-> BukaVerifikasi1_4
+        
+        KlikTolak1_4 --> ProsesTolak1_4[Update Tagihan & Minta Upload Bukti Ulang]
+        KlikTerima1_4 --> ProsesTerima1_4[Set Tagihan Lunas & Perpanjang Tanggal Selesai Sewa]
+        ProsesTerima1_4 --> TampilkanSukses1_4[Tampilkan Pesan Sukses Verifikasi]
+    end
     
-    %% Verifikasi Pembayaran oleh Admin
-    PenghuniBayar --> BukaVerifikasi[Admin Buka Menu Kelola Pembayaran]
-    BukaVerifikasi --> PilihPembayaran[Pilih Bukti Pembayaran Pembayaran Bulanan]
-    PilihPembayaran --> CekValiditas{Bukti Pembayaran Valid?}
-    
-    CekValiditas -- Tidak --> SetTidakValid[Update Pembayaran: 'tidak_valid' & Tagihan: 'belum_bayar']
-    SetTidakValid --> MintaReUpload[Penghuni Diminta Upload Ulang] --> PenghuniBayar
-    
-    CekValiditas -- Ya --> SetLunas[Update Pembayaran: 'valid' & Tagihan: 'lunas']
-    SetLunas --> PerpanjangHuni[Perbarui Masa Huni / Tanggal Selesai Sewa]
-    PerpanjangHuni --> End([Selesai])
+    subgraph Database ["Database MySQL"]
+        TampilkanPenghuni1_4 --> QueryPenghuni1_4[("SELECT * FROM users JOIN kamar WHERE role='penghuni'")]
+        ProsesBuat1_4 --> DBInsertTagihan1_4[("INSERT INTO tagihan (status='belum_bayar')")]
+        
+        ProsesTolak1_4 --> DBUpdateTolak1_4[("UPDATE pembayaran SET status='tidak_valid'<br/>UPDATE tagihan SET status='belum_bayar'")]
+        ProsesTerima1_4 --> DBUpdateLunas1_4[("UPDATE pembayaran SET status='valid'<br/>UPDATE tagihan SET status='lunas'<br/>UPDATE penghuni SET tanggal_selesai=perpanjang")]
+        
+        DBInsertTagihan1_4 --> BukaTagihan1_4
+        DBUpdateTolak1_4 --> BukaVerifikasi1_4
+        DBUpdateLunas1_4 --> TampilkanSukses1_4
+    end
 ```
 
 ---
@@ -147,74 +221,119 @@ flowchart TD
 ## 2. Activity Diagram - Penghuni Per-Fitur
 
 ### 2.1. Pembayaran Tagihan Bulanan (Upload Bukti Bayar)
-Alur bagi Penghuni untuk melihat dan melunasi tagihan kost bulanan melalui menu `backend/penghuni/pembayaran.php`.
+Alur bagi Penghuni untuk melihat dan melunasi tagihan sewa kost bulanan melalui menu `backend/penghuni/pembayaran.php`.
 
 ```mermaid
-flowchart TD
-    Start([Mulai]) --> LoginPenghuni[Penghuni Login ke Akun]
-    LoginPenghuni --> MenuPembayaran[Buka Halaman Pembayaran]
-    MenuPembayaran --> LihatTagihan[Tampilkan Daftar Tagihan Aktif]
-    LihatTagihan --> PilihTagihan[Pilih Tagihan status 'belum_bayar']
+flowchart TB
+    subgraph Aktor ["Aktor: Penghuni"]
+        Start2_1([Mulai]) --> LoginPenghuni2_1[Login Akun Penghuni]
+        LoginPenghuni2_1 --> BukaMenuBayar2_1[Buka Menu Pembayaran Sewa]
+        BukaMenuBayar2_1 --> PilihTagihan2_1[Pilih Tagihan status 'belum_bayar']
+        PilihTagihan2_1 --> TransferDana2_1[Transfer Dana ke Nomor Rekening Kost]
+        TransferDana2_1 --> FormUpload2_1[Isi Form Tanggal & Upload Foto Bukti]
+        FormUpload2_1 --> KlikKirim2_1[Klik Kirim Bukti Pembayaran]
+    end
     
-    PilihTagihan --> InfoBank[Sistem Tampilkan Informasi Rekening Kost]
-    InfoBank --> MelakukanTransfer[Penghuni Transfer Dana via Bank/E-Wallet]
-    MelakukanTransfer --> FormUpload[Isi Tanggal Bayar, Jumlah Transfer, & Upload Bukti Foto]
-    FormUpload --> SubmitBukti[Klik Kirim Bukti Pembayaran]
+    subgraph Sistem ["Sistem (Aplikasi)"]
+        LoginPenghuni2_1 --> CekSession2_1{Apakah Session Valid?}
+        CekSession2_1 -- Tidak --> LoginPenghuni2_1
+        CekSession2_1 -- Ya --> TampilkanDashboard2_1[Tampilkan Halaman Dashboard]
+        
+        BukaMenuBayar2_1 --> TampilkanTagihan2_1[Tampilkan Tagihan & Info Rekening]
+        KlikKirim2_1 --> ValidasiForm2_1{File & Input Lengkap?}
+        ValidasiForm2_1 -- Tidak --> FormUpload2_1
+        ValidasiForm2_1 -- Ya --> UploadBukti2_1[Simpan Foto Bukti ke /uploads/pembayaran/]
+        UploadBukti2_1 --> ProsesSimpan2_1[Set Status Pembayaran: 'menunggu_verifikasi']
+        ProsesSimpan2_1 --> SuksesKirim2_1[Tampilkan Notif Menunggu Verifikasi Admin]
+    end
     
-    SubmitBukti --> ValidasiForm{File & Input Lengkap?}
-    ValidasiForm -- Tidak --> FormUpload
-    ValidasiForm -- Ya --> SimpanPembayaran[Sistem Simpan Pembayaran: status 'menunggu_verifikasi']
-    SimpanPembayaran --> TungguAdmin[Menunggu Proses Verifikasi Admin] --> End([Selesai])
+    subgraph Database ["Database MySQL"]
+        TampilkanTagihan2_1 --> QueryTagihan2_1[("SELECT * FROM tagihan WHERE user_id AND status='belum_bayar'")]
+        ProsesSimpan2_1 --> DBInsertPembayaran2_1[("INSERT INTO pembayaran (...)<br/>UPDATE tagihan SET status='diproses'")]
+        
+        DBInsertPembayaran2_1 --> SuksesKirim2_1
+    end
 ```
 
 ---
 
 ### 2.2. Pengajuan Pengaduan Kerusakan
-Alur bagi Penghuni untuk melaporkan kerusakan fasilitas di dalam kamar atau area kost melalui menu `backend/penghuni/buat_pengaduan.php` dan memantau perkembangannya di `backend/penghuni/riwayat_pengaduan.php`.
+Alur bagi Penghuni untuk melaporkan kerusakan fasilitas di dalam kamar atau area kost melalui menu `backend/penghuni/buat_pengaduan.php`.
 
 ```mermaid
-flowchart TD
-    Start([Mulai]) --> LoginPenghuni[Penghuni Login]
-    LoginPenghuni --> MenuPengaduan[Buka Halaman Pengaduan]
-    MenuPengaduan --> BuatAduan[Klik Tombol Buat Pengaduan Baru]
+flowchart TB
+    subgraph Aktor ["Aktor: Penghuni"]
+        Start2_2([Mulai]) --> BukaAduan2_2[Buka Menu Pengaduan]
+        BukaAduan2_2 --> KlikBuat2_2[Klik Buat Pengaduan Baru]
+        KlikBuat2_2 --> IsiForm2_2[Isi Deskripsi, Prioritas, & Upload Foto Fasilitas Rusak]
+        IsiForm2_2 --> KlikKirim2_2[Klik Kirim Laporan]
+        KlikKirim2_2 --> PantauRiwayat2_2[Pantau Riwayat & Progres Perbaikan]
+    end
     
-    BuatAduan --> IsiFormAduan[Isi Judul Keluhan, Isi Deskripsi, Prioritas, & Upload Foto Bukti]
-    IsiFormAduan --> SubmitAduan[Klik Kirim Laporan]
-    SubmitAduan --> ValidasiForm{Apakah Form Lengkap?}
-    ValidasiForm -- Tidak --> IsiFormAduan
+    subgraph Sistem ["Sistem (Aplikasi)"]
+        BukaAduan2_2 --> TampilkanDaftar2_2[Tampilkan Daftar Laporan Sebelumnya]
+        KlikBuat2_2 --> TampilkanForm2_2[Tampilkan Form Input Pengaduan]
+        KlikKirim2_2 --> ValidasiInput2_2{Input & Foto Lengkap?}
+        ValidasiInput2_2 -- Tidak --> IsiForm2_2
+        ValidasiInput2_2 -- Ya --> UploadFoto2_2[Simpan Foto Kerusakan ke /uploads/pengaduan/]
+        UploadFoto2_2 --> SimpanAduan2_2[Set Status Pengaduan Baru: 'masuk']
+        SimpanAduan2_2 --> SuksesKirim2_2[Tampilkan Pesan Berhasil & Refresh Daftar]
+        SuksesKirim2_2 --> PantauRiwayat2_2
+    end
     
-    ValidasiForm -- Ya --> SimpanAduan[Sistem Simpan Pengaduan: status 'baru' / 'masuk']
-    SimpanAduan --> RiwayatAduan[Lihat Daftar Pengaduan & Pantau Progres Perbaikan]
-    
-    %% Alur Progres
-    RiwayatAduan --> CekStatus{Status Pengaduan?}
-    CekStatus -- diproses --> LihatFotoProses[Lihat Foto Proses Perbaikan dari Admin]
-    CekStatus -- selesai --> LihatFotoSelesai[Lihat Foto Selesai Perbaikan & Fasilitas Kembali Normal]
-    LihatFotoSelesai --> End([Selesai])
+    subgraph Database ["Database MySQL"]
+        TampilkanDaftar2_2 --> QueryRiwayat2_2[("SELECT * FROM pengaduan WHERE user_id")]
+        SimpanAduan2_2 --> DBInsertAduan2_2[("INSERT INTO pengaduan (status='masuk', ...)")]
+        
+        DBInsertAduan2_2 --> SuksesKirim2_2
+    end
 ```
 
 ---
 
 ### 2.3. Pemberian Ulasan & Testimoni Kost
-Alur bagi Penghuni yang aktif untuk memberikan rating dan tanggapan/testimoni terhadap pelayanan kost di menu `backend/penghuni/ulasan.php`.
+Alur bagi Penghuni yang aktif untuk memberikan rating dan ulasan/testimoni terhadap pelayanan kost di menu `backend/penghuni/ulasan.php`.
 
 ```mermaid
-flowchart TD
-    Start([Mulai]) --> LoginPenghuni[Penghuni Login]
-    LoginPenghuni --> MenuUlasan[Buka Halaman Ulasan]
-    MenuUlasan --> CekUlasanLama{Sudah Pernah Memberi Ulasan?}
+flowchart TB
+    subgraph Aktor ["Aktor: Penghuni"]
+        Start2_3([Mulai]) --> BukaUlasan2_3[Buka Menu Ulasan & Testimoni]
+        BukaUlasan2_3 --> CekUlasanLama2_3{Sudah Pernah Mengulas?}
+        
+        %% Belum
+        CekUlasanLama2_3 -- Belum --> FormBaru2_3[Isi Rating Bintang 1-5, Komentar, & Foto]
+        FormBaru2_3 --> KlikKirim2_3[Klik Kirim Ulasan]
+        
+        %% Sudah
+        CekUlasanLama2_3 -- Sudah --> EditUlasan2_3[Klik Edit Ulasan]
+        EditUlasan2_3 --> FormEdit2_3[Ubah Rating & Teks Ulasan]
+        FormEdit2_3 --> KlikSimpan2_3[Klik Update Ulasan]
+    end
     
-    %% Mengisi Ulasan Pertama
-    CekUlasanLama -- Belum --> FormUlasan[Isi Rating Bintang 1-5, Komentar, & Upload Foto Ulasan]
-    FormUlasan --> SubmitUlasan[Klik Kirim Ulasan]
-    SubmitUlasan --> SimpanUlasanDB[Sistem Simpan Ulasan: default tampilkan = 0]
+    subgraph Sistem ["Sistem (Aplikasi)"]
+        BukaUlasan2_3 --> CekDBUlasan2_3[Kirim Request Pemeriksaan Ulasan]
+        CekDBUlasan2_3 --> CekUlasanLama2_3
+        
+        KlikKirim2_3 --> ValidasiBaru2_3{Input Valid?}
+        ValidasiBaru2_3 -- Tidak --> FormBaru2_3
+        ValidasiBaru2_3 -- Ya --> SimpanUlasan2_3[Simpan Ulasan Baru dengan status tampilkan=0]
+        
+        KlikSimpan2_3 --> ValidasiEdit2_3{Input Valid?}
+        ValidasiEdit2_3 -- Tidak --> FormEdit2_3
+        ValidasiEdit2_3 -- Ya --> UpdateUlasan2_3[Update Ulasan & Set status tampilkan=0]
+        
+        SimpanUlasan2_3 --> SuksesUlas2_3[Tampilkan Notifikasi Sukses & Menunggu Moderasi Admin]
+        UpdateUlasan2_3 --> SuksesUlas2_3
+    end
     
-    %% Mengedit Ulasan yang Ada
-    CekUlasanLama -- Sudah --> TampilkanUlasanLama[Tampilkan Ulasan yang Ada & Balasan Admin]
-    TampilkanUlasanLama --> EditUlasan[Klik Edit Ulasan]
-    EditUlasan --> FormUlasan
-    
-    SimpanUlasanDB --> TungguModerasi[Menunggu Admin Menyetujui Ulasan Ditampilkan di Landing Page] --> End([Selesai])
+    subgraph Database ["Database MySQL"]
+        CekDBUlasan2_3 -.-> QueryCekUlasan2_3[("SELECT * FROM ulasan WHERE user_id")]
+        SimpanUlasan2_3 --> DBInsertUlasan2_3[("INSERT INTO ulasan (tampilkan=0, ...)")]
+        UpdateUlasan2_3 --> DBUpdateUlasan2_3[("UPDATE ulasan SET tampilkan=0, ... WHERE user_id")]
+        
+        DBInsertUlasan2_3 --> SuksesUlas2_3
+        DBUpdateUlasan2_3 --> SuksesUlas2_3
+    end
 ```
 
 ---
@@ -225,52 +344,87 @@ flowchart TD
 Alur bagi pengunjung umum (Guest) untuk membuat akun di website agar dapat melakukan pemesanan kamar kost di `frontend/pages/guest/profil.php`.
 
 ```mermaid
-flowchart TD
-    Start([Mulai]) --> AksesWeb[Pengunjung Buka Landing Page EL-MISARAH]
-    AksesWeb --> BukaModalAuth[Klik Login / Registrasi]
-    BukaModalAuth --> PilihAksi{Pilih Opsi}
+flowchart TB
+    subgraph Aktor ["Aktor: Calon Penyewa"]
+        Start3_1([Mulai]) --> AksesWeb3_1[Akses Landing Page EL-MISARAH]
+        AksesWeb3_1 --> KlikAuth3_1[Klik Registrasi / Login]
+        KlikAuth3_1 --> PilihOpsi3_1{Pilih Opsi}
+        
+        %% Registrasi
+        PilihOpsi3_1 -- Daftar Baru --> FormDaftar3_1[Isi Nama, Email, No HP, & Password]
+        FormDaftar3_1 --> KlikDaftar3_1[Klik Daftar Sekarang]
+        
+        %% Login
+        PilihOpsi3_1 -- Masuk Akun --> FormLogin3_1[Masukkan Email & Password]
+        FormLogin3_1 --> KlikMasuk3_1[Klik Masuk]
+    end
     
-    %% Registrasi
-    PilihAksi -- Registrasi Akun Baru --> FormDaftar[Isi Nama, Email, No HP, & Password]
-    FormDaftar --> SubmitDaftar[Klik Daftar Sekarang]
-    SubmitDaftar --> ValidasiEmail{Email Sudah Terdaftar?}
-    ValidasiEmail -- Ya --> NotifEmailGanda[Tampilkan Pesan Error: Email Sudah Digunakan] --> FormDaftar
-    ValidasiEmail -- Tidak --> SimpanUserDB[Simpan Akun Baru ke DB: role 'user', status 'aktif']
-    SimpanUserDB --> SuksesDaftar[Tampilkan Pesan Registrasi Sukses] --> FormLogin
+    subgraph Sistem ["Sistem (Aplikasi)"]
+        KlikAuth3_1 --> TampilkanModal3_1[Tampilkan Modal / Halaman Autentikasi]
+        KlikDaftar3_1 --> CekDuplikasi3_1[Validasi Input & Ketersediaan Email]
+        CekDuplikasi3_1 -- Terdaftar --> NotifGanda3_1[Tampilkan Error: Email Sudah Digunakan]
+        NotifGanda3_1 --> FormDaftar3_1
+        
+        CekDuplikasi3_1 -- Tersedia --> HashPassword3_1[Enkripsi Password dengan password_hash]
+        HashPassword3_1 --> BuatAkun3_1[Simpan Akun Baru Ke Database]
+        BuatAkun3_1 --> SuksesDaftar3_1[Tampilkan Pesan Sukses Registrasi]
+        SuksesDaftar3_1 --> FormLogin3_1
+        
+        KlikMasuk3_1 --> VerifikasiKredensial3_1[Autentikasi Email & Verifikasi Password Hash]
+        VerifikasiKredensial3_1 -- Salah / Nonaktif --> NotifGagal3_1[Tampilkan Error: Kredensial Salah]
+        NotifGagal3_1 --> FormLogin3_1
+        
+        VerifikasiKredensial3_1 -- Cocok --> SetSession3_1[Inisialisasi PHP Session: user_id, role]
+        SetSession3_1 --> RedirectRole3_1[Redirect Pengguna Sesuai Role]
+        RedirectRole3_1 --> End3_1([Selesai])
+    end
     
-    %% Login
-    PilihAksi -- Login Akun --> FormLogin[Masukkan Email & Password]
-    FormLogin --> SubmitLogin[Klik Masuk]
-    SubmitLogin --> Autentikasi{Kredensial Cocok & Akun Aktif?}
-    Autentikasi -- Tidak --> NotifGagalLogin[Tampilkan Pesan Error: Kredensial Salah] --> FormLogin
-    Autentikasi -- Ya --> SetSession[Sistem Setup Session: user_id, nama, role, status]
-    
-    SetSession --> RedirectRole[Arahkan User Berdasarkan Role]
-    RedirectRole --> End([Selesai])
+    subgraph Database ["Database MySQL"]
+        CekDuplikasi3_1 -.-> DBQueryEmail3_1[("SELECT email FROM users WHERE email=?")]
+        BuatAkun3_1 --> DBInsertUser3_1[("INSERT INTO users (role='user', status='aktif', ...)")]
+        VerifikasiKredensial3_1 -.-> DBQueryAuth3_1[("SELECT * FROM users WHERE email=?")]
+        
+        DBInsertUser3_1 --> SuksesDaftar3_1
+    end
 ```
 
 ---
 
 ### 3.2. Eksplorasi Kamar & Pengajuan Booking
-Alur bagi Calon Penyewa (User) untuk mengecek ketersediaan kamar dan melakukan booking melalui menu `frontend/pages/guest/rooms.php` dan `frontend/pages/guest/booking.php`.
+Alur bagi Calon Penyewa (User) untuk mengecek ketersediaan kamar dan melakukan booking melalui menu `frontend/pages/guest/rooms.php`.
 
 ```mermaid
-flowchart TD
-    Start([Mulai]) --> LoginUser[User Terdaftar Login]
-    LoginUser --> BukaDaftarKamar[Buka Halaman Cari Kamar]
-    BukaDaftarKamar --> FilterKamar[Eksplorasi Detail Kamar, Fasilitas, & Status Kamar]
-    FilterKamar --> PilihKamar[Pilih Kamar dengan status 'tersedia']
+flowchart TB
+    subgraph Aktor ["Aktor: Calon Penyewa"]
+        Start3_2([Mulai]) --> BukaKamar3_2[Buka Halaman Cari Kamar]
+        BukaKamar3_2 --> FilterKamar3_2[Eksplorasi Spesifikasi & Status Kamar]
+        FilterKamar3_2 --> PilihKamar3_2[Pilih Kamar status 'tersedia']
+        PilihKamar3_2 --> FormBooking3_2[Isi Tanggal Masuk, Durasi, & Catatan]
+        FormBooking3_2 --> KlikKonfirmasi3_2[Klik Konfirmasi Pemesanan]
+    end
     
-    PilihKamar --> KlikBooking[Klik Tombol Booking Kamar]
-    KlikBooking --> FormBooking[Isi Tanggal Rencana Masuk, Durasi Sewa, & Catatan Tambahan]
-    FormBooking --> SubmitBooking[Klik Konfirmasi Pemesanan]
+    subgraph Sistem ["Sistem (Aplikasi)"]
+        BukaKamar3_2 --> TampilkanKamar3_2[Tampilkan Daftar Kamar Tersedia]
+        PilihKamar3_2 --> TampilkanForm3_2[Tampilkan Form Booking]
+        KlikKonfirmasi3_2 --> CekStatusKamar3_2[Periksa Ulang Status Kamar Terkini]
+        CekStatusKamar3_2 --> CekTersedia3_2{Kamar Masih Tersedia?}
+        CekTersedia3_2 -- Tidak --> NotifPenuh3_2[Tampilkan Error: Kamar Baru Saja Dibooking Orang Lain] --> BukaKamar3_2
+        
+        CekTersedia3_2 -- Ya --> SimpanBooking3_2[Simpan Booking dengan status 'pending']
+        SimpanBooking3_2 --> UbahStatusKamar3_2[Set Status Kamar: 'dibooking']
+        UbahStatusKamar3_2 --> RedirectRiwayat3_2[Arahkan ke Halaman Riwayat Pemesanan]
+        RedirectRiwayat3_2 --> End3_2([Selesai])
+    end
     
-    SubmitBooking --> CekKetersediaan{Apakah Kamar Masih Tersedia di DB?}
-    CekKetersediaan -- Tidak --> NotifKamarPenuh[Tampilkan Pesan: Kamar Baru Saja Dipesan Orang Lain] --> BukaDaftarKamar
-    
-    CekKetersediaan -- Ya --> SimpanBooking[Sistem Simpan Booking: status 'pending']
-    SimpanBooking --> UpdateKamarStatus[Update Kamar: status 'dibooking']
-    UpdateKamarStatus --> ArahkanMenunggu[Arahkan ke Halaman Menunggu Persetujuan Admin] --> End([Selesai])
+    subgraph Database ["Database MySQL"]
+        TampilkanKamar3_2 --> QueryKamarTersedia3_2[("SELECT * FROM kamar WHERE status='tersedia'")]
+        CekStatusKamar3_2 -.-> QueryKamarDB3_2[("SELECT status FROM kamar WHERE id=?")]
+        SimpanBooking3_2 --> DBInsertBooking3_2[("INSERT INTO booking (status='pending', ...)")]
+        UbahStatusKamar3_2 --> DBUpdateKamar3_2[("UPDATE kamar SET status='dibooking' WHERE id=?")]
+        
+        DBInsertBooking3_2 --> UbahStatusKamar3_2
+        DBUpdateKamar3_2 --> RedirectRiwayat3_2
+    end
 ```
 
 ---
@@ -279,19 +433,36 @@ flowchart TD
 Alur bagi Calon Penyewa untuk mengunggah bukti pembayaran DP setelah pengajuan booking disetujui oleh admin (status booking berubah menjadi `menunggu_dp`), melalui menu `frontend/pages/guest/pembayaran_booking.php`.
 
 ```mermaid
-flowchart TD
-    Start([Mulai]) --> BukaRiwayatBooking[User Buka Menu Riwayat Booking]
-    BukaRiwayatBooking --> LihatStatus{Cek Status Booking}
+flowchart TB
+    subgraph Aktor ["Aktor: Calon Penyewa"]
+        Start3_3([Mulai]) --> BukaRiwayat3_3[Buka Menu Riwayat Booking]
+        BukaRiwayat3_3 --> CekStatus3_3{Cek Status Booking}
+        
+        %% Pending
+        CekStatus3_3 -- pending --> TungguPersetujuan3_3[Menunggu Verifikasi Awal Admin] --> BukaRiwayat3_3
+        
+        %% Menunggu DP
+        CekStatus3_3 -- menunggu_dp --> KlikBayar3_3[Klik Tombol Pembayaran DP]
+        KlikBayar3_3 --> TransferDP3_3[Transfer Dana Sesuai Nominal & Rekening Kost]
+        TransferDP3_3 --> FormUploadDP3_3[Isi Form & Upload Bukti Pembayaran DP]
+        FormUploadDP3_3 --> KlikKirim3_3[Klik Kirim Bukti DP]
+    end
     
-    LihatStatus -- pending --> TungguPersetujuan[Menunggu Persetujuan Verifikasi Awal Admin] --> BukaRiwayatBooking
+    subgraph Sistem ["Sistem (Aplikasi)"]
+        BukaRiwayat3_3 --> TampilkanRiwayat3_3[Tampilkan Riwayat Pemesanan Kamar]
+        KlikBayar3_3 --> TampilkanHalamanBayar3_3[Tampilkan Jumlah DP & Info Rekening]
+        KlikKirim3_3 --> ValidasiForm3_3{Input & Foto Bukti Lengkap?}
+        ValidasiForm3_3 -- Tidak --> FormUploadDP3_3
+        ValidasiForm3_3 -- Ya --> UploadFoto3_3[Simpan Foto Bukti ke /uploads/pembayaran/]
+        UploadFoto3_3 --> SimpanPembayaran3_3[Set Status Pembayaran DP: 'menunggu_verifikasi']
+        SimpanPembayaran3_3 --> TampilkanSukses3_3[Tampilkan Halaman Sukses & Menunggu Verifikasi]
+        TampilkanSukses3_3 --> End3_3([Selesai])
+    end
     
-    LihatStatus -- menunggu_dp --> KlikBayar[Klik Tombol Pembayaran DP]
-    KlikBayar --> HalamanBayar[Tampilkan Jumlah Tagihan DP & Rekening Pembayaran]
-    HalamanBayar --> BayarTransfer[Penyewa Transfer Pembayaran]
-    
-    BayarTransfer --> FormUploadDP[Isi Form Pembayaran & Upload Foto Bukti Pembayaran DP]
-    FormUploadDP --> SubmitDP[Klik Kirim Bukti DP]
-    SubmitDP --> SimpanBuktiDB[Sistem Simpan Transaksi Pembayaran: status 'menunggu_verifikasi']
-    
-    SimpanBuktiDB --> HalamanSelesai[Arahkan ke Halaman Menunggu Konfirmasi Bukti Bayar] --> End([Selesai])
+    subgraph Database ["Database MySQL"]
+        TampilkanRiwayat3_3 --> QueryBooking3_3[("SELECT * FROM booking WHERE user_id")]
+        SimpanPembayaran3_3 --> DBInsertPembayaran3_3[("INSERT INTO pembayaran (status='menunggu_verifikasi', ...)<br/>UPDATE booking SET status='menunggu_verifikasi'")]
+        
+        DBInsertPembayaran3_3 --> TampilkanSukses3_3
+    end
 ```
