@@ -81,21 +81,15 @@ if ($id && in_array($action, ['valid', 'tidak_valid'])) {
             }
             // ------------------------------------
         } elseif ($action === 'tidak_valid') {
-            // Jika pembayaran nipu / tidak valid, batalkan booking terkait
-            if (!empty($pay['booking_id'])) {
-                $stmtBookInfo = $conn->prepare("SELECT kamar_id FROM booking WHERE id = ?");
-                $stmtBookInfo->execute([$pay['booking_id']]);
-                $bookRow = $stmtBookInfo->fetch(PDO::FETCH_ASSOC);
-
-                if ($bookRow) {
-                    $stmtUpdateBook = $conn->prepare("UPDATE booking SET status = 'dibatalkan' WHERE id = ?");
-                    $stmtUpdateBook->execute([$pay['booking_id']]);
-
-                    // Kosongkan status kamar jika sedang diisi booking ini
-                    $stmtFreeKamar = $conn->prepare("UPDATE kamar SET status = 'tersedia' WHERE id = ? AND status != 'dihuni'");
-                    $stmtFreeKamar->execute([$bookRow['kamar_id']]);
-                }
-            }
+            // Jika bukti tidak valid, kembalikan status pembayaran ke belum_bayar
+            // agar penghuni bisa upload ulang — JANGAN batalkan booking
+            $stmtReset = $conn->prepare("
+                UPDATE pembayaran 
+                SET status = 'belum_bayar', bukti_bayar = NULL 
+                WHERE id = ?
+            ");
+            $stmtReset->execute([$id]);
+            $targetUserId = null;
         }
 
         $conn->commit();

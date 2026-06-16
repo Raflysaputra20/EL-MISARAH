@@ -22,8 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$user || !password_verify($kata_sandi_lama, $user['password'])) {
         $error = 'Kata sandi lama tidak sesuai.';
-    } elseif (strlen($kata_sandi_baru) < 6) {
-        $error = 'Kata sandi baru minimal 6 karakter.';
+    } elseif (strlen($kata_sandi_baru) < 8) {
+        $error = 'Kata sandi baru minimal 8 karakter.';
+    } elseif (!preg_match('/[A-Z]/', $kata_sandi_baru) || !preg_match('/[a-z]/', $kata_sandi_baru) || !preg_match('/[0-9]/', $kata_sandi_baru) || !preg_match('/[^A-Za-z0-9]/', $kata_sandi_baru)) {
+        $error = 'Kata sandi baru harus mengandung kombinasi huruf besar, huruf kecil, angka, dan simbol.';
     } elseif ($kata_sandi_baru !== $konfirmasi) {
         $error = 'Konfirmasi kata sandi tidak cocok.';
     } else {
@@ -41,9 +43,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pengaturan - Admin Kost Elmi Sarah</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/dashboard-responsive.css">
+    <link rel="stylesheet" href="../assets/css/dashboard-responsive.css?v=1.2">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Topbar layout */
+        .topbar-right { display: flex; align-items: center; gap: 16px; }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-info { display: flex; flex-direction: column; }
+        .avatar { width: 38px; height: 38px; background: #d1d5db; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; overflow: hidden; }
+        .user-name { font-weight: 600; font-size: 13.5px; line-height: 1.2; }
+        .user-role { font-size: 11px; color: #9ca3af; font-weight: 500; }
+        .notification-btn { background: none; border: none; outline: none; cursor: pointer; padding: 6px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #1f2937; transition: background 0.15s; }
+        .notification-btn:hover { background: rgba(0,0,0,0.06); }
+
         :root {
             --admin-green: #11a654;
             --admin-bg: #f4f6f8;
@@ -256,7 +268,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="field-label">Kata Sandi Baru</div>
                     <div class="field-input-wrap">
                         <input type="password" name="kata_sandi_baru" id="pw_baru"
-                               class="field-input" placeholder="Masukkan kata sandi baru" required>
+                               class="field-input" placeholder="Min. 8 karakter (huruf besar, kecil, angka, simbol)" required>
                         <button type="button" class="toggle-pw" onclick="togglePw('pw_baru', this)">
                             <i data-lucide="eye" style="width:18px; height:18px;"></i>
                         </button>

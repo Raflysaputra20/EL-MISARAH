@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <title>Edit Profil - Admin Kost Elmi Sarah</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/css/dashboard-responsive.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard-responsive.css?v=1.2">
     <style>
         :root { --admin-green: #11a654; --admin-bg: #f4f6f8; --admin-text: #1f2937; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--admin-bg); color: var(--admin-text); padding: 40px 20px; }

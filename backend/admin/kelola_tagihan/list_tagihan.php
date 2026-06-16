@@ -10,21 +10,11 @@ $nm = [1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',7=>'J
 // ═══ AUTO-SYNC: Sinkronisasi status kamar dengan data penghuni aktif ═══
 try {
     $conn->exec("
-        UPDATE booking b
-        JOIN users u ON b.user_id = u.id
-        SET b.status = 'aktif'
-        WHERE b.status = 'selesai'
-          AND u.role = 'penghuni'
-          AND u.status = 'aktif'
-          AND b.kamar_id IS NOT NULL
-          AND b.id = (SELECT MAX(b2.id) FROM (SELECT id, user_id FROM booking) b2 WHERE b2.user_id = b.user_id)
-    ");
-    $conn->exec("
         UPDATE kamar k
         JOIN booking b ON b.kamar_id = k.id
         JOIN users u ON b.user_id = u.id
         SET k.status = 'terisi'
-        WHERE b.status = 'aktif'
+        WHERE b.status IN ('aktif', 'selesai')
           AND u.role = 'penghuni'
           AND u.status = 'aktif'
           AND k.status = 'tersedia'
@@ -37,7 +27,7 @@ try {
               SELECT b.kamar_id 
               FROM booking b 
               JOIN users u ON b.user_id = u.id 
-              WHERE b.status IN ('aktif', 'disetujui') 
+              WHERE b.status IN ('aktif', 'disetujui', 'selesai') 
                 AND u.role = 'penghuni' 
                 AND u.status = 'aktif'
                 AND b.kamar_id IS NOT NULL
@@ -45,47 +35,76 @@ try {
     ");
 } catch (Exception $e) {}
 
+// Tanggal awal & akhir bulan yang dipilih
+$tglAwal  = sprintf('%04d-%02d-01', $tahun, $bulan);
+$tglAkhir = date('Y-m-t', mktime(0, 0, 0, $bulan, 1, $tahun)); // last day of month
+
 try {
-    // Ambil semua penghuni (dari users) + info kamar dari booking jika ada
-    // + status pembayaran bulan ini (dari pembayaran via user_id)
-        $stmt = $conn->prepare("
-            SELECT 
-                u.id as user_id, u.nama, u.no_hp,
-                k.nomor_kamar as no_kamar, k.tipe, k.harga,
-                b.id      as booking_id,
-                p.id      as pay_id, p.status as pay_status,
-                p.jumlah  as pay_jumlah, p.tanggal_bayar, p.bukti_bayar,
-                p.metode, p.durasi_bulan as pay_durasi
-            FROM users u
-            LEFT JOIN booking b ON b.user_id = u.id 
-                AND b.status IN ('disetujui','aktif')
-                AND b.id = (SELECT MAX(b3.id) FROM booking b3 WHERE b3.user_id = u.id AND b3.status IN ('disetujui','aktif'))
-            LEFT JOIN kamar k   ON b.kamar_id = k.id
-            LEFT JOIN pembayaran p ON p.id = (
-                SELECT MAX(id) FROM pembayaran p2 
-                WHERE p2.booking_id = b.id 
-                  AND (
-                      (MONTH(p2.tanggal_bayar) = ? AND YEAR(p2.tanggal_bayar) = ?)
-                      OR (MONTH(b.tanggal_masuk) = ? AND YEAR(b.tanggal_masuk) = ?)
-                      OR p2.status = 'menunggu_verifikasi'
-                  )
-                  AND NOT (p2.metode LIKE '%Perpanjangan%' AND p2.status = 'valid')
+    // Ambil semua penghuni + info kamar dari booking + status pembayaran bulan ini
+    // Mendeteksi 2 jenis pembayaran yang berlaku:
+    //   (A) Tagihan reguler: tanggal_bayar di bulan yang dipilih, bukan Perpanjangan
+    //   (B) Perpanjangan valid yang mencakup bulan ini (tanggal_bayar + durasi_bulan bulan >= bulan ini)
+    $stmt = $conn->prepare("
+        SELECT 
+            u.id as user_id, u.nama, u.no_hp,
+            k.nomor_kamar as no_kamar, k.tipe, k.harga,
+            b.id      as booking_id,
+            p.id      as pay_id, p.status as pay_status,
+            p.jumlah  as pay_jumlah, p.tanggal_bayar, p.bukti_bayar,
+            p.metode, p.durasi_bulan as pay_durasi,
+            perp.id   as perp_id, perp.jumlah as perp_jumlah,
+            perp.tanggal_bayar as perp_tgl, perp.durasi_bulan as perp_durasi
+        FROM users u
+        LEFT JOIN booking b ON b.user_id = u.id 
+            AND b.status IN ('disetujui','aktif','selesai')
+            AND b.id = (
+                SELECT MAX(b3.id) FROM booking b3 
+                WHERE b3.user_id = u.id AND b3.status IN ('disetujui','aktif','selesai')
             )
-            WHERE u.role = 'penghuni'
-            ORDER BY CASE WHEN p.status = 'menunggu_verifikasi' THEN 0 ELSE 1 END ASC, u.id ASC
-        ");
-        $stmt->execute([$bulan, $tahun, $bulan, $tahun]);
+        LEFT JOIN kamar k ON b.kamar_id = k.id
+        -- (A) Tagihan reguler bulan ini (bukan Perpanjangan)
+        LEFT JOIN pembayaran p ON p.id = (
+            SELECT MAX(p2.id) FROM pembayaran p2 
+            WHERE p2.booking_id = b.id 
+              AND MONTH(p2.tanggal_bayar) = ? AND YEAR(p2.tanggal_bayar) = ?
+              AND (p2.metode IS NULL OR p2.metode NOT LIKE '%Perpanjangan%')
+        )
+        -- (B) Perpanjangan valid yang mencakup bulan ini
+        LEFT JOIN pembayaran perp ON perp.id = (
+            SELECT MAX(p3.id) FROM pembayaran p3
+            WHERE p3.booking_id = b.id
+              AND p3.metode LIKE '%Perpanjangan%'
+              AND p3.status = 'valid'
+              AND p3.tanggal_bayar <= ?
+              AND DATE_ADD(p3.tanggal_bayar, INTERVAL p3.durasi_bulan MONTH) > ?
+        )
+        WHERE u.role = 'penghuni' AND u.status = 'aktif'
+        ORDER BY 
+            CASE WHEN p.status = 'menunggu_verifikasi' THEN 0
+                 WHEN p.id IS NULL AND perp.id IS NULL THEN 1
+                 WHEN p.status = 'belum_bayar' THEN 2
+                 ELSE 3 END ASC,
+            u.id ASC
+    ");
+    $stmt->execute([$bulan, $tahun, $tglAkhir, $tglAwal]);
     $list = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (Exception $e) { $list = []; }
+} catch (Exception $e) { $list = []; error_log('list_tagihan error: ' . $e->getMessage()); }
 
 $totalBelum = 0; $totalLunas = 0; $totalVerif = 0;
 foreach ($list as $r) {
-    if (!$r['pay_id']) $totalBelum++;
-    elseif ($r['pay_status'] === 'valid') $totalLunas++;
+    $coverByPerp = !empty($r['perp_id']); // covered by valid Perpanjangan
+    if ($coverByPerp) {
+        $totalLunas++; // Perpanjangan valid = sudah lunas untuk bulan ini
+    } elseif (!$r['pay_id']) {
+        if ($r['booking_id']) $totalBelum++;
+    } elseif ($r['pay_status'] === 'valid') $totalLunas++;
     elseif ($r['pay_status'] === 'menunggu_verifikasi') $totalVerif++;
     else $totalBelum++;
 }
-$belumGenerate = count(array_filter($list, fn($r) => !$r['pay_id']));
+// Belum generate = tidak ada tagihan reguler DAN tidak di-cover perpanjangan
+$belumGenerate = count(array_filter($list, fn($r) => !$r['pay_id'] && empty($r['perp_id']) && !empty($r['booking_id'])));
+$tanpaBooking  = count(array_filter($list, fn($r) => empty($r['booking_id'])));
+
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -93,9 +112,19 @@ $belumGenerate = count(array_filter($list, fn($r) => !$r['pay_id']));
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Kelola Tagihan - Admin Kost Elmi Sarah</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/css/dashboard-responsive.css">
+<link rel="stylesheet" href="../../assets/css/dashboard-responsive.css?v=1.2">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+        /* Topbar layout */
+        .topbar-right { display: flex; align-items: center; gap: 16px; }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-info { display: flex; flex-direction: column; }
+        .avatar { width: 38px; height: 38px; background: #d1d5db; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; overflow: hidden; }
+        .user-name { font-weight: 600; font-size: 13.5px; line-height: 1.2; }
+        .user-role { font-size: 11px; color: #9ca3af; font-weight: 500; }
+        .notification-btn { background: none; border: none; outline: none; cursor: pointer; padding: 6px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #1f2937; transition: background 0.15s; }
+        .notification-btn:hover { background: rgba(0,0,0,0.06); }
+
 :root{--g:#11a654;--bg:#f4f6f8;--dk:#1f2937;}
 body{font-family:'Poppins',sans-serif;background:var(--bg);margin:0;color:var(--dk);}
 .admin-sidebar{width:240px;height:100vh;background:var(--g);position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:1000;border-top-right-radius:15px;border-bottom-right-radius:15px;box-shadow:4px 0 10px rgba(0,0,0,.03);}
@@ -124,10 +153,13 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);margin:0;color:var(--
 }
 .btn-keluar:hover { background-color: #f3f4f6; color: var(--dk); }
 .admin-main{margin-left:240px;min-height:100vh;display:flex;flex-direction:column;}
-.topbar{height:70px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 30px;border-bottom:1px solid #e5e7eb;}
+.admin-topbar{height:70px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 30px;border-bottom:1px solid #e5e7eb;}
 .page-title{font-size:20px;font-weight:600;margin:0;}
+.topbar-right{display:flex;align-items:center;gap:20px;}
+.user-profile{display:flex;align-items:center;gap:12px;}
+.user-info{display:flex;flex-direction:column;}
 .notif-btn{background:none;border:none;color:var(--dk);}
-.avatar{width:38px;height:38px;background:#d1d5db;border-radius:50%;}
+.avatar{width:38px;height:38px;background:#d1d5db;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:14px;overflow:hidden;}
 .user-name{font-weight:600;font-size:13px;line-height:1.2;}
 .user-role{font-size:11px;color:#9ca3af;}
 .content{padding:25px 30px;flex-grow:1;}
@@ -217,16 +249,23 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);margin:0;color:var(--
 </aside>
 
 <div class="admin-main">
-    <header class="topbar">
+    <header class="admin-topbar">
         <div style="display:flex;align-items:center;gap:12px;">
             <button class="btn-toggle-sidebar" onclick="openMobileSidebar()"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
             <h2 class="page-title">Kelola Tagihan & Pembayaran</h2>
         </div>
-        <div class="d-flex align-items-center gap-3">
-            <button class="notif-btn"><i data-lucide="bell" style="width:20px;height:20px;"></i></button>
-            <div class="d-flex align-items-center gap-2">
-                <div class="avatar"></div>
-                <div><div class="user-name"><?= htmlspecialchars($_SESSION['nama'] ?? 'Admin') ?></div><div class="user-role">Administrator</div></div>
+        <div class="topbar-right">
+            <button class="notification-btn">
+                <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+            </button>
+            <div class="user-profile">
+                <div class="avatar">
+                    <?= strtoupper(substr($_SESSION['nama'] ?? 'A', 0, 1)) ?>
+                </div>
+                <div class="user-info">
+                    <span class="user-name"><?= htmlspecialchars($_SESSION['nama'] ?? 'Admin') ?></span>
+                    <span class="user-role">Administrator</span>
+                </div>
             </div>
         </div>
     </header>
@@ -294,20 +333,30 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);margin:0;color:var(--
                 </thead>
                 <tbody>
                 <?php if (empty($list)): ?>
-                    <tr><td colspan="7" style="text-align:center;padding:40px;color:#9ca3af;">Belum ada penghuni aktif</td></tr>
+                    <tr><td colspan="8" style="text-align:center;padding:40px;color:#9ca3af;">Belum ada penghuni aktif</td></tr>
                 <?php else: foreach ($list as $r):
-                    $sudahGenerate = !empty($r['pay_id']);
-                    $status = $r['pay_status'] ?? null;
-                    $hargaTagihan = $r['pay_jumlah'] ?? $r['harga'];
+                    $sudahGenerate  = !empty($r['pay_id']);
+                    $punyaBooking   = !empty($r['booking_id']);
+                    $coverByPerp    = !empty($r['perp_id']); // Bulan ini dicakup Perpanjangan valid
+                    $status         = $r['pay_status'] ?? null;
+                    $hargaTagihan   = $r['pay_jumlah'] ?? $r['harga'];
                 ?>
-                <tr>
+                <tr <?= $coverByPerp ? 'style="background:#f0fdf4;"' : '' ?>>
                     <td>
                         <div style="font-weight:600;"><?= htmlspecialchars($r['nama']) ?></div>
                         <div style="font-size:11px;color:#9ca3af;"><?= htmlspecialchars($r['no_hp']??'-') ?></div>
                     </td>
-                    <td><span class="badge-room"><?= htmlspecialchars($r['no_kamar']??'-') ?></span></td>
+                    <td>
+                        <?php if ($punyaBooking): ?>
+                            <span class="badge-room"><?= htmlspecialchars($r['no_kamar']??'-') ?></span>
+                        <?php else: ?>
+                            <span class="bp bp-none" style="font-size:10px;">Belum Booking</span>
+                        <?php endif; ?>
+                    </td>
                     <td style="font-weight:700;">
-                        <?php if (!$sudahGenerate): ?>
+                        <?php if ($coverByPerp): ?>
+                            <span style="color:#6b7280;font-size:12px;">Rp <?= number_format($r['perp_jumlah'],0,',','.') ?></span>
+                        <?php elseif (!$sudahGenerate && $punyaBooking): ?>
                             <div class="d-flex align-items-center gap-1">
                                 <span style="font-size:12px; color:#9ca3af;">Rp</span>
                                 <input type="number" name="jumlah_custom" 
@@ -316,27 +365,37 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);margin:0;color:var(--
                                        value="<?= !empty($r['harga']) ? intval($r['harga']) : 1000000 ?>"
                                        placeholder="Nominal...">
                             </div>
-                        <?php else: ?>
+                        <?php elseif ($sudahGenerate): ?>
                             Rp <?= number_format($hargaTagihan,0,',','.') ?>
+                        <?php else: ?>
+                            <span style="color:#d1d5db;">—</span>
                         <?php endif; ?>
                     </td>
                     <td>
-                        <?php if (!$sudahGenerate): ?>
+                        <?php if ($coverByPerp): ?>
+                            <span style="font-weight:700;color:var(--g);font-size:12px;"><?= $r['perp_durasi'] ?> Bulan</span>
+                        <?php elseif (!$sudahGenerate && $punyaBooking): ?>
                             <input type="number" name="durasi_bulan" 
                                    form="form_gen_<?= $r['user_id'] ?>"
                                    class="input-nominal" style="width: 60px;" 
                                    value="1" min="1"
                                    placeholder="Bln">
-                        <?php else: ?>
+                        <?php elseif ($sudahGenerate): ?>
                             <?php if (isset($r['metode']) && strpos($r['metode'], 'Perpanjangan') !== false): ?>
                                 <span style="font-weight:700; color:var(--g);"><?= htmlspecialchars($r['pay_durasi'] ?? 1) ?> Bulan</span>
                             <?php else: ?>
                                 —
                             <?php endif; ?>
+                        <?php else: ?>
+                            —
                         <?php endif; ?>
                     </td>
                     <td>
-                        <?php if (!$sudahGenerate): ?>
+                        <?php if ($coverByPerp): ?>
+                            <span class="bp bp-lunas">✓ Lunas (Perpanjangan)</span>
+                        <?php elseif (!$punyaBooking): ?>
+                            <span class="bp bp-none">— Belum Ada Booking</span>
+                        <?php elseif (!$sudahGenerate): ?>
                             <span class="bp bp-none">— Belum Ada Tagihan</span>
                         <?php elseif ($status==='valid'): ?>
                             <span class="bp bp-lunas">✓ Lunas</span>
@@ -347,7 +406,11 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);margin:0;color:var(--
                         <?php endif; ?>
                     </td>
                     <td style="color:#9ca3af;font-size:12px;">
-                        <?= !empty($r['tanggal_bayar']) ? date('j M Y',strtotime($r['tanggal_bayar'])) : '—' ?>
+                        <?php if ($coverByPerp): ?>
+                            <?= date('j M Y', strtotime($r['perp_tgl'])) ?>
+                        <?php else: ?>
+                            <?= !empty($r['tanggal_bayar']) ? date('j M Y',strtotime($r['tanggal_bayar'])) : '—' ?>
+                        <?php endif; ?>
                     </td>
                     <td>
                         <?php if (!empty($r['bukti_bayar'])): ?>
@@ -360,7 +423,9 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);margin:0;color:var(--
                     </td>
                     <td>
                         <div class="d-flex gap-2 flex-wrap">
-                            <?php if (!$sudahGenerate): ?>
+                            <?php if ($coverByPerp): ?>
+                            <!-- Bulan ini dicakup Perpanjangan, tidak perlu buat tagihan baru -->
+                            <?php elseif (!$sudahGenerate && $punyaBooking): ?>
                             <form method="POST" action="proses_tagihan.php" id="form_gen_<?= $r['user_id'] ?>">
                                 <input type="hidden" name="bulan" value="<?= $bulan ?>">
                                 <input type="hidden" name="tahun" value="<?= $tahun ?>">
@@ -369,21 +434,21 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);margin:0;color:var(--
                                     <i data-lucide="plus" style="width:12px;height:12px;"></i>Buat Tagihan
                                 </button>
                             </form>
-                            <?php else: ?>
+                            <?php elseif ($sudahGenerate): ?>
                             <button class="btn-gen" disabled>
                                 <i data-lucide="check" style="width:12px;height:12px;"></i>Tertagih
                             </button>
                             <?php endif; ?>
 
                             <?php if ($sudahGenerate && $status === 'menunggu_verifikasi'): ?>
-                            <a href="../kelola_pembayaran/validasi_pembayaran.php?id=<?= $r['pay_id'] ?>&action=valid" class="btn-gen" style="background:#11a654; text-decoration:none;" onclick="return confirm('Validasi pembayaran ini?')">
+                            <a href="../kelola_pembayaran/validasi_pembayaran.php?id=<?= $r['pay_id'] ?>&action=valid" class="btn-gen" style="background:#11a654; text-decoration:none;" onclick="return confirm('Validasi dan setujui pembayaran ini?')">
                                 <i data-lucide="check-circle" style="width:12px;height:12px;"></i>Validasi
                             </a>
-                            <a href="../kelola_pembayaran/validasi_pembayaran.php?id=<?= $r['pay_id'] ?>&action=tidak_valid" class="btn-warn" style="color:#ef4444; border-color:#ef4444; text-decoration:none;" onclick="return confirm('Tolak pembayaran ini?')">
+                            <a href="../kelola_pembayaran/validasi_pembayaran.php?id=<?= $r['pay_id'] ?>&action=tidak_valid" class="btn-warn" style="color:#ef4444; border-color:#ef4444; text-decoration:none;" onclick="return confirm('Tolak bukti ini? Penghuni akan diminta upload ulang.')">
                                 <i data-lucide="x-circle" style="width:12px;height:12px;"></i>Tolak
                             </a>
                             <?php elseif ($sudahGenerate && $status !== 'valid'): ?>
-                            <button class="btn-warn" onclick="bukaPeringatan(<?= $r['booking_id'] ?>, '<?= htmlspecialchars(addslashes($r['nama'])) ?>', '<?= $nm[$bulan].' '.$tahun ?>', <?= $hargaTagihan ?>)">
+                            <button class="btn-warn" onclick="bukaPeringatan(<?= $r['booking_id'] ?>, '<?= htmlspecialchars(addslashes($r['nama'])) ?>', '<?= $nm[$bulan].' '.$tahun ?>', <?= $hargaTagihan ?>, <?= $r['user_id'] ?>)">
                                 <i data-lucide="bell" style="width:12px;height:12px;"></i>Ingatkan
                             </button>
                             <?php endif; ?>
@@ -428,9 +493,11 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);margin:0;color:var(--
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 let activeBookingId = null;
+let activeUserId = null;
 
-function bukaPeringatan(bookingId, nama, periode, harga) {
+function bukaPeringatan(bookingId, nama, periode, harga, userId) {
     activeBookingId = bookingId;
+    activeUserId    = userId || 0;
     document.getElementById('modalSub').textContent = 'Kepada: ' + nama;
     const rp = 'Rp ' + harga.toLocaleString('id-ID');
     document.getElementById('pesanPeringatan').value =
@@ -442,6 +509,7 @@ function bukaPeringatan(bookingId, nama, periode, harga) {
 function tutupModal() {
     document.getElementById('modalPeringatan').classList.remove('show');
     activeBookingId = null;
+    activeUserId    = null;
 }
 
 function kirimPeringatan() {
@@ -451,6 +519,7 @@ function kirimPeringatan() {
 
     const fd = new FormData();
     fd.append('booking_id', activeBookingId);
+    fd.append('user_id',    activeUserId);
     fd.append('pesan', pesan);
 
     fetch('kirim_peringatan.php', { method:'POST', body:fd })

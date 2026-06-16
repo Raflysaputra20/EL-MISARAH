@@ -35,7 +35,7 @@ if (!$p) {
     <title>Detail Penghuni - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/css/dashboard-responsive.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard-responsive.css?v=1.2">
     <style>
         body { font-family: 'Poppins', sans-serif; background-color: #f4f6f8; padding: 40px 20px; }
         .detail-container { max-width: 800px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }

@@ -10,7 +10,16 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "penghuni") {
 
 $userId   = $_SESSION["user_id"];
 $namaUser = $_SESSION["nama"] ?? "Penghuni";
+$userFoto = $_SESSION["foto"] ?? null;
 $success  = '';
+$error    = '';
+
+// Ambil foto terbaru dari DB
+try {
+    $stmtFoto = $conn->prepare("SELECT foto FROM users WHERE id = ?");
+    $stmtFoto->execute([$userId]);
+    $userFoto = $stmtFoto->fetchColumn() ?: null;
+} catch (Exception $e) {}
 
 // Buat tabel pengaturan jika belum ada
 try {
@@ -45,25 +54,55 @@ try {
 
 // Handle POST simpan pengaturan
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = [
-        'notif_email'       => isset($_POST['notif_email'])       ? 1 : 0,
-        'notif_tagihan'     => isset($_POST['notif_tagihan'])     ? 1 : 0,
-        'notif_pengumuman'  => isset($_POST['notif_pengumuman'])  ? 1 : 0,
-        'notif_pengaduan'   => isset($_POST['notif_pengaduan'])   ? 1 : 0,
-        'privasi_profil'    => isset($_POST['privasi_profil'])    ? 1 : 0,
-        'sesi_aktif_notif'  => isset($_POST['sesi_aktif_notif'])  ? 1 : 0,
-    ];
-    try {
-        $upd = $conn->prepare("
-            UPDATE pengaturan_penghuni
-            SET notif_email=?, notif_tagihan=?, notif_pengumuman=?, notif_pengaduan=?, privasi_profil=?, sesi_aktif_notif=?
-            WHERE user_id=?
-        ");
-        $upd->execute(array_merge(array_values($data), [$userId]));
-        $setting  = array_merge($setting, $data);
-        $success  = 'Pengaturan berhasil disimpan!';
-    } catch (Exception $e) {
-        $success = '';
+    $action = $_POST['form_action'] ?? 'settings';
+
+    if ($action === 'change_password') {
+        $oldPw  = $_POST['old_password'] ?? '';
+        $newPw  = $_POST['new_password'] ?? '';
+        $confPw = $_POST['confirm_password'] ?? '';
+        if (!$oldPw || !$newPw || !$confPw) {
+            $error = 'Semua field password wajib diisi.';
+        } elseif (strlen($newPw) < 8) {
+            $error = 'Password baru minimal 8 karakter.';
+        } elseif ($newPw !== $confPw) {
+            $error = 'Konfirmasi password tidak cocok.';
+        } else {
+            try {
+                $stmtPw = $conn->prepare("SELECT password FROM users WHERE id = ?");
+                $stmtPw->execute([$userId]);
+                $hash = $stmtPw->fetchColumn();
+                if (!password_verify($oldPw, $hash)) {
+                    $error = 'Password lama salah.';
+                } else {
+                    $newHash = password_hash($newPw, PASSWORD_DEFAULT);
+                    $conn->prepare("UPDATE users SET password = ? WHERE id = ?")->execute([$newHash, $userId]);
+                    $success = 'Password berhasil diubah!';
+                }
+            } catch (Exception $e) {
+                $error = 'Gagal mengubah password.';
+            }
+        }
+    } else {
+        $data = [
+            'notif_email'       => isset($_POST['notif_email'])       ? 1 : 0,
+            'notif_tagihan'     => isset($_POST['notif_tagihan'])     ? 1 : 0,
+            'notif_pengumuman'  => isset($_POST['notif_pengumuman'])  ? 1 : 0,
+            'notif_pengaduan'   => isset($_POST['notif_pengaduan'])   ? 1 : 0,
+            'privasi_profil'    => isset($_POST['privasi_profil'])    ? 1 : 0,
+            'sesi_aktif_notif'  => isset($_POST['sesi_aktif_notif'])  ? 1 : 0,
+        ];
+        try {
+            $upd = $conn->prepare("
+                UPDATE pengaturan_penghuni
+                SET notif_email=?, notif_tagihan=?, notif_pengumuman=?, notif_pengaduan=?, privasi_profil=?, sesi_aktif_notif=?
+                WHERE user_id=?
+            ");
+            $upd->execute(array_merge(array_values($data), [$userId]));
+            $setting  = array_merge($setting, $data);
+            $success  = 'Pengaturan berhasil disimpan!';
+        } catch (Exception $e) {
+            $error = 'Gagal menyimpan pengaturan.';
+        }
     }
 }
 
@@ -81,32 +120,36 @@ $sesiInfo = [
     <meta name="description" content="Kelola pengaturan akun dan notifikasi Kost Elmi Sarah.">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/dashboard-responsive.css">
+    <link rel="stylesheet" href="../assets/css/dashboard-responsive.css?v=1.2">
     <style>
         :root { --green:#11a654; --green-light:#e8f7f0; --bg:#f4f6f8; --dark:#1f2937; --gray:#6b7280; --border:#e5e7eb; }
         * { box-sizing:border-box; }
         body { font-family:'Poppins',sans-serif; background:var(--bg); margin:0; overflow-x:hidden; color:var(--dark); }
 
-        /* SIDEBAR */
-        .sidebar { width:230px; height:100vh; background:var(--green); position:fixed; top:0; left:0; display:flex; flex-direction:column; z-index:1000; border-top-right-radius:15px; border-bottom-right-radius:15px; box-shadow:4px 0 10px rgba(0,0,0,.06); }
-        .sidebar-header { padding:24px 20px; font-size:21px; font-weight:700; color:white; }
+        /* SIDEBAR — inherits from dashboard-responsive.css?v=1.2 */
+        .sidebar { width:240px; height:100vh; background:var(--green); position:fixed; top:0; left:0; display:flex; flex-direction:column; z-index:1000; }
         .sidebar-menu { list-style:none; padding:0; margin:0; flex-grow:1; }
-        .sidebar-item { padding-left:14px; margin-bottom:4px; }
-        .sidebar-link { display:flex; align-items:center; padding:10px 18px; color:rgba(255,255,255,.85); text-decoration:none; font-size:13px; font-weight:500; border-top-left-radius:25px; border-bottom-left-radius:25px; transition:all .2s; gap:12px; }
-        .sidebar-link:hover { color:white; background:rgba(255,255,255,.12); }
-        .sidebar-link.active { background:var(--bg); color:var(--green); font-weight:600; }
-        .sidebar-icon { width:17px; height:17px; flex-shrink:0; }
-        .sidebar-footer { padding:18px 14px; margin-bottom:14px; }
-        .btn-keluar { display:inline-flex; align-items:center; gap:8px; background:white; color:var(--dark); text-decoration:none; padding:8px 18px; border-radius:25px; font-weight:600; font-size:13px; }
+        .sidebar-icon { width:18px; height:18px; flex-shrink:0; }
 
         /* MAIN */
-        .main { margin-left:230px; min-height:100vh; display:flex; flex-direction:column; }
+        .main { margin-left:240px; min-height:100vh; display:flex; flex-direction:column; }
+
+        /* Password field */
+        .pw-field { width:100%; border:1.5px solid var(--border); border-radius:10px; padding:10px 14px; font-size:13px; font-family:'Poppins',sans-serif; outline:none; transition:border-color .2s; background:#fff; }
+        .pw-field:focus { border-color:var(--green); }
+        .pw-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; padding:16px 22px; }
+        @media(max-width:768px) { .pw-grid { grid-template-columns:1fr; } }
+        .pw-label { font-size:12px; font-weight:600; color:var(--dark); margin-bottom:6px; display:block; }
+        .btn-pw { background:var(--green); color:white; border:none; border-radius:10px; padding:9px 22px; font-family:'Poppins',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:6px; }
+        .btn-pw:hover { background:#0d8e47; }
         .topbar { height:68px; background:white; display:flex; align-items:center; justify-content:space-between; padding:0 28px; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; }
         .topbar-title { font-size:19px; font-weight:600; margin:0; }
-        .topbar-right { display:flex; align-items:center; gap:18px; }
-        .notif-btn { background:none; border:none; color:var(--dark); cursor:pointer; padding:0; }
+        .topbar-right { display:flex; align-items:center; gap:16px; }
+        .notif-btn, .notification-btn { background:none; border:none; outline:none; color:var(--dark); cursor:pointer; padding:6px; border-radius:8px; display:flex; align-items:center; justify-content:center; transition:background .15s; }
+        .notif-btn:hover, .notification-btn:hover { background:rgba(0,0,0,.06); }
         .user-profile { display:flex; align-items:center; gap:10px; }
-        .avatar { width:36px; height:36px; background:#d1d5db; border-radius:50%; }
+        .avatar { width:38px; height:38px; background:#d1d5db; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:14px; overflow:hidden; }
+        .user-info { display:flex; flex-direction:column; }
         .user-name { font-weight:600; font-size:13px; line-height:1.2; }
         .user-role { font-size:11px; color:#9ca3af; }
         .content { padding:24px 28px; flex-grow:1; }
@@ -190,15 +233,16 @@ $sesiInfo = [
     <div class="sidebar-brand">
         <span class="sidebar-brand-name">Elmi Sarah</span>
     </div>
-    <ul class="sidebar-menu">
-        <li class="sidebar-item"><a href="dashboard.php" class="sidebar-link"><i data-lucide="layout-dashboard" class="sidebar-icon"></i> Dashboard</a></li>
-        <li class="sidebar-item"><a href="pembayaran.php" class="sidebar-link"><i data-lucide="credit-card" class="sidebar-icon"></i> Pembayaran</a></li>
-        <li class="sidebar-item"><a href="riwayat_pengaduan.php" class="sidebar-link"><i data-lucide="wrench" class="sidebar-icon"></i> Pengaduan Kost</a></li>
-        <li class="sidebar-item"><a href="pengumuman.php" class="sidebar-link"><i data-lucide="megaphone" class="sidebar-icon"></i> Pengumuman</a></li>
-        <li class="sidebar-item"><a href="riwayat_sewa.php" class="sidebar-link"><i data-lucide="history" class="sidebar-icon"></i> Riwayat Sewa</a></li>
-        <li class="sidebar-item"><a href="informasi_kost.php" class="sidebar-link"><i data-lucide="info" class="sidebar-icon"></i> Informasi Kost</a></li>
-        <li class="sidebar-item"><a href="ulasan.php" class="sidebar-link"><i data-lucide="star" class="sidebar-icon"></i> Ulasan</a></li>
-        <li class="sidebar-item"><a href="profil.php" class="sidebar-link"><i data-lucide="user" class="sidebar-icon"></i> Profil Saya</a></li>
+        <ul class="sidebar-menu">
+        <li class="sidebar-item"><a href="dashboard.php" class="sidebar-link "><i data-lucide="layout-dashboard" class="sidebar-icon"></i> Dashboard</a></li>
+        <li class="sidebar-item"><a href="notifikasi.php" class="sidebar-link "><i data-lucide="bell" class="sidebar-icon"></i> Notifikasi</a></li>
+        <li class="sidebar-item"><a href="pembayaran.php" class="sidebar-link "><i data-lucide="credit-card" class="sidebar-icon"></i> Pembayaran</a></li>
+        <li class="sidebar-item"><a href="riwayat_pengaduan.php" class="sidebar-link "><i data-lucide="wrench" class="sidebar-icon"></i> Pengaduan Kost</a></li>
+        <li class="sidebar-item"><a href="pengumuman.php" class="sidebar-link "><i data-lucide="megaphone" class="sidebar-icon"></i> Pengumuman</a></li>
+        <li class="sidebar-item"><a href="riwayat_sewa.php" class="sidebar-link "><i data-lucide="history" class="sidebar-icon"></i> Riwayat Sewa</a></li>
+        <li class="sidebar-item"><a href="informasi_kost.php" class="sidebar-link "><i data-lucide="info" class="sidebar-icon"></i> Informasi Kost</a></li>
+        <li class="sidebar-item"><a href="ulasan.php" class="sidebar-link "><i data-lucide="star" class="sidebar-icon"></i> Ulasan</a></li>
+        <li class="sidebar-item"><a href="profil.php" class="sidebar-link "><i data-lucide="user" class="sidebar-icon"></i> Profil Saya</a></li>
         <li class="sidebar-item"><a href="pengaturan.php" class="sidebar-link active"><i data-lucide="settings" class="sidebar-icon"></i> Pengaturan</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -209,24 +253,60 @@ $sesiInfo = [
 <!-- MAIN -->
 <div class="main">
     <header class="topbar">
-        <div style="display:flex;align-items:center;gap:12px;">
-            <button class="btn-toggle-sidebar" onclick="openMobileSidebar()"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <button class="btn-toggle-sidebar" onclick="openMobileSidebar()"><i data-lucide="menu" style="width:24px; height:24px;"></i></button>
             <h2 class="topbar-title">Pengaturan</h2>
         </div>
         <div class="topbar-right">
-            <button class="notif-btn"><i data-lucide="bell" style="width:20px;height:20px;"></i></button>
-            <div class="user-profile">
-                <div class="avatar"></div>
-                <div class="topbar-user-info">
-                    <div class="user-name"><?= htmlspecialchars($namaUser) ?></div>
-                    <div class="user-role">Penghuni</div>
+            <div id="notifWrapper" style="position:relative;display:inline-block;">
+                    <button id="notifBell" class="notification-btn" onclick="toggleNotif(event)" aria-label="Notifikasi" style="position:relative;">
+                        <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+                        <span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;min-width:17px;height:17px;border-radius:999px;align-items:center;justify-content:center;padding:0 3px;line-height:17px;text-align:center;">0</span>
+                    </button>
+                    <!-- DROPDOWN NOTIFIKASI -->
+                    <div id="notifDropdown" style="display:none;position:absolute;right:0;top:52px;width:330px;background:#fff;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,0.14);z-index:9999;overflow:hidden;">
+                        <div style="padding:14px 18px 10px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between;">
+                            <span style="font-weight:700;font-size:14px;color:#111;">🔔 Notifikasi</span>
+                            <span id="notifCount" style="font-size:11px;color:#888;">Memuat...</span>
+                        </div>
+                        <div id="notifList" style="max-height:300px;overflow-y:auto;">
+                            <div style="padding:20px;text-align:center;color:#aaa;font-size:13px;">Memuat notifikasi...</div>
+                        </div>
+                    </div>
                 </div>
+            <div class="user-profile">
+                <a href="profil.php" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:12px;">
+                    <div class="avatar">
+                        <?php if (isset($userFoto) && $userFoto): ?>
+                            <img src="../uploads/profil/<?= htmlspecialchars(basename($userFoto)) ?>" alt="Profil">
+                        <?php elseif (isset($foto) && $foto): ?>
+                            <img src="../uploads/profil/<?= htmlspecialchars(basename($foto)) ?>" alt="Profil">
+                        <?php else: ?>
+                            <?= strtoupper(substr($namaUser ?? 'P', 0, 1)) ?>
+                        <?php endif; ?>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name"><?= htmlspecialchars($namaUser) ?></span>
+                        <span class="user-role">Penghuni Kos</span>
+                    </div>
+                </a>
             </div>
         </div>
     </header>
 
     <main class="content">
+        <?php if ($success): ?>
+        <div style="background:#e8f7f0;color:#11a654;padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:18px;display:flex;align-items:center;gap:8px;">
+            <i data-lucide="check-circle" style="width:16px;height:16px;flex-shrink:0;"></i> <?= htmlspecialchars($success) ?>
+        </div>
+        <?php endif; ?>
+        <?php if ($error): ?>
+        <div style="background:#fee2e2;color:#ef4444;padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:18px;display:flex;align-items:center;gap:8px;">
+            <i data-lucide="alert-circle" style="width:16px;height:16px;flex-shrink:0;"></i> <?= htmlspecialchars($error) ?>
+        </div>
+        <?php endif; ?>
         <form method="POST" id="settingForm">
+        <input type="hidden" name="form_action" value="settings">
         <div class="setting-grid">
 
             <!-- 1. NOTIFIKASI -->
@@ -307,6 +387,38 @@ $sesiInfo = [
                         <input type="checkbox" name="privasi_profil" id="privasi_profil" <?= $setting['privasi_profil'] ? 'checked' : '' ?>>
                         <span class="toggle-slider"></span>
                     </label>
+                </div>
+            </div>
+
+            <!-- 2b. UBAH PASSWORD -->
+            <div class="setting-card">
+                <div class="setting-card-header">
+                    <div class="setting-card-icon" style="background:#fef3c7;">
+                        <i data-lucide="key-round" style="width:18px;height:18px;color:#d97706;"></i>
+                    </div>
+                    <div>
+                        <div class="setting-card-title">Ubah Password</div>
+                        <div class="setting-card-desc">Ganti kata sandi akun kamu</div>
+                    </div>
+                </div>
+                <div class="pw-grid">
+                    <div>
+                        <label class="pw-label">Password Lama</label>
+                        <input type="password" name="old_password" form="pwForm" class="pw-field" placeholder="••••••••" required>
+                    </div>
+                    <div>
+                        <label class="pw-label">Password Baru</label>
+                        <input type="password" name="new_password" form="pwForm" class="pw-field" placeholder="Min. 8 karakter" required minlength="8">
+                    </div>
+                    <div>
+                        <label class="pw-label">Konfirmasi</label>
+                        <input type="password" name="confirm_password" form="pwForm" class="pw-field" placeholder="Ulangi password" required>
+                    </div>
+                </div>
+                <div style="padding:0 22px 18px;">
+                    <button type="submit" form="pwForm" class="btn-pw">
+                        <i data-lucide="lock" style="width:14px;height:14px;"></i> Ubah Password
+                    </button>
                 </div>
             </div>
 
@@ -412,14 +524,7 @@ $sesiInfo = [
         <!-- SAVE BAR -->
         <div class="save-bar">
             <div>
-                <?php if ($success): ?>
-                <div class="alert-success-inline">
-                    <i data-lucide="check-circle" style="width:16px;height:16px;"></i>
-                    <?= htmlspecialchars($success) ?>
-                </div>
-                <?php else: ?>
-                <span style="font-size:12.5px;color:var(--gray);">Perubahan belum disimpan</span>
-                <?php endif; ?>
+                <span id="saveStatus" style="font-size:12.5px;color:var(--gray);">Perubahan belum disimpan</span>
             </div>
             <button type="submit" class="btn-save">
                 <i data-lucide="save" style="width:15px;height:15px;"></i>
@@ -431,18 +536,41 @@ $sesiInfo = [
     </main>
 </div>
 
+<!-- Separate form for changing password -->
+<form id="pwForm" method="POST" style="display:none;">
+    <input type="hidden" name="form_action" value="change_password">
+</form>
+
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="../assets/js/sidebar-toggle.js"></script>
 <script>lucide.createIcons();</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // Tandai perubahan belum disimpan
-    const saveBar = document.querySelector('.save-bar span');
+    const saveStatus = document.getElementById('saveStatus');
     document.querySelectorAll('.toggle-switch input').forEach(toggle => {
         toggle.addEventListener('change', () => {
-            if (saveBar) saveBar.textContent = '● Perubahan belum disimpan';
+            if (saveStatus) {
+                saveStatus.textContent = '● Ada perubahan belum disimpan';
+                saveStatus.style.color = '#f59e0b';
+                saveStatus.style.fontWeight = '600';
+            }
         });
     });
+
+    // Password confirm validation
+    const pwForm = document.getElementById('pwForm');
+    if (pwForm) {
+        pwForm.addEventListener('submit', function(e) {
+            const np = document.querySelector('[name=new_password]').value;
+            const cp = document.querySelector('[name=confirm_password]').value;
+            if (np !== cp) {
+                e.preventDefault();
+                alert('Konfirmasi password tidak cocok!');
+            }
+        });
+    }
 </script>
+<script src="../assets/js/notifikasi.js"></script>
 </body>
 </html>

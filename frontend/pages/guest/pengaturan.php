@@ -41,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $updateStmt = $conn->prepare("UPDATE users SET nama = ?, no_hp = ?, foto = ? WHERE id = ?");
         if ($updateStmt->execute([$nama, $no_hp, $fotoProfil, $userId])) {
             $_SESSION['nama'] = $nama;
+            $_SESSION['foto'] = $fotoProfil;
             $message = "Profil berhasil diperbarui!";
             $messageType = "success";
             

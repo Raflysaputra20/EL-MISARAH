@@ -42,9 +42,19 @@ $totalNonaktif = $totalUser - $totalAktif;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola User - Admin Kost Elmi Sarah</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/css/dashboard-responsive.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard-responsive.css?v=1.2">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* Topbar layout */
+        .topbar-right { display: flex; align-items: center; gap: 16px; }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-info { display: flex; flex-direction: column; }
+        .avatar { width: 38px; height: 38px; background: #d1d5db; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; overflow: hidden; }
+        .user-name { font-weight: 600; font-size: 13.5px; line-height: 1.2; }
+        .user-role { font-size: 11px; color: #9ca3af; font-weight: 500; }
+        .notification-btn { background: none; border: none; outline: none; cursor: pointer; padding: 6px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #1f2937; transition: background 0.15s; }
+        .notification-btn:hover { background: rgba(0,0,0,0.06); }
+
         :root { --admin-green: #11a654; --admin-bg: #f4f6f8; --admin-text-dark: #1f2937; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--admin-bg); margin: 0; color: var(--admin-text-dark); overflow-x: hidden; }
         .admin-sidebar {
@@ -135,12 +145,19 @@ $totalNonaktif = $totalUser - $totalAktif;
             <button class="btn-toggle-sidebar" onclick="openMobileSidebar()"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
             <h2 style="font-size: 20px; font-weight: 800; margin: 0;">Manajemen Akun User</h2>
         </div>
-        <div style="display:flex; align-items:center; gap:12px;">
-            <div style="text-align:right;">
-                <div style="font-size:13.5px; font-weight:700;"><?= htmlspecialchars($_SESSION['nama'] ?? 'Admin') ?></div>
-                <div style="font-size:11px; color:#64748b; font-weight:500;">Administrator</div>
+        <div class="topbar-right">
+            <button class="notification-btn">
+                <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+            </button>
+            <div class="user-profile">
+                <div class="avatar">
+                    <?= strtoupper(substr($_SESSION['nama'] ?? 'A', 0, 1)) ?>
+                </div>
+                <div class="user-info">
+                    <span class="user-name"><?= htmlspecialchars($_SESSION['nama'] ?? 'Admin') ?></span>
+                    <span class="user-role">Administrator</span>
+                </div>
             </div>
-            <div style="width:38px; height:38px; border-radius:50%; background:#d1d5db; display:flex; align-items:center; justify-content:center; font-weight:800; color:white;">A</div>
         </div>
     </header>
 

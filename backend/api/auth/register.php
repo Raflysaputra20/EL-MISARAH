@@ -23,6 +23,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $message = "Semua field wajib diisi";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $message = "Format email tidak valid";
+    } elseif (strlen($password) < 8) {
+        $message = "Kata sandi minimal harus 8 karakter";
+    } elseif (!preg_match('/[A-Z]/', $password) || !preg_match('/[a-z]/', $password) || !preg_match('/[0-9]/', $password) || !preg_match('/[^A-Za-z0-9]/', $password)) {
+        $message = "Kata sandi harus mengandung kombinasi huruf besar, huruf kecil, angka, dan simbol";
     } elseif ($password !== $confirm_password) {
         $message = "Konfirmasi password tidak sesuai";
     } elseif (!isset($_POST["terms"])) {
@@ -354,7 +358,50 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             .visual-caption {
                 font-size: 22px;
-            }
+
+        /* Terms Modal Overlay Styles */
+        .login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+        .login-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .login-modal {
+            position: relative;
+            background: #fff;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+            width: min(600px, 100%);
+            animation: modalFadeIn 0.3s ease forwards;
+        }
+        @keyframes modalFadeIn {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .login-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.2s;
+        }
+        .login-close:hover {
+            color: #333;
         }
     </style>
 </head>
@@ -399,13 +446,33 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <input class="form-control full" type="email" name="email" placeholder="Email" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>">
                     <input class="form-control full" type="text" name="no_hp" placeholder="No Hp" value="<?php echo htmlspecialchars($_POST['no_hp'] ?? ''); ?>">
 
-                    <input class="form-control" type="password" name="password" placeholder="Password">
+                    <input class="form-control" type="password" name="password" id="regPasswordStandalone" placeholder="Password">
                     <input class="form-control" type="password" name="confirm_password" placeholder="Konfirmasi Password">
+                    <div class="pw-checker-container" style="grid-column: span 2; margin-top: -10px; background: rgba(0,0,0,0.02); padding: 8px 12px; border-radius: 8px; border: 1px solid #D9D9D9; text-align: left;">
+                        <div style="font-size: 12px; font-weight: 600; color: #000; margin-bottom: 6px;">Kriteria Kata Sandi:</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px;">
+                            <div class="pw-rule-sa" id="rule-sa-length" style="font-size: 11px; color: #525252; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                                <span class="rule-icon" style="display: inline-block; width: 14px; text-align: center; font-weight: bold;">○</span> Min. 8 karakter
+                            </div>
+                            <div class="pw-rule-sa" id="rule-sa-upper" style="font-size: 11px; color: #525252; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                                <span class="rule-icon" style="display: inline-block; width: 14px; text-align: center; font-weight: bold;">○</span> Huruf besar (A-Z)
+                            </div>
+                            <div class="pw-rule-sa" id="rule-sa-lower" style="font-size: 11px; color: #525252; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                                <span class="rule-icon" style="display: inline-block; width: 14px; text-align: center; font-weight: bold;">○</span> Huruf kecil (a-z)
+                            </div>
+                            <div class="pw-rule-sa" id="rule-sa-number" style="font-size: 11px; color: #525252; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                                <span class="rule-icon" style="display: inline-block; width: 14px; text-align: center; font-weight: bold;">○</span> Angka (0-9)
+                            </div>
+                            <div class="pw-rule-sa" id="rule-sa-symbol" style="font-size: 11px; color: #525252; display: flex; align-items: center; gap: 6px; transition: all 0.2s; grid-column: span 2;">
+                                <span class="rule-icon" style="display: inline-block; width: 14px; text-align: center; font-weight: bold;">○</span> Simbol (!@#$%^&*)
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <label class="terms">
                     <input type="checkbox" name="terms" checked>
-                    <span>Saya setuju dengan <a href="#">Syarat & Ketentuan</a></span>
+                    <span>Saya setuju dengan <a href="#" onclick="openTermsModal(event)">Syarat & Ketentuan</a></span>
                 </label>
 
                 <button type="submit" class="submit-btn">Daftar Sekarang</button>
@@ -421,6 +488,81 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     Google
                 </a>
             </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Terms Modal Functions
+function openTermsModal(e) {
+    if (e) e.preventDefault();
+    document.getElementById('termsOverlay').classList.add('active');
+}
+function closeTermsModal() {
+    document.getElementById('termsOverlay').classList.remove('active');
+}
+
+// Dynamic Password Checker (Standalone)
+function initPasswordChecker() {
+    const passwordInput = document.getElementById('regPasswordStandalone');
+    if (passwordInput) {
+        passwordInput.addEventListener('input', function() {
+            const val = this.value;
+            
+            // Check length
+            updateRuleState('rule-sa-length', val.length >= 8);
+            
+            // Check uppercase
+            updateRuleState('rule-sa-upper', /[A-Z]/.test(val));
+            
+            // Check lowercase
+            updateRuleState('rule-sa-lower', /[a-z]/.test(val));
+            
+            // Check number
+            updateRuleState('rule-sa-number', /[0-9]/.test(val));
+            
+            // Check symbol
+            updateRuleState('rule-sa-symbol', /[^A-Za-z0-9]/.test(val));
+        });
+    }
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPasswordChecker);
+} else {
+    initPasswordChecker();
+}
+
+function updateRuleState(ruleId, isMet) {
+    const el = document.getElementById(ruleId);
+    if (!el) return;
+    const icon = el.querySelector('.rule-icon');
+    if (isMet) {
+        el.style.color = '#198754';
+        el.style.fontWeight = '600';
+        icon.textContent = '✔';
+        icon.style.color = '#198754';
+    } else {
+        el.style.color = '#525252';
+        el.style.fontWeight = 'normal';
+        icon.textContent = '○';
+        icon.style.color = '#525252';
+    }
+}
+</script>
+
+<div class="login-overlay" id="termsOverlay" onclick="if(event.target===this) closeTermsModal()">
+    <div class="login-modal" style="max-width: 600px; background: #fff; border-radius: 16px; padding: 0; overflow: hidden; font-family: 'Poppins', sans-serif;">
+        <button class="login-close" onclick="closeTermsModal()">&times;</button>
+        <div style="padding: 30px;">
+            <h2 style="font-weight: 800; font-size: 24px; margin-top: 0; margin-bottom: 20px; color: #000;">Syarat & Ketentuan</h2>
+            <div style="font-size: 13.5px; line-height: 1.6; color: #333; max-height: 350px; overflow-y: auto; padding-right: 10px; margin-bottom: 24px; text-align: left;">
+                <p style="margin-top: 0;"><strong>1. Ketentuan Umum</strong><br>Dengan mendaftar dan menggunakan layanan Kost Elmi Sarah, Anda menyetujui seluruh aturan dan ketentuan yang berlaku di lingkungan kost.</p>
+                <p><strong>2. Pembayaran & Booking</strong><br>Booking kamar hanya dianggap sah setelah Anda membayar uang muka (DP) sesuai nominal yang ditentukan dan diverifikasi oleh Admin. Pembayaran bulanan jatuh tempo setiap bulan sesuai tanggal mulai sewa.</p>
+                <p><strong>3. Tata Tertib Kost</strong><br>Setiap penghuni wajib menjaga ketertiban, keamanan, kebersihan, serta mematuhi aturan jam malam dan larangan membawa tamu menginap tanpa izin pengelola.</p>
+                <p><strong>4. Penggunaan Fasilitas</strong><br>Fasilitas kamar dan area bersama harus dirawat dengan baik. Kerusakan akibat kelalaian penghuni akan dikenakan biaya perbaikan.</p>
+                <p style="margin-bottom: 0;"><strong>5. Pembatalan Booking</strong><br>Pembatalan sepihak setelah pembayaran DP dapat mengakibatkan hangusnya uang muka sesuai dengan kebijakan pengelola.</p>
+            </div>
+            <button onclick="closeTermsModal()" class="submit-btn" style="background: #2C3E50; width: 100%; height: 46px; border: none; border-radius: 8px; color: #fff; font-size: 14.5px; font-weight: 600; cursor: pointer;">Saya Mengerti</button>
         </div>
     </div>
 </div>

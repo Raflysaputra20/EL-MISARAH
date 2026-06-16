@@ -16,12 +16,22 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
     exit;
 }
 
+if (!isset($_SESSION['captcha_num1']) || !isset($_SESSION['captcha_num2'])) {
+    $_SESSION['captcha_num1'] = rand(1, 10);
+    $_SESSION['captcha_num2'] = rand(1, 10);
+}
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = trim($_POST["email"] ?? "");
     $password = trim($_POST["password"] ?? "");
+    $captcha = intval($_POST["captcha"] ?? 0);
+
+    $expected = intval($_SESSION['captcha_num1'] ?? 0) + intval($_SESSION['captcha_num2'] ?? 0);
 
     if ($email === "" || $password === "") {
         $message = "Email/No Hp dan kata sandi wajib diisi";
+    } elseif ($captcha !== $expected) {
+        $message = "Jawaban CAPTCHA salah";
     } else {
         $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? OR no_hp = ? LIMIT 1");
         $stmt->execute([$email, $email]);
@@ -41,6 +51,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION["email"] = $user["email"];
             $_SESSION["role"] = $user["role"];
 
+            // Clear captcha on success
+            unset($_SESSION['captcha_num1']);
+            unset($_SESSION['captcha_num2']);
+
             if (isset($_POST['is_ajax'])) {
                 $redirect_url = ($user["role"] === "admin") ? "index.php?page=admin-dashboard" : "index.php";
                 echo json_encode(["status" => "success", "redirect" => $redirect_url]);
@@ -56,8 +70,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
     
+    // Regenerate CAPTCHA on failure
+    $_SESSION['captcha_num1'] = rand(1, 10);
+    $_SESSION['captcha_num2'] = rand(1, 10);
+    
     if (isset($_POST['is_ajax'])) {
-        echo json_encode(["status" => "error", "message" => $message]);
+        echo json_encode([
+            "status" => "error", 
+            "message" => $message,
+            "captcha_num1" => $_SESSION['captcha_num1'],
+            "captcha_num2" => $_SESSION['captcha_num2']
+        ]);
         exit;
     }
 }
@@ -408,6 +431,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     >
                 </div>
 
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px;">
+                        <label id="captcha-question-page" style="margin-bottom: 0;">Berapa hasil dari <?php echo $_SESSION['captcha_num1']; ?> + <?php echo $_SESSION['captcha_num2']; ?>?</label>
+                        <button type="button" onclick="refreshCaptchaPage()" style="background: none; border: none; color: #2C3E50; cursor: pointer; padding: 0; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; font-family: 'Poppins', sans-serif;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw" style="vertical-align: middle;"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg> Ubah Soal
+                        </button>
+                    </div>
+                    <input
+                        class="form-control"
+                        type="number"
+                        name="captcha"
+                        id="loginCaptchaPage"
+                        placeholder="Masukkan jawaban angka"
+                        required
+                    >
+                </div>
+
                 <div class="login-options">
                     <label class="remember">
                         <input type="checkbox" name="remember" checked>
@@ -449,6 +489,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </div>
     </div>
 </div>
+
+<script>
+async function refreshCaptchaPage() {
+    try {
+        const response = await fetch('refresh_captcha.php');
+        const data = await response.json();
+        if (data.status === 'success') {
+            document.getElementById('captcha-question-page').textContent = `Berapa hasil dari ${data.captcha_num1} + ${data.captcha_num2}?`;
+            const inputEl = document.getElementById('loginCaptchaPage');
+            if (inputEl) inputEl.value = '';
+        }
+    } catch (e) {
+        console.error("Gagal memuat CAPTCHA baru", e);
+    }
+}
+</script>
 
 </body>
 </html>

@@ -27,8 +27,12 @@ $statusClass = ['baru'=>'badge-baru','diproses'=>'badge-proses','selesai'=>'badg
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Riwayat Pengaduan - Kost Elmi Sarah</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/dashboard-responsive.css">
+<link rel="stylesheet" href="../assets/css/dashboard-responsive.css?v=1.2">
 <style>
+        /* Notification bell reset */
+        .notification-btn, .notif-btn { background:none !important; border:none !important; outline:none !important; box-shadow:none !important; cursor:pointer; padding:6px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#1f2937; transition:background .15s; }
+        .notification-btn:hover, .notif-btn:hover { background:rgba(0,0,0,0.06) !important; }
+
 :root{--g:#11a654;--gl:#e8f7f0;--bg:#f4f6f8;--dk:#1f2937;--gr:#6b7280;--bd:#e5e7eb}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dk);overflow-x:hidden}
@@ -107,16 +111,17 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dk);overf
     <div class="sidebar-brand">
         <span class="sidebar-brand-name">Elmi Sarah</span>
     </div>
-    <ul class="sidebar-menu">
-        <li class="sidebar-item"><a href="dashboard.php" class="sidebar-link"><i data-lucide="layout-dashboard" class="sidebar-icon"></i> Dashboard</a></li>
-        <li class="sidebar-item"><a href="pembayaran.php" class="sidebar-link"><i data-lucide="credit-card" class="sidebar-icon"></i> Pembayaran</a></li>
+        <ul class="sidebar-menu">
+        <li class="sidebar-item"><a href="dashboard.php" class="sidebar-link "><i data-lucide="layout-dashboard" class="sidebar-icon"></i> Dashboard</a></li>
+        <li class="sidebar-item"><a href="notifikasi.php" class="sidebar-link "><i data-lucide="bell" class="sidebar-icon"></i> Notifikasi</a></li>
+        <li class="sidebar-item"><a href="pembayaran.php" class="sidebar-link "><i data-lucide="credit-card" class="sidebar-icon"></i> Pembayaran</a></li>
         <li class="sidebar-item"><a href="riwayat_pengaduan.php" class="sidebar-link active"><i data-lucide="wrench" class="sidebar-icon"></i> Pengaduan Kost</a></li>
-        <li class="sidebar-item"><a href="pengumuman.php" class="sidebar-link"><i data-lucide="megaphone" class="sidebar-icon"></i> Pengumuman</a></li>
-        <li class="sidebar-item"><a href="riwayat_sewa.php" class="sidebar-link"><i data-lucide="history" class="sidebar-icon"></i> Riwayat Sewa</a></li>
-        <li class="sidebar-item"><a href="informasi_kost.php" class="sidebar-link"><i data-lucide="info" class="sidebar-icon"></i> Informasi Kost</a></li>
-        <li class="sidebar-item"><a href="ulasan.php" class="sidebar-link"><i data-lucide="star" class="sidebar-icon"></i> Ulasan</a></li>
-        <li class="sidebar-item"><a href="profil.php" class="sidebar-link"><i data-lucide="user" class="sidebar-icon"></i> Profil Saya</a></li>
-        <li class="sidebar-item"><a href="pengaturan.php" class="sidebar-link"><i data-lucide="settings" class="sidebar-icon"></i> Pengaturan</a></li>
+        <li class="sidebar-item"><a href="pengumuman.php" class="sidebar-link "><i data-lucide="megaphone" class="sidebar-icon"></i> Pengumuman</a></li>
+        <li class="sidebar-item"><a href="riwayat_sewa.php" class="sidebar-link "><i data-lucide="history" class="sidebar-icon"></i> Riwayat Sewa</a></li>
+        <li class="sidebar-item"><a href="informasi_kost.php" class="sidebar-link "><i data-lucide="info" class="sidebar-icon"></i> Informasi Kost</a></li>
+        <li class="sidebar-item"><a href="ulasan.php" class="sidebar-link "><i data-lucide="star" class="sidebar-icon"></i> Ulasan</a></li>
+        <li class="sidebar-item"><a href="profil.php" class="sidebar-link "><i data-lucide="user" class="sidebar-icon"></i> Profil Saya</a></li>
+        <li class="sidebar-item"><a href="pengaturan.php" class="sidebar-link "><i data-lucide="settings" class="sidebar-icon"></i> Pengaturan</a></li>
     </ul>
     <div class="sidebar-footer">
         <a href="../logout.php" class="btn-keluar"><i data-lucide="log-out" style="width:16px;height:16px;"></i> Keluar</a>
@@ -125,15 +130,46 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dk);overf
 
 <div class="main">
   <header class="topbar">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <button class="btn-toggle-sidebar" onclick="openMobileSidebar()"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
-      <h2 class="tp-title">Riwayat Pengaduan</h2>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px">
-      <div class="av"><?php if($userFoto):?><img src="../uploads/profil/<?=htmlspecialchars(basename($userFoto))?>" alt=""><?php else:?><?=strtoupper(substr($namaUser,0,1))?><?php endif;?></div>
-      <div class="topbar-user-info"><div class="u-name"><?=htmlspecialchars($namaUser)?></div><div class="u-role">Penghuni</div></div>
-    </div>
-  </header>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <button class="btn-toggle-sidebar" onclick="openMobileSidebar()"><i data-lucide="menu" style="width:24px; height:24px;"></i></button>
+            <h2 class="topbar-title">Pengaduan Saya</h2>
+        </div>
+        <div class="topbar-right">
+            <div id="notifWrapper" style="position:relative;display:inline-block;">
+                    <button id="notifBell" class="notification-btn" onclick="toggleNotif(event)" aria-label="Notifikasi" style="position:relative;">
+                        <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+                        <span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;min-width:17px;height:17px;border-radius:999px;align-items:center;justify-content:center;padding:0 3px;line-height:17px;text-align:center;">0</span>
+                    </button>
+                    <!-- DROPDOWN NOTIFIKASI -->
+                    <div id="notifDropdown" style="display:none;position:absolute;right:0;top:52px;width:330px;background:#fff;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,0.14);z-index:9999;overflow:hidden;">
+                        <div style="padding:14px 18px 10px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between;">
+                            <span style="font-weight:700;font-size:14px;color:#111;">🔔 Notifikasi</span>
+                            <span id="notifCount" style="font-size:11px;color:#888;">Memuat...</span>
+                        </div>
+                        <div id="notifList" style="max-height:300px;overflow-y:auto;">
+                            <div style="padding:20px;text-align:center;color:#aaa;font-size:13px;">Memuat notifikasi...</div>
+                        </div>
+                    </div>
+                </div>
+            <div class="user-profile">
+                <a href="profil.php" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:12px;">
+                    <div class="avatar">
+                        <?php if (isset($userFoto) && $userFoto): ?>
+                            <img src="../uploads/profil/<?= htmlspecialchars(basename($userFoto)) ?>" alt="Profil">
+                        <?php elseif (isset($foto) && $foto): ?>
+                            <img src="../uploads/profil/<?= htmlspecialchars(basename($foto)) ?>" alt="Profil">
+                        <?php else: ?>
+                            <?= strtoupper(substr($namaUser ?? 'P', 0, 1)) ?>
+                        <?php endif; ?>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name"><?= htmlspecialchars($namaUser) ?></span>
+                        <span class="user-role">Penghuni Kos</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </header>
   <main class="content">
     <div class="top-bar">
       <div style="font-size:13px;color:var(--gr)"><?=count($pengaduan)?> laporan ditemukan</div>
@@ -204,5 +240,6 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dk);overf
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="../assets/js/sidebar-toggle.js"></script>
 <script>lucide.createIcons();</script>
+<script src="../assets/js/notifikasi.js"></script>
 </body>
 </html>

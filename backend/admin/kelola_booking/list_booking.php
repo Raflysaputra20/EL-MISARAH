@@ -68,9 +68,19 @@ function getStatusBadge($status, $buktiBayar = null) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Booking - Admin Kost Elmi Sarah</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/css/dashboard-responsive.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard-responsive.css?v=1.2">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Topbar layout */
+        .topbar-right { display: flex; align-items: center; gap: 16px; }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-info { display: flex; flex-direction: column; }
+        .avatar { width: 38px; height: 38px; background: #d1d5db; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; overflow: hidden; }
+        .user-name { font-weight: 600; font-size: 13.5px; line-height: 1.2; }
+        .user-role { font-size: 11px; color: #9ca3af; font-weight: 500; }
+        .notification-btn { background: none; border: none; outline: none; cursor: pointer; padding: 6px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #1f2937; transition: background 0.15s; }
+        .notification-btn:hover { background: rgba(0,0,0,0.06); }
+
         :root { --admin-green: #11a654; --admin-bg: #f4f6f8; --admin-text-dark: #1f2937; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--admin-bg); margin: 0; overflow-x: hidden; color: var(--admin-text-dark); }
         .admin-sidebar { width: 240px; height: 100vh; background-color: var(--admin-green); position: fixed; top: 0; left: 0; display: flex; flex-direction: column; color: white; z-index: 1000; border-top-right-radius: 15px; border-bottom-right-radius: 15px; box-shadow: 4px 0 10px rgba(0,0,0,0.03); }
@@ -205,32 +215,32 @@ function getStatusBadge($status, $buktiBayar = null) {
                         <td><div style="font-size:11px; color:#6b7280; font-weight:500; margin-bottom:2px;"><?= htmlspecialchars($b['tipe']) ?></div><span class="badge-room">No. <?= htmlspecialchars($b['nomor'] ?? '-') ?></span></td>
                         <td><span class="badge-status" style="background-color:<?= $badge['bg'] ?>; color:<?= $badge['color'] ?>;"><?php if ($badge['icon']): ?><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><?php endif; ?> <?= $badge['label'] ?></span></td>
                         <td>
-                            <div class="action-icons">
-                                <a href="edit_booking.php?id=<?= $b['id'] ?>" class="action-btn" title="Edit"><i data-lucide="pencil" style="width:15px; height:15px;"></i></a>
-                                <div class="dropdown">
-                                    <button class="action-btn" data-bs-toggle="dropdown" data-bs-popper-config='{"strategy":"fixed"}'><i data-lucide="more-vertical" style="width:15px; height:15px;"></i></button>
-                                    <ul class="dropdown-menu dropdown-menu-end" style="font-size:13px;">
-                                        <?php 
-                                        $statusLow = strtolower($b['status']);
-                                        $hasBukti = !empty($b['bukti_bayar']);
-                                        if ($statusLow === 'pending'): ?>
-                                            <li><a class="dropdown-item" href="#" onclick="event.preventDefault();confirmAction('proses_booking.php?id=<?= $b['id'] ?>&aksi=setujui','Setujui booking ini?','success')">✔ Setujui</a></li>
-                                            <li><a class="dropdown-item text-danger" href="#" onclick="event.preventDefault();showRejectModal(<?= $b['id'] ?>)">✕ Tolak</a></li>
-                                        <?php elseif ($statusLow === 'menunggu_dp' && $hasBukti): ?>
-                                            <li><a class="dropdown-item" href="#" onclick="event.preventDefault();confirmAction('proses_booking.php?id=<?= $b['id'] ?>&aksi=setujui','Setujui booking ini?','success')">✔ Setujui</a></li>
-                                            <li><a class="dropdown-item text-danger" href="#" onclick="event.preventDefault();showRejectModal(<?= $b['id'] ?>)">✕ Tolak</a></li>
-                                        <?php elseif ($statusLow === 'menunggu_dp' && !$hasBukti): ?>
-                                            <li><span class="dropdown-item text-muted" style="font-size:11px; cursor:default;">⏳ Menunggu bukti bayar</span></li>
-                                            <li><a class="dropdown-item text-danger" href="#" onclick="event.preventDefault();showRejectModal(<?= $b['id'] ?>)">✕ Tolak</a></li>
-                                        <?php elseif ($statusLow === 'disetujui'): ?>
-                                            <li><a class="dropdown-item" href="#" onclick="event.preventDefault();confirmAction('jadikan_penghuni.php?id=<?= $b['id'] ?>','Jadikan user ini sebagai penghuni?','success')">👤 Jadikan Penghuni</a></li>
-                                        <?php elseif ($statusLow === 'aktif'): ?>
-                                            <li><a class="dropdown-item" href="#" onclick="event.preventDefault();confirmAction('proses_booking.php?id=<?= $b['id'] ?>&aksi=selesai','Tandai booking ini sebagai selesai?','success')">✅ Tandai Selesai</a></li>
-                                        <?php endif; ?>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item text-danger" href="#" onclick="event.preventDefault();confirmAction('hapus_booking.php?id=<?= $b['id'] ?>','Hapus booking ini permanen? Tidak bisa dibatalkan.','danger')">🗑 Hapus</a></li>
-                                    </ul>
-                                </div>
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <?php 
+                                $statusLow = strtolower($b['status']);
+                                $hasBukti = !empty($b['bukti_bayar']);
+                                
+                                if ($statusLow === 'pending'): ?>
+                                    <a href="#" onclick="event.preventDefault();confirmAction('proses_booking.php?id=<?= $b['id'] ?>&aksi=setujui','Setujui booking ini?','success')" class="btn btn-sm btn-success" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; font-weight:600;">Setujui</a>
+                                    <a href="#" onclick="event.preventDefault();showRejectModal(<?= $b['id'] ?>)" class="btn btn-sm btn-danger" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; font-weight:600;">Tolak</a>
+                                    
+                                <?php elseif ($statusLow === 'menunggu_dp' && $hasBukti): ?>
+                                    <a href="#" onclick="event.preventDefault();confirmAction('proses_booking.php?id=<?= $b['id'] ?>&aksi=setujui','Setujui booking ini?','success')" class="btn btn-sm btn-success" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; font-weight:600;">Setujui</a>
+                                    <a href="#" onclick="event.preventDefault();showRejectModal(<?= $b['id'] ?>)" class="btn btn-sm btn-danger" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; font-weight:600;">Tolak</a>
+                                    
+                                <?php elseif ($statusLow === 'menunggu_dp' && !$hasBukti): ?>
+                                    <span class="badge bg-secondary text-white" style="font-size: 11px; padding: 6px 10px; border-radius: 6px; font-weight:500;">Menunggu DP</span>
+                                    <a href="#" onclick="event.preventDefault();showRejectModal(<?= $b['id'] ?>)" class="btn btn-sm btn-danger" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; font-weight:600;">Tolak</a>
+                                    
+                                <?php elseif ($statusLow === 'disetujui'): ?>
+                                    <a href="#" onclick="event.preventDefault();confirmAction('jadikan_penghuni.php?id=<?= $b['id'] ?>','Jadikan user ini sebagai penghuni?','success')" class="btn btn-sm btn-primary" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; font-weight:600;">Jadikan Penghuni</a>
+                                    
+                                <?php elseif ($statusLow === 'aktif'): ?>
+                                    <a href="#" onclick="event.preventDefault();confirmAction('proses_booking.php?id=<?= $b['id'] ?>&aksi=selesai','Tandai booking ini sebagai selesai?','success')" class="btn btn-sm btn-success" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; font-weight:600;">Selesai</a>
+                                <?php endif; ?>
+
+                                <a href="edit_booking.php?id=<?= $b['id'] ?>" class="btn btn-sm btn-outline-secondary" style="padding: 4px 8px; border-radius: 6px;" title="Edit"><i data-lucide="pencil" style="width: 14px; height: 14px; vertical-align: middle;"></i></a>
+                                <a href="#" onclick="event.preventDefault();confirmAction('hapus_booking.php?id=<?= $b['id'] ?>','Hapus booking ini permanen? Tidak bisa dibatalkan.','danger')" class="btn btn-sm btn-outline-danger" style="padding: 4px 8px; border-radius: 6px;" title="Hapus"><i data-lucide="trash-2" style="width: 14px; height: 14px; vertical-align: middle;"></i></a>
                             </div>
                         </td>
                     </tr>

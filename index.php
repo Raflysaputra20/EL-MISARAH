@@ -9,17 +9,24 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+if (!isset($_SESSION['captcha_num1']) || !isset($_SESSION['captcha_num2'])) {
+    $_SESSION['captcha_num1'] = rand(1, 10);
+    $_SESSION['captcha_num2'] = rand(1, 10);
+}
+
 require_once __DIR__ . "/backend/config/database.php";
 
 // 1. REFRESH SESSION DARI DATABASE (Penting agar perubahan role otomatis ter-update)
 if (isset($_SESSION['user_id'])) {
     try {
-        $stmtSync = $conn->prepare("SELECT role, status FROM users WHERE id = ?");
+        $stmtSync = $conn->prepare("SELECT nama, role, status, foto FROM users WHERE id = ?");
         $stmtSync->execute([$_SESSION['user_id']]);
         $userSync = $stmtSync->fetch(PDO::FETCH_ASSOC);
         if ($userSync) {
+            $_SESSION['nama'] = $userSync['nama'];
             $_SESSION['role'] = $userSync['role'];
             $_SESSION['status'] = $userSync['status'];
+            $_SESSION['foto'] = $userSync['foto'];
         }
     } catch (Exception $e) {}
 }

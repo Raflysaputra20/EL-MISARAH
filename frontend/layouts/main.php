@@ -142,6 +142,15 @@
                             <label>Kata Sandi</label>
                             <input class="form-control-modal" type="password" name="password" id="loginPassword" placeholder="Masukkan kata sandi" required>
                         </div>
+                        <div class="form-group-modal">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <label id="captcha-question-modal" style="margin-bottom: 0;">Berapa hasil dari <?php echo $_SESSION['captcha_num1'] ?? 0; ?> + <?php echo $_SESSION['captcha_num2'] ?? 0; ?>?</label>
+                                <button type="button" onclick="refreshCaptchaModal()" style="background: none; border: none; color: #a58145; cursor: pointer; padding: 0; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw" style="vertical-align: middle;"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg> Ubah Soal
+                                </button>
+                            </div>
+                            <input class="form-control-modal" type="number" name="captcha" id="loginCaptcha" placeholder="Masukkan jawaban angka" required>
+                        </div>
                         
                         <div class="login-options-modal">
                             <label class="remember-modal">
@@ -175,10 +184,10 @@
 .register-wrapper-modal {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    min-height: 500px;
+    min-height: 460px;
 }
 .register-content-modal {
-    padding: 30px 24px;
+    padding: 16px 24px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -186,6 +195,17 @@
 .register-box-modal {
     width: 100%;
     max-width: 500px;
+}
+.register-box-modal .login-title {
+    font-size: 26px;
+    margin: 0 0 4px;
+}
+.register-box-modal .login-subtitle {
+    margin: 0 0 12px;
+}
+.register-box-modal .form-control-modal {
+    height: 42px;
+    font-size: 13px;
 }
 .register-visual-modal {
     position: relative;
@@ -197,8 +217,8 @@
 .form-grid-modal {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 15px;
+    gap: 10px;
+    margin-bottom: 12px;
 }
 .form-control-modal.full {
     grid-column: span 2;
@@ -208,13 +228,13 @@
     align-items: center;
     gap: 8px;
     font-size: 13px;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
     color: #000;
 }
 @media (max-width: 768px) {
     .register-wrapper-modal { grid-template-columns: 1fr; min-height: auto; }
     .register-visual-modal { display: none; }
-    .register-content-modal { padding: 25px 20px; }
+    .register-content-modal { padding: 20px 20px; }
     .form-grid-modal { grid-template-columns: 1fr; }
     .form-control-modal.full { grid-column: span 1; }
 }
@@ -246,11 +266,31 @@
                             <input class="form-control-modal full" type="text" name="no_hp" id="regNoHp" placeholder="No Hp" required>
                             <input class="form-control-modal" type="password" name="password" id="regPassword" placeholder="Password" required>
                             <input class="form-control-modal" type="password" name="confirm_password" id="regConfirmPassword" placeholder="Konfirmasi Password" required>
+                            <div class="pw-checker-container full" style="grid-column: span 2; margin-top: -6px; background: rgba(0,0,0,0.02); padding: 8px 12px; border-radius: 8px; border: 1px solid #D9D9D9;">
+                                <div style="font-size: 12px; font-weight: 600; color: #000; margin-bottom: 6px;">Kriteria Kata Sandi:</div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px;">
+                                    <div class="pw-rule" id="rule-length" style="font-size: 11px; color: #666; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                                        <span class="rule-icon" style="display: inline-block; width: 14px; text-align: center; font-weight: bold;">○</span> Min. 8 karakter
+                                    </div>
+                                    <div class="pw-rule" id="rule-upper" style="font-size: 11px; color: #666; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                                        <span class="rule-icon" style="display: inline-block; width: 14px; text-align: center; font-weight: bold;">○</span> Huruf besar (A-Z)
+                                    </div>
+                                    <div class="pw-rule" id="rule-lower" style="font-size: 11px; color: #666; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                                        <span class="rule-icon" style="display: inline-block; width: 14px; text-align: center; font-weight: bold;">○</span> Huruf kecil (a-z)
+                                    </div>
+                                    <div class="pw-rule" id="rule-number" style="font-size: 11px; color: #666; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                                        <span class="rule-icon" style="display: inline-block; width: 14px; text-align: center; font-weight: bold;">○</span> Angka (0-9)
+                                    </div>
+                                    <div class="pw-rule" id="rule-symbol" style="font-size: 11px; color: #666; display: flex; align-items: center; gap: 6px; transition: all 0.2s; grid-column: span 2;">
+                                        <span class="rule-icon" style="display: inline-block; width: 14px; text-align: center; font-weight: bold;">○</span> Simbol (!@#$%^&*)
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         
                         <label class="terms-modal">
                             <input type="checkbox" name="terms" id="regTerms" checked>
-                            <span>Saya setuju dengan <a href="#" style="color: #2F80FF;">Syarat & Ketentuan</a></span>
+                            <span>Saya setuju dengan <a href="#" onclick="openTermsModal(event)" style="color: #2F80FF;">Syarat & Ketentuan</a></span>
                         </label>
                         
                         <button type="submit" class="submit-btn-modal" id="registerBtnSubmit">Daftar Sekarang</button>
@@ -320,14 +360,15 @@ async function submitLoginModal(e) {
     
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
+    const captcha = document.getElementById('loginCaptcha').value;
     const msgDiv = document.getElementById('loginMessage');
     const btn = document.getElementById('loginBtnSubmit');
     
     msgDiv.style.display = 'none';
     msgDiv.className = 'login-message error';
     
-    if (!email || !password) {
-        msgDiv.textContent = 'Email/No Hp dan kata sandi wajib diisi';
+    if (!email || !password || !captcha) {
+        msgDiv.textContent = 'Email/No Hp, kata sandi, dan CAPTCHA wajib diisi';
         msgDiv.style.display = 'block';
         return;
     }
@@ -339,6 +380,7 @@ async function submitLoginModal(e) {
         const formData = new FormData();
         formData.append('email', email);
         formData.append('password', password);
+        formData.append('captcha', captcha);
         formData.append('is_ajax', '1');
         
         const response = await fetch('backend/api/auth/login.php', {
@@ -363,6 +405,12 @@ async function submitLoginModal(e) {
             msgDiv.style.display = 'block';
             btn.textContent = 'Masuk';
             btn.disabled = false;
+            
+            // Update captcha numbers if returned by server
+            if (data.captcha_num1 !== undefined) {
+                document.getElementById('captcha-question-modal').textContent = `Berapa hasil dari ${data.captcha_num1} + ${data.captcha_num2}?`;
+                document.getElementById('loginCaptcha').value = '';
+            }
         }
     } catch (error) {
         console.error(error);
@@ -370,6 +418,20 @@ async function submitLoginModal(e) {
         msgDiv.style.display = 'block';
         btn.textContent = 'Masuk';
         btn.disabled = false;
+    }
+}
+
+async function refreshCaptchaModal() {
+    try {
+        const response = await fetch('backend/api/auth/refresh_captcha.php');
+        const data = await response.json();
+        if (data.status === 'success') {
+            document.getElementById('captcha-question-modal').textContent = `Berapa hasil dari ${data.captcha_num1} + ${data.captcha_num2}?`;
+            const inputEl = document.getElementById('loginCaptcha');
+            if (inputEl) inputEl.value = '';
+        }
+    } catch (e) {
+        console.error("Gagal memuat CAPTCHA baru", e);
     }
 }
 
@@ -392,6 +454,23 @@ async function submitRegisterModal(e) {
     
     if (!namaDepan || !email || !noHp || !password || !confirmPassword) {
         msgDiv.textContent = 'Semua field wajib diisi';
+        msgDiv.style.display = 'block';
+        return;
+    }
+    
+    if (password.length < 8) {
+        msgDiv.textContent = 'Kata sandi minimal harus 8 karakter';
+        msgDiv.style.display = 'block';
+        return;
+    }
+    
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSymbol = /[^A-Za-z0-9]/.test(password);
+    
+    if (!hasUpperCase || !hasLowerCase || !hasNumber || !hasSymbol) {
+        msgDiv.textContent = 'Kata sandi harus mengandung kombinasi huruf besar, huruf kecil, angka, dan simbol';
         msgDiv.style.display = 'block';
         return;
     }
@@ -462,6 +541,62 @@ async function submitRegisterModal(e) {
     }
 }
 
+// Terms Modal Functions
+function openTermsModal(e) {
+    if (e) e.preventDefault();
+    document.getElementById('termsOverlay').classList.add('active');
+}
+function closeTermsModal() {
+    document.getElementById('termsOverlay').classList.remove('active');
+}
+
+// Dynamic Password Checker
+function initPasswordChecker() {
+    const passwordInput = document.getElementById('regPassword');
+    if (passwordInput) {
+        passwordInput.addEventListener('input', function() {
+            const val = this.value;
+            
+            // Check length
+            updateRuleState('rule-length', val.length >= 8);
+            
+            // Check uppercase
+            updateRuleState('rule-upper', /[A-Z]/.test(val));
+            
+            // Check lowercase
+            updateRuleState('rule-lower', /[a-z]/.test(val));
+            
+            // Check number
+            updateRuleState('rule-number', /[0-9]/.test(val));
+            
+            // Check symbol
+            updateRuleState('rule-symbol', /[^A-Za-z0-9]/.test(val));
+        });
+    }
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPasswordChecker);
+} else {
+    initPasswordChecker();
+}
+
+function updateRuleState(ruleId, isMet) {
+    const el = document.getElementById(ruleId);
+    if (!el) return;
+    const icon = el.querySelector('.rule-icon');
+    if (isMet) {
+        el.style.color = '#198754';
+        el.style.fontWeight = '600';
+        icon.textContent = '✔';
+        icon.style.color = '#198754';
+    } else {
+        el.style.color = '#666';
+        el.style.fontWeight = 'normal';
+        icon.textContent = '○';
+        icon.style.color = '#666';
+    }
+}
+
 // Check for URL parameters to show modals
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -485,6 +620,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
+
+<div class="login-overlay" id="termsOverlay" onclick="if(event.target===this) closeTermsModal()">
+    <div class="login-modal" style="max-width: 600px; background: #fff; border-radius: 16px; padding: 0; overflow: hidden;">
+        <button class="login-close" onclick="closeTermsModal()">&times;</button>
+        <div style="padding: 30px;">
+            <h2 style="font-weight: 800; font-size: 24px; margin-top: 0; margin-bottom: 20px; color: #000; font-family: 'Poppins', sans-serif;">Syarat & Ketentuan</h2>
+            <div style="font-size: 13.5px; line-height: 1.6; color: #333; max-height: 350px; overflow-y: auto; padding-right: 10px; margin-bottom: 24px; font-family: 'Poppins', sans-serif; text-align: left;">
+                <p style="margin-top: 0;"><strong>1. Ketentuan Umum</strong><br>Dengan mendaftar dan menggunakan layanan Kost Elmi Sarah, Anda menyetujui seluruh aturan dan ketentuan yang berlaku di lingkungan kost.</p>
+                <p><strong>2. Pembayaran & Booking</strong><br>Booking kamar hanya dianggap sah setelah Anda membayar uang muka (DP) sesuai nominal yang ditentukan dan diverifikasi oleh Admin. Pembayaran bulanan jatuh tempo setiap bulan sesuai tanggal mulai sewa.</p>
+                <p><strong>3. Tata Tertib Kost</strong><br>Setiap penghuni wajib menjaga ketertiban, keamanan, kebersihan, serta mematuhi aturan jam malam dan larangan membawa tamu menginap tanpa izin pengelola.</p>
+                <p><strong>4. Penggunaan Fasilitas</strong><br>Fasilitas kamar dan area bersama harus dirawat dengan baik. Kerusakan akibat kelalaian penghuni akan dikenakan biaya perbaikan.</p>
+                <p style="margin-bottom: 0;"><strong>5. Pembatalan Booking</strong><br>Pembatalan sepihak setelah pembayaran DP dapat mengakibatkan hangusnya uang muka sesuai dengan kebijakan pengelola.</p>
+            </div>
+            <button onclick="closeTermsModal()" class="submit-btn-modal" style="background: #2C3E50; width: 100%; height: 46px; border: none; border-radius: 8px; color: #fff; font-size: 14.5px; font-weight: 600; cursor: pointer;">Saya Mengerti</button>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

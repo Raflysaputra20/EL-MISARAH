@@ -34,24 +34,14 @@ if (!$tipe_target) {
 // ═══ AUTO-SYNC: Sinkronisasi status kamar dengan data penghuni aktif ═══
 try {
     // 1. Fix booking yang user-nya masih penghuni aktif tapi statusnya 'selesai' -> 'aktif'
-    $conn->exec("
-        UPDATE booking b
-        JOIN users u ON b.user_id = u.id
-        SET b.status = 'aktif'
-        WHERE b.status = 'selesai'
-          AND u.role = 'penghuni'
-          AND u.status = 'aktif'
-          AND b.kamar_id IS NOT NULL
-          AND b.id = (SELECT MAX(b2.id) FROM (SELECT id, user_id FROM booking) b2 WHERE b2.user_id = b.user_id)
-    ");
-
+    
     // 2. Kamar yang harusnya 'terisi' (ada penghuni aktif) tapi masih 'tersedia' -> 'terisi'
     $conn->exec("
         UPDATE kamar k
         JOIN booking b ON b.kamar_id = k.id
         JOIN users u ON b.user_id = u.id
         SET k.status = 'terisi'
-        WHERE b.status = 'aktif'
+        WHERE b.status IN ('aktif', 'selesai')
           AND u.role = 'penghuni'
           AND u.status = 'aktif'
           AND k.status = 'tersedia'
@@ -66,7 +56,7 @@ try {
               SELECT b.kamar_id 
               FROM booking b 
               JOIN users u ON b.user_id = u.id 
-              WHERE b.status IN ('aktif', 'disetujui') 
+              WHERE b.status IN ('aktif', 'disetujui', 'selesai') 
                 AND u.role = 'penghuni' 
                 AND u.status = 'aktif'
                 AND b.kamar_id IS NOT NULL
@@ -213,7 +203,7 @@ if (!function_exists('renderImagePreview')) {
     <title>Kelola Tipe & Kamar - Admin Kost</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/css/dashboard-responsive.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard-responsive.css?v=1.2">
     <style>
         body { font-family: 'Poppins', sans-serif; background-color: #f4f6f8; }
         .edit-card { background: white; border-radius: 12px; padding: 30px; margin: 20px auto; max-width: 1000px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }

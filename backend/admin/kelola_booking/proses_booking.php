@@ -153,18 +153,6 @@ if ($aksi === "setujui") {
     $updateBooking = $conn->prepare("UPDATE booking SET status = 'selesai' WHERE id = ?");
     $updateBooking->execute([$id]);
 
-    // Kamar kembali tersedia
-    if (!empty($booking["kamar_id"])) {
-        $updateKamar = $conn->prepare("UPDATE kamar SET status = 'tersedia' WHERE id = ?");
-        $updateKamar->execute([$booking["kamar_id"]]);
-    }
-
-    // Update penghuni record jika ada
-    try {
-        $stmtPenghuni = $conn->prepare("UPDATE penghuni SET status = 'selesai', tanggal_keluar = CURDATE() WHERE booking_id = ? AND status = 'aktif'");
-        $stmtPenghuni->execute([$id]);
-    } catch (Exception $e) { /* table may not exist yet */ }
-
     header("Location: list_booking.php?success=Booking+ditandai+selesai");
     exit;
 }

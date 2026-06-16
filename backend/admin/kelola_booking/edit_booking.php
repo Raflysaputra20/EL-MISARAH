@@ -76,8 +76,18 @@ $kamars = $stmtKamar->fetchAll(PDO::FETCH_ASSOC);
     <title>Edit Booking - Admin Kost Elmi Sarah</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/css/dashboard-responsive.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard-responsive.css?v=1.2">
     <style>
+        /* Topbar layout */
+        .topbar-right { display: flex; align-items: center; gap: 16px; }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-info { display: flex; flex-direction: column; }
+        .avatar { width: 38px; height: 38px; background: #d1d5db; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; overflow: hidden; }
+        .user-name { font-weight: 600; font-size: 13.5px; line-height: 1.2; }
+        .user-role { font-size: 11px; color: #9ca3af; font-weight: 500; }
+        .notification-btn { background: none; border: none; outline: none; cursor: pointer; padding: 6px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #1f2937; transition: background 0.15s; }
+        .notification-btn:hover { background: rgba(0,0,0,0.06); }
+
         :root {
             --admin-green: #11a654;
             --admin-bg: #f4f6f8;
@@ -145,6 +155,9 @@ $kamars = $stmtKamar->fetchAll(PDO::FETCH_ASSOC);
             <h2 class="page-title">Edit Booking</h2>
         </div>
         <div class="topbar-right">
+                <button class="notification-btn" type="button">
+                    <i data-lucide="bell" style="width:20px;height:20px;"></i>
+                </button>
             <div class="user-profile">
                 <div class="avatar"></div>
                 <div>

@@ -522,11 +522,32 @@ $denahPath = getImgPath($room['foto_denah'] ?? null) ?? 'frontend/assets/image/d
     }
 }
 @media (max-width: 700px) {
+    .dk-wrap {
+        padding: 16px 12px 60px;
+    }
     .dk-gallery {
         grid-template-columns: 1fr;
-        grid-template-rows: 260px 140px 140px;
+        grid-template-rows: 260px;
+        border-radius: 12px;
+        margin-bottom: 8px;
     }
-    .dk-main-photo { grid-row: 1 / 2; }
+    .dk-main-photo {
+        grid-column: 1 / -1;
+        grid-row: 1 / -1;
+    }
+    .dk-sub-photo {
+        display: none;
+    }
+    .dk-price-denah {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .dk-title {
+        font-size: 22px;
+    }
+    .dk-price {
+        font-size: 28px;
+    }
 }
 /* Lightbox */
 .dk-lightbox {

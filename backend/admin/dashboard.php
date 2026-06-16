@@ -27,22 +27,12 @@ $recentActivities = [];
 
 // ═══ AUTO-SYNC: Sinkronisasi status kamar dengan data penghuni aktif ═══
 try {
-    $conn->exec("
-        UPDATE booking b
-        JOIN users u ON b.user_id = u.id
-        SET b.status = 'aktif'
-        WHERE b.status = 'selesai'
-          AND u.role = 'penghuni'
-          AND u.status = 'aktif'
-          AND b.kamar_id IS NOT NULL
-          AND b.id = (SELECT MAX(b2.id) FROM (SELECT id, user_id FROM booking) b2 WHERE b2.user_id = b.user_id)
-    ");
-    $conn->exec("
+        $conn->exec("
         UPDATE kamar k
         JOIN booking b ON b.kamar_id = k.id
         JOIN users u ON b.user_id = u.id
         SET k.status = 'terisi'
-        WHERE b.status = 'aktif'
+        WHERE b.status IN ('aktif', 'selesai')
           AND u.role = 'penghuni'
           AND u.status = 'aktif'
           AND k.status = 'tersedia'
@@ -55,7 +45,7 @@ try {
               SELECT b.kamar_id 
               FROM booking b 
               JOIN users u ON b.user_id = u.id 
-              WHERE b.status IN ('aktif', 'disetujui') 
+              WHERE b.status IN ('aktif', 'disetujui', 'selesai') 
                 AND u.role = 'penghuni' 
                 AND u.status = 'aktif'
                 AND b.kamar_id IS NOT NULL
@@ -80,7 +70,7 @@ try {
     $kamarDibooking = $kamarStats['dibooking'] ?? 0;
 
     $stmtRecent = $conn->query("
-            SELECT 'Booking' as tipe, b.id, u.nama, CONCAT(k.tipe, ' No.', COALESCE(k.nomor_kamar, '-')) as nomor_kamar, b.created_at as tgl, b.tanggal_booking as tgl_acara
+            SELECT b.status as tipe, b.id, u.nama, CONCAT(k.tipe, ' No.', COALESCE(k.nomor_kamar, '-')) as nomor_kamar, b.created_at as tgl, b.tanggal_booking as tgl_acara
             FROM booking b
             JOIN users u ON b.user_id = u.id
             JOIN kamar k ON b.kamar_id = k.id
@@ -100,13 +90,23 @@ try {
     <title>Dashboard Admin - Kost Elmi Sarah</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/dashboard-responsive.css">
+    <link rel="stylesheet" href="../assets/css/dashboard-responsive.css?v=1.2">
     <!-- Google Fonts: Poppins for that specific clean look -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
+        /* Topbar layout */
+        .topbar-right { display: flex; align-items: center; gap: 16px; }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-info { display: flex; flex-direction: column; }
+        .avatar { width: 38px; height: 38px; background: #d1d5db; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; overflow: hidden; }
+        .user-name { font-weight: 600; font-size: 13.5px; line-height: 1.2; }
+        .user-role { font-size: 11px; color: #9ca3af; font-weight: 500; }
+        .notification-btn { background: none; border: none; outline: none; cursor: pointer; padding: 6px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #1f2937; transition: background 0.15s; }
+        .notification-btn:hover { background: rgba(0,0,0,0.06); }
+
         :root {
             --admin-green: #11a654; /* Exact green from design */
             --admin-bg: #f4f6f8; /* Very light grey */
@@ -474,7 +474,34 @@ try {
                                             <span class="booking-room">Kamar <?= htmlspecialchars($act['nomor_kamar']) ?>, <?= date('d M Y', strtotime($act['tgl_acara'])) ?></span>
                                         </div>
                                     </div>
-                                    <span class="badge-booking"><?= $act['tipe'] ?></span>
+                                    <?php
+                                    $statusVal = strtolower($act['tipe'] ?? '');
+                                    $badgeText = 'Booking';
+                                    $badgeStyle = 'border-color: #11a654; color: #11a654;';
+                                    if ($statusVal === 'pending') {
+                                        $badgeText = 'Pending';
+                                        $badgeStyle = 'border-color: #f59e0b; color: #f59e0b;';
+                                    } elseif ($statusVal === 'menunggu_dp') {
+                                        $badgeText = 'Menunggu DP';
+                                        $badgeStyle = 'border-color: #f59e0b; color: #f59e0b;';
+                                    } elseif ($statusVal === 'disetujui') {
+                                        $badgeText = 'Disetujui';
+                                        $badgeStyle = 'border-color: #10b981; color: #10b981;';
+                                    } elseif ($statusVal === 'aktif') {
+                                        $badgeText = 'Aktif';
+                                        $badgeStyle = 'border-color: #11a654; color: #11a654;';
+                                    } elseif ($statusVal === 'selesai') {
+                                        $badgeText = 'Selesai';
+                                        $badgeStyle = 'border-color: #9ca3af; color: #9ca3af; background-color: #f3f4f6;';
+                                    } elseif ($statusVal === 'ditolak') {
+                                        $badgeText = 'Ditolak';
+                                        $badgeStyle = 'border-color: #ef4444; color: #ef4444;';
+                                    } elseif ($statusVal === 'dibatalkan') {
+                                        $badgeText = 'Dibatalkan';
+                                        $badgeStyle = 'border-color: #ef4444; color: #ef4444;';
+                                    }
+                                    ?>
+                                    <span class="badge-booking" style="<?= $badgeStyle ?>"><?= $badgeText ?></span>
                                 </div>
                                 <?php endforeach; ?>
                             <?php endif; ?>

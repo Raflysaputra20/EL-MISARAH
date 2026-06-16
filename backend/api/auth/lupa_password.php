@@ -13,8 +13,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if ($identity === "" || $nama === "" || $new_password === "" || $confirm_password === "") {
         $message = "Semua kolom verifikasi wajib diisi!";
-    } elseif (strlen($new_password) < 6) {
-        $message = "Kata sandi baru minimal 6 karakter!";
+    } elseif (strlen($new_password) < 8) {
+        $message = "Kata sandi baru minimal 8 karakter!";
+    } elseif (!preg_match('/[A-Z]/', $new_password) || !preg_match('/[a-z]/', $new_password) || !preg_match('/[0-9]/', $new_password) || !preg_match('/[^A-Za-z0-9]/', $new_password)) {
+        $message = "Kata sandi baru harus mengandung kombinasi huruf besar, huruf kecil, angka, dan simbol!";
     } elseif ($new_password !== $confirm_password) {
         $message = "Konfirmasi kata sandi tidak cocok!";
     } else {
@@ -75,52 +77,52 @@ $waUrl = "https://wa.me/" . $adminWA . "?text=" . urlencode($waMsg);
         }
 
         .login-wrapper {
-            width: min(1270px, 100%);
-            min-height: 845px;
+            width: min(1200px, 100%);
+            min-height: 660px;
             background: #EBE7DE;
             border-radius: 16px;
-            padding: 12px 14px;
+            padding: 12px;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 34px;
+            gap: 28px;
         }
 
         .login-content {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 52px 20px;
+            padding: 24px 20px;
         }
 
         .login-box {
             width: 100%;
-            max-width: 482px;
+            max-width: 440px;
         }
 
         h1 {
-            margin: 0 0 18px;
-            font-size: 44px;
+            margin: 0 0 6px;
+            font-size: 34px;
             line-height: 1.2;
             font-weight: 800;
             color: #000;
         }
 
         .subtitle {
-            margin: 0 0 40px;
-            font-size: 15px;
+            margin: 0 0 18px;
+            font-size: 13.5px;
             color: #525252;
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
         .message {
-            margin-bottom: 24px;
-            padding: 14px 18px;
-            border-radius: 9px;
+            margin-bottom: 16px;
+            padding: 10px 14px;
+            border-radius: 8px;
             background: #ffe3e3;
             color: #c1121f;
-            font-size: 13.5px;
+            font-size: 13px;
             font-weight: 500;
-            line-height: 1.5;
+            line-height: 1.4;
             border-left: 4px solid #c1121f;
         }
 
@@ -131,26 +133,26 @@ $waUrl = "https://wa.me/" . $adminWA . "?text=" . urlencode($waMsg);
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
+            margin-bottom: 4px;
+            font-size: 13px;
             font-weight: 600;
             color: #000;
         }
 
         .form-control {
             width: 100%;
-            height: 54px;
-            border: 1px solid #D9D9D9;
-            border-radius: 9px;
+            height: 44px;
+            border: 1px solid #B0B0B0;
+            border-radius: 8px;
             background: #fff;
-            padding: 0 20px;
+            padding: 0 16px;
             font-family: 'Poppins', sans-serif;
-            font-size: 14px;
+            font-size: 13px;
             outline: none;
             transition: border-color 0.2s;
         }
@@ -160,18 +162,18 @@ $waUrl = "https://wa.me/" . $adminWA . "?text=" . urlencode($waMsg);
         }
 
         .form-control::placeholder {
-            color: #D9D9D9;
+            color: #888;
         }
 
         .submit-btn {
             width: 100%;
-            height: 54px;
+            height: 44px;
             border: none;
-            border-radius: 9px;
+            border-radius: 8px;
             background: #2C3E50;
             color: #fff;
             font-family: 'Poppins', sans-serif;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: background 0.2s;
@@ -185,9 +187,9 @@ $waUrl = "https://wa.me/" . $adminWA . "?text=" . urlencode($waMsg);
             display: flex;
             align-items: center;
             text-align: center;
-            margin: 25px 0;
-            color: #888;
-            font-size: 13px;
+            margin: 16px 0;
+            color: #777;
+            font-size: 12.5px;
         }
 
         .divider::before, .divider::after {
@@ -208,15 +210,15 @@ $waUrl = "https://wa.me/" . $adminWA . "?text=" . urlencode($waMsg);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             width: 100%;
-            height: 54px;
+            height: 44px;
             border: 1px solid #25D366;
-            border-radius: 9px;
+            border-radius: 8px;
             background: #25D366;
             color: #fff;
             font-family: 'Poppins', sans-serif;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             text-decoration: none;
             transition: opacity 0.2s;
@@ -227,10 +229,10 @@ $waUrl = "https://wa.me/" . $adminWA . "?text=" . urlencode($waMsg);
         }
 
         .register-text {
-            margin-top: 30px;
+            margin-top: 18px;
             text-align: center;
             color: #525252;
-            font-size: 14px;
+            font-size: 13.5px;
         }
 
         .register-text a {
@@ -246,51 +248,51 @@ $waUrl = "https://wa.me/" . $adminWA . "?text=" . urlencode($waMsg);
             background-image: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url("../../../frontend/assets/image/login.png");
             background-size: cover;
             background-position: center;
-            min-height: 821px;
+            min-height: 636px;
         }
 
         .visual-brand {
             position: absolute;
-            top: 43px;
-            left: 36px;
+            top: 28px;
+            left: 28px;
             color: #fff;
-            font-size: 25px;
+            font-size: 22px;
             font-weight: 700;
         }
 
         .visual-caption {
             position: absolute;
             left: 50%;
-            bottom: 76px;
+            bottom: 52px;
             transform: translateX(-50%);
             width: 420px;
             max-width: 90%;
             color: #fff;
             text-align: center;
-            font-size: 30px;
-            line-height: 1.5;
+            font-size: 22px;
+            line-height: 1.4;
             font-weight: 400;
         }
 
         .visual-dots {
             position: absolute;
             left: 50%;
-            bottom: 34px;
+            bottom: 24px;
             transform: translateX(-50%);
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
 
         .visual-dots span {
-            width: 50px;
-            height: 5px;
+            width: 40px;
+            height: 4px;
             background: #525252;
             border-radius: 16px;
         }
 
         .visual-dots span.active {
-            width: 60px;
+            width: 50px;
             background: #fff;
         }
 
@@ -370,9 +372,31 @@ $waUrl = "https://wa.me/" . $adminWA . "?text=" . urlencode($waMsg);
                         class="form-control"
                         type="password"
                         name="new_password"
-                        placeholder="Minimal 6 karakter"
+                        id="resetPasswordInput"
+                        placeholder="Kata Sandi Baru"
                         required
                     >
+                </div>
+
+                <div class="pw-checker-container" style="margin-top: -6px; margin-bottom: 12px; background: rgba(0,0,0,0.02); padding: 8px 12px; border-radius: 8px; border: 1px solid #B0B0B0; text-align: left;">
+                    <div style="font-size: 12px; font-weight: 600; color: #000; margin-bottom: 6px;">Kriteria Kata Sandi:</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px;">
+                        <div class="pw-rule-sa" id="rule-sa-length" style="font-size: 11px; color: #525252; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                            <span class="rule-icon" style="display: inline-block; width: 14px; text-align: center; font-weight: bold;">○</span> Min. 8 karakter
+                        </div>
+                        <div class="pw-rule-sa" id="rule-sa-upper" style="font-size: 11px; color: #525252; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                            <span class="rule-icon" style="display: inline-block; width: 14px; text-align: center; font-weight: bold;">○</span> Huruf besar (A-Z)
+                        </div>
+                        <div class="pw-rule-sa" id="rule-sa-lower" style="font-size: 11px; color: #525252; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                            <span class="rule-icon" style="display: inline-block; width: 14px; text-align: center; font-weight: bold;">○</span> Huruf kecil (a-z)
+                        </div>
+                        <div class="pw-rule-sa" id="rule-sa-number" style="font-size: 11px; color: #525252; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                            <span class="rule-icon" style="display: inline-block; width: 14px; text-align: center; font-weight: bold;">○</span> Angka (0-9)
+                        </div>
+                        <div class="pw-rule-sa" id="rule-sa-symbol" style="font-size: 11px; color: #525252; display: flex; align-items: center; gap: 6px; transition: all 0.2s; grid-column: span 2;">
+                            <span class="rule-icon" style="display: inline-block; width: 14px; text-align: center; font-weight: bold;">○</span> Simbol (!@#$%^&*)
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -420,6 +444,49 @@ $waUrl = "https://wa.me/" . $adminWA . "?text=" . urlencode($waMsg);
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const pwInput = document.getElementById('resetPasswordInput');
+    
+    if (pwInput) {
+        pwInput.addEventListener('input', function() {
+            const val = this.value;
+            
+            // Rules
+            const hasLength = val.length >= 8;
+            const hasUpper = /[A-Z]/.test(val);
+            const hasLower = /[a-z]/.test(val);
+            const hasNumber = /[0-9]/.test(val);
+            const hasSymbol = /[^A-Za-z0-9]/.test(val);
+            
+            updateRule('rule-sa-length', hasLength);
+            updateRule('rule-sa-upper', hasUpper);
+            updateRule('rule-sa-lower', hasLower);
+            updateRule('rule-sa-number', hasNumber);
+            updateRule('rule-sa-symbol', hasSymbol);
+        });
+    }
+    
+    function updateRule(elementId, isValid) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        const icon = el.querySelector('.rule-icon');
+        
+        if (isValid) {
+            el.style.color = '#198754';
+            el.style.fontWeight = 'bold';
+            icon.textContent = '✔';
+            icon.style.color = '#198754';
+        } else {
+            el.style.color = '#525252';
+            el.style.fontWeight = 'normal';
+            icon.textContent = '○';
+            icon.style.color = '#525252';
+        }
+    }
+});
+</script>
 
 </body>
 </html>

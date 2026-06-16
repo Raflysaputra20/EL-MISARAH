@@ -120,25 +120,31 @@
         <div class="col-lg-5">
             <div class="row g-3 mb-4">
                 <div class="col-6">
-                    <div class="contact-card">
-                        <i data-lucide="phone" class="contact-icon"></i>
-                        <h6 class="contact-title">Telepon</h6>
-                        <p class="contact-text">0812-3456-7890</p>
-                    </div>
+                    <a href="tel:081234567890" style="text-decoration: none; display: block; height: 100%;">
+                        <div class="contact-card">
+                            <i data-lucide="phone" class="contact-icon"></i>
+                            <h6 class="contact-title">Telepon</h6>
+                            <p class="contact-text">0812-3456-7890</p>
+                        </div>
+                    </a>
                 </div>
                 <div class="col-6">
-                    <div class="contact-card">
-                        <i data-lucide="message-circle" class="contact-icon"></i>
-                        <h6 class="contact-title">Whatsapp</h6>
-                        <p class="contact-text">0812-3458-7890</p>
-                    </div>
+                    <a href="https://wa.me/6285933675790" target="_blank" style="text-decoration: none; display: block; height: 100%;">
+                        <div class="contact-card">
+                            <i data-lucide="message-circle" class="contact-icon"></i>
+                            <h6 class="contact-title">Whatsapp</h6>
+                            <p class="contact-text">0859-3367-5790</p>
+                        </div>
+                    </a>
                 </div>
                 <div class="col-6">
-                    <div class="contact-card">
-                        <i data-lucide="mail" class="contact-icon"></i>
-                        <h6 class="contact-title">Email</h6>
-                        <p class="contact-text" style="font-size: 12px;">elmisarah79@gmail.com</p>
-                    </div>
+                    <a href="mailto:elmisarah79@gmail.com" style="text-decoration: none; display: block; height: 100%;">
+                        <div class="contact-card">
+                            <i data-lucide="mail" class="contact-icon"></i>
+                            <h6 class="contact-title">Email</h6>
+                            <p class="contact-text" style="font-size: 12px;">elmisarah79@gmail.com</p>
+                        </div>
+                    </a>
                 </div>
                 <div class="col-6">
                     <div class="contact-card">
@@ -165,7 +171,7 @@
                 Silakan isi formulir berikut untuk mengirimkan pesan kepada kami. Tim kami akan segera merespons pertanyaan atau kebutuhan Anda.
             </p>
 
-            <form action="" method="POST">
+            <form id="contactForm" onsubmit="sendToWhatsApp(event)">
                 <div class="mb-3">
                     <label class="form-label-kontak">Nama</label>
                     <input type="text" class="form-control form-input-kontak" name="nama" placeholder="Nama" required>
@@ -192,3 +198,27 @@
 
     </div>
 </div>
+
+<script>
+function sendToWhatsApp(e) {
+    e.preventDefault();
+    const nama = document.querySelector('input[name="nama"]').value;
+    const email = document.querySelector('input[name="email"]').value;
+    const subjek = document.querySelector('input[name="subjek"]').value;
+    const pesan = document.querySelector('textarea[name="pesan"]').value;
+
+    const targetWA = "6285933675790";
+    const text = `Halo Admin Kost Elmi Sarah,
+
+Saya ingin mengirimkan pesan dengan detail berikut:
+• Nama: ${nama}
+• Email: ${email}
+• Subjek: ${subjek}
+
+Pesan:
+${pesan}`;
+
+    const waUrl = `https://api.whatsapp.com/send?phone=${targetWA}&text=${encodeURIComponent(text)}`;
+    window.open(waUrl, '_blank');
+}
+</script>

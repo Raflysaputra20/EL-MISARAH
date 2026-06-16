@@ -30,8 +30,8 @@
                 <h5 class="footer-col-title">Kontak</h5>
                 <ul class="footer-col-list">
                     <li><i data-lucide="map-pin" style="width:14px;height:14px;display:inline;vertical-align:-2px;margin-right:6px;"></i>Komplek PDK, Jl. Perjuangan blok A No.34, Sunyaragi, Kec. Kesambi, Kota Cirebon, Jawa Barat 45132</li>
-                    <li><i data-lucide="phone" style="width:14px;height:14px;display:inline;vertical-align:-2px;margin-right:6px;"></i>0812-3458-7890</li>
-                    <li><a href="https://wa.me/6281234587890" target="_blank" style="display:inline-flex;align-items:center;gap:6px;"><i data-lucide="message-circle" style="width:14px;height:14px;"></i>WhatsApp</a></li>
+                    <li><i data-lucide="phone" style="width:14px;height:14px;display:inline;vertical-align:-2px;margin-right:6px;"></i>0859-3367-5790</li>
+                    <li><a href="https://wa.me/6285933675790" target="_blank" style="display:inline-flex;align-items:center;gap:6px;"><i data-lucide="message-circle" style="width:14px;height:14px;"></i>WhatsApp</a></li>
                 </ul>
             </div>
 

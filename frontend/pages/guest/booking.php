@@ -70,7 +70,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmtCheckActive->execute([$userId]);
     $existingBooking = $stmtCheckActive->fetch();
     
-    if ($existingBooking && $existingBooking['status'] !== 'pending') {
+    if (strlen($ktp_number) !== 16 || !ctype_digit($ktp_number)) {
+        $errorMsg = "No KTP harus terdiri dari tepat 16 digit angka.";
+    } elseif ($existingBooking && $existingBooking['status'] !== 'pending') {
         $errorMsg = "Anda masih memiliki pesanan aktif yang belum selesai atau belum dibatalkan. Tidak dapat membuat pesanan baru.";
     } elseif (!$kamarId) {
         $errorMsg = "Harap pilih tipe kamar.";
@@ -355,7 +357,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="form-group">
             <label class="input-label">No KTP</label>
-            <input type="text" class="custom-input" name="ktp_number" placeholder="Masukan No KTP" value="<?= htmlspecialchars($userAutofill['no_ktp'] ?? '') ?>" required>
+            <input type="text" class="custom-input" name="ktp_number" placeholder="Masukan No KTP (16 digit angka)" value="<?= htmlspecialchars($userAutofill['no_ktp'] ?? '') ?>" required maxlength="16" pattern="\d{16}" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="No KTP harus terdiri dari tepat 16 digit angka">
+            <small style="display: block; margin-top: 6px; color: #dc2626; font-size: 12.5px; font-weight: 600;">
+                <i data-lucide="info" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px; margin-top: -2px;"></i> Harus terdiri dari tepat 16 digit angka.
+            </small>
         </div>
 
         <div class="form-group">

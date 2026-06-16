@@ -18,18 +18,19 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $pembayaranId = intval($_POST['pembayaran_id'] ?? 0);
 
-// Validasi kepemilikan pembayaran (via user_id langsung ATAU via booking)
+// Validasi kepemilikan pembayaran (pembayaran -> booking -> user_id)
 try {
     $stmtCheck = $conn->prepare("
-        SELECT id, status
-        FROM pembayaran
-        WHERE id = ? AND user_id = ?
+        SELECT p.id, p.status
+        FROM pembayaran p
+        JOIN booking b ON p.booking_id = b.id
+        WHERE p.id = ? AND b.user_id = ?
     ");
     $stmtCheck->execute([$pembayaranId, $userId]);
     $pay = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
     if (!$pay) {
-        echo json_encode(['success' => false, 'message' => 'Data pembayaran tidak ditemukan']);
+        echo json_encode(['success' => false, 'message' => 'Data pembayaran tidak ditemukan atau Anda tidak memiliki akses']);
         exit;
     }
 

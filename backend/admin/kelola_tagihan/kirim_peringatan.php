@@ -9,13 +9,14 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "admin") {
 
 $bookingId = intval($_POST['booking_id'] ?? 0);
 $pesan     = trim($_POST['pesan'] ?? '');
+$userId    = intval($_POST['user_id'] ?? 0);
 
 if (!$bookingId || !$pesan) {
     echo json_encode(['success'=>false,'message'=>'Data tidak lengkap']); exit;
 }
 
 try {
-    // Cek booking ada
+    // Dapatkan user_id & nama dari booking
     $stmtChk = $conn->prepare("SELECT b.user_id, u.nama FROM booking b JOIN users u ON b.user_id=u.id WHERE b.id=?");
     $stmtChk->execute([$bookingId]);
     $booking = $stmtChk->fetch(PDO::FETCH_ASSOC);
@@ -24,21 +25,22 @@ try {
         echo json_encode(['success'=>false,'message'=>'Booking tidak ditemukan']); exit;
     }
 
-    // Simpan notifikasi ke tabel pengaduan sebagai pesan sistem (gunakan tabel terpisah jika ada)
-    // Karena belum ada tabel notifikasi, kita gunakan pengumuman dengan target user
-    // Simpan sebagai record di tabel notifikasi_tagihan jika ada, atau buat log di pengaduan
-    
-    // Cek apakah tabel notifikasi_tagihan ada, jika tidak buat pesan sederhana di pengumuman
-    $stmtNotif = $conn->prepare("
-        INSERT INTO pengumuman (judul, isi, created_at, pinned)
-        VALUES (?, ?, NOW(), 0)
-    ");
-    $judulNotif = "Peringatan Tagihan untuk " . $booking['nama'];
-    $stmtNotif->execute([$judulNotif, $pesan]);
+    $targetUserId = $userId ?: $booking['user_id'];
+    $namaUser     = $booking['nama'];
 
-    echo json_encode(['success'=>true,'message'=>'Peringatan berhasil dikirim ke ' . $booking['nama']]);
+    // Simpan langsung ke tabel notifikasi (personal, bukan pengumuman umum)
+    $stmtNotif = $conn->prepare("
+        INSERT INTO notifikasi (user_id, judul, isi, tipe, is_read, created_at)
+        VALUES (?, ?, ?, 'warning', 0, NOW())
+    ");
+    $judulNotif = "Peringatan Tagihan";
+    $stmtNotif->execute([$targetUserId, $judulNotif, $pesan]);
+
+    echo json_encode([
+        'success' => true,
+        'message' => "Peringatan berhasil dikirim ke {$namaUser}"
+    ]);
 
 } catch (PDOException $e) {
-    // Jika tabel pengumuman tidak support, fallback
-    echo json_encode(['success'=>true,'message'=>'Peringatan dicatat (database: ' . $e->getMessage() . ')']);
+    echo json_encode(['success'=>false,'message'=>'Error: ' . $e->getMessage()]);
 }

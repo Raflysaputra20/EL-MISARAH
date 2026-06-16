@@ -28,24 +28,14 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "admin") {
 // ═══ AUTO-SYNC: Sinkronisasi status kamar dengan data penghuni aktif ═══
 try {
     // 1. Fix booking yang user-nya masih penghuni aktif tapi statusnya 'selesai' -> 'aktif'
-    $conn->exec("
-        UPDATE booking b
-        JOIN users u ON b.user_id = u.id
-        SET b.status = 'aktif'
-        WHERE b.status = 'selesai'
-          AND u.role = 'penghuni'
-          AND u.status = 'aktif'
-          AND b.kamar_id IS NOT NULL
-          AND b.id = (SELECT MAX(b2.id) FROM (SELECT id, user_id FROM booking) b2 WHERE b2.user_id = b.user_id)
-    ");
-
+    
     // 2. Kamar yang harusnya 'terisi' (ada penghuni aktif) tapi masih 'tersedia' -> 'terisi'
     $conn->exec("
         UPDATE kamar k
         JOIN booking b ON b.kamar_id = k.id
         JOIN users u ON b.user_id = u.id
         SET k.status = 'terisi'
-        WHERE b.status = 'aktif'
+        WHERE b.status IN ('aktif', 'selesai')
           AND u.role = 'penghuni'
           AND u.status = 'aktif'
           AND k.status = 'tersedia'
@@ -60,7 +50,7 @@ try {
               SELECT b.kamar_id 
               FROM booking b 
               JOIN users u ON b.user_id = u.id 
-              WHERE b.status IN ('aktif', 'disetujui') 
+              WHERE b.status IN ('aktif', 'disetujui', 'selesai') 
                 AND u.role = 'penghuni' 
                 AND u.status = 'aktif'
                 AND b.kamar_id IS NOT NULL
@@ -125,9 +115,19 @@ function getIcon($fasilitas, $iconMap) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manajemen Kamar - Admin Kost Elmi Sarah</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/css/dashboard-responsive.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard-responsive.css?v=1.2">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Topbar layout */
+        .topbar-right { display: flex; align-items: center; gap: 16px; }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-info { display: flex; flex-direction: column; }
+        .avatar { width: 38px; height: 38px; background: #d1d5db; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; overflow: hidden; }
+        .user-name { font-weight: 600; font-size: 13.5px; line-height: 1.2; }
+        .user-role { font-size: 11px; color: #9ca3af; font-weight: 500; }
+        .notification-btn { background: none; border: none; outline: none; cursor: pointer; padding: 6px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #1f2937; transition: background 0.15s; }
+        .notification-btn:hover { background: rgba(0,0,0,0.06); }
+
         :root {
             --admin-green: #11a654;
             --admin-bg: #f4f6f8;

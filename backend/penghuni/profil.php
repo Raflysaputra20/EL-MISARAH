@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['tab'])) {
             try {
                 $upd=$conn->prepare("UPDATE users SET nama=?,no_hp=?,alamat=?,foto=?,tanggal_lahir=?,pekerjaan=? WHERE id=?");
                 $upd->execute([$nama,$hpVal,$alVal,$fotoVal,$tlVal,$pekerjaanVal,$userId]);
-                $_SESSION['nama']=$nama; $namaUser=$nama;
+                $_SESSION['nama']=$nama; $_SESSION['foto']=$fotoVal; $namaUser=$nama;
                 $user=array_merge($user,['nama'=>$nama,'no_hp'=>$hpVal,'alamat'=>$alVal,'foto'=>$fotoVal,'tanggal_lahir'=>$tlVal,'pekerjaan'=>$pekerjaanVal]);
                 $success='Profil berhasil diperbarui!'; $activeTab='info';
             } catch(Exception $e){ $error='Gagal: '.$e->getMessage(); $activeTab='info'; }
@@ -60,7 +60,8 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['tab'])) {
     } elseif ($_POST['tab']==='password') {
         $old=$_POST['old_password']??''; $new=$_POST['new_password']??''; $conf=$_POST['confirm_password']??'';
         if (!password_verify($old,$user['password']??'')) $error='Kata sandi lama salah.';
-        elseif (strlen($new)<8) $error='Min 8 karakter.';
+        elseif (strlen($new)<8) $error='Kata sandi minimal 8 karakter.';
+        elseif (!preg_match('/[A-Z]/', $new) || !preg_match('/[a-z]/', $new) || !preg_match('/[0-9]/', $new) || !preg_match('/[^A-Za-z0-9]/', $new)) $error='Kata sandi harus mengandung kombinasi huruf besar, huruf kecil, angka, dan simbol.';
         elseif ($new!==$conf) $error='Konfirmasi tidak cocok.';
         else { try { $conn->prepare("UPDATE users SET password=? WHERE id=?")->execute([password_hash($new,PASSWORD_DEFAULT),$userId]); $success='Kata sandi diperbarui!'; } catch(Exception $e){ $error='Gagal.'; } }
         $activeTab='password';
@@ -76,8 +77,12 @@ $tglLahirFmt=$tglLahir?date('j F Y',strtotime($tglLahir)):'—';
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Profil Saya - Kost Elmi Sarah</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/dashboard-responsive.css">
+<link rel="stylesheet" href="../assets/css/dashboard-responsive.css?v=1.2">
 <style>
+        /* Notification bell reset */
+        .notification-btn, .notif-btn { background:none !important; border:none !important; outline:none !important; box-shadow:none !important; cursor:pointer; padding:6px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#1f2937; transition:background .15s; }
+        .notification-btn:hover, .notif-btn:hover { background:rgba(0,0,0,0.06) !important; }
+
 :root{--g:#11a654;--gl:#e8f7f0;--bg:#f4f6f8;--dk:#1f2937;--gr:#6b7280;--bd:#e5e7eb}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dk);overflow-x:hidden}
@@ -175,16 +180,17 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dk);overf
     <div class="sidebar-brand">
         <span class="sidebar-brand-name">Elmi Sarah</span>
     </div>
-    <ul class="sidebar-menu">
-        <li class="sidebar-item"><a href="dashboard.php" class="sidebar-link"><i data-lucide="layout-dashboard" class="sidebar-icon"></i> Dashboard</a></li>
-        <li class="sidebar-item"><a href="pembayaran.php" class="sidebar-link"><i data-lucide="credit-card" class="sidebar-icon"></i> Pembayaran</a></li>
-        <li class="sidebar-item"><a href="riwayat_pengaduan.php" class="sidebar-link"><i data-lucide="wrench" class="sidebar-icon"></i> Pengaduan Kost</a></li>
-        <li class="sidebar-item"><a href="pengumuman.php" class="sidebar-link"><i data-lucide="megaphone" class="sidebar-icon"></i> Pengumuman</a></li>
-        <li class="sidebar-item"><a href="riwayat_sewa.php" class="sidebar-link"><i data-lucide="history" class="sidebar-icon"></i> Riwayat Sewa</a></li>
-        <li class="sidebar-item"><a href="informasi_kost.php" class="sidebar-link"><i data-lucide="info" class="sidebar-icon"></i> Informasi Kost</a></li>
-        <li class="sidebar-item"><a href="ulasan.php" class="sidebar-link"><i data-lucide="star" class="sidebar-icon"></i> Ulasan</a></li>
+        <ul class="sidebar-menu">
+        <li class="sidebar-item"><a href="dashboard.php" class="sidebar-link "><i data-lucide="layout-dashboard" class="sidebar-icon"></i> Dashboard</a></li>
+        <li class="sidebar-item"><a href="notifikasi.php" class="sidebar-link "><i data-lucide="bell" class="sidebar-icon"></i> Notifikasi</a></li>
+        <li class="sidebar-item"><a href="pembayaran.php" class="sidebar-link "><i data-lucide="credit-card" class="sidebar-icon"></i> Pembayaran</a></li>
+        <li class="sidebar-item"><a href="riwayat_pengaduan.php" class="sidebar-link "><i data-lucide="wrench" class="sidebar-icon"></i> Pengaduan Kost</a></li>
+        <li class="sidebar-item"><a href="pengumuman.php" class="sidebar-link "><i data-lucide="megaphone" class="sidebar-icon"></i> Pengumuman</a></li>
+        <li class="sidebar-item"><a href="riwayat_sewa.php" class="sidebar-link "><i data-lucide="history" class="sidebar-icon"></i> Riwayat Sewa</a></li>
+        <li class="sidebar-item"><a href="informasi_kost.php" class="sidebar-link "><i data-lucide="info" class="sidebar-icon"></i> Informasi Kost</a></li>
+        <li class="sidebar-item"><a href="ulasan.php" class="sidebar-link "><i data-lucide="star" class="sidebar-icon"></i> Ulasan</a></li>
         <li class="sidebar-item"><a href="profil.php" class="sidebar-link active"><i data-lucide="user" class="sidebar-icon"></i> Profil Saya</a></li>
-        <li class="sidebar-item"><a href="pengaturan.php" class="sidebar-link"><i data-lucide="settings" class="sidebar-icon"></i> Pengaturan</a></li>
+        <li class="sidebar-item"><a href="pengaturan.php" class="sidebar-link "><i data-lucide="settings" class="sidebar-icon"></i> Pengaturan</a></li>
     </ul>
     <div class="sidebar-footer">
         <a href="../logout.php" class="btn-keluar"><i data-lucide="log-out" style="width:16px;height:16px;"></i> Keluar</a>
@@ -193,15 +199,46 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dk);overf
 
 <div class="main">
   <header class="topbar">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <button class="btn-toggle-sidebar" onclick="openMobileSidebar()"><i data-lucide="menu" style="width:24px;height:24px;"></i></button>
-      <h2 class="tp-title"><?= $activeTab==='view'?'Profil Saya':'Edit Profil' ?></h2>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px">
-      <div class="av"><?php if($foto):?><img src="../uploads/profil/<?=htmlspecialchars(basename($foto))?>" alt=""><?php else:?><?=strtoupper(substr($namaUser,0,1))?><?php endif;?></div>
-      <div class="topbar-user-info"><div class="u-name"><?=htmlspecialchars($namaUser)?></div><div class="u-role">Penghuni</div></div>
-    </div>
-  </header>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <button class="btn-toggle-sidebar" onclick="openMobileSidebar()"><i data-lucide="menu" style="width:24px; height:24px;"></i></button>
+            <h2 class="tp-title"><?= $activeTab==='view'?'Profil Saya':'Edit Profil' ?></h2>
+        </div>
+        <div class="topbar-right">
+            <div id="notifWrapper" style="position:relative;display:inline-block;">
+                    <button id="notifBell" class="notification-btn" onclick="toggleNotif(event)" aria-label="Notifikasi" style="position:relative;">
+                        <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+                        <span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;min-width:17px;height:17px;border-radius:999px;align-items:center;justify-content:center;padding:0 3px;line-height:17px;text-align:center;">0</span>
+                    </button>
+                    <!-- DROPDOWN NOTIFIKASI -->
+                    <div id="notifDropdown" style="display:none;position:absolute;right:0;top:52px;width:330px;background:#fff;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,0.14);z-index:9999;overflow:hidden;">
+                        <div style="padding:14px 18px 10px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between;">
+                            <span style="font-weight:700;font-size:14px;color:#111;">🔔 Notifikasi</span>
+                            <span id="notifCount" style="font-size:11px;color:#888;">Memuat...</span>
+                        </div>
+                        <div id="notifList" style="max-height:300px;overflow-y:auto;">
+                            <div style="padding:20px;text-align:center;color:#aaa;font-size:13px;">Memuat notifikasi...</div>
+                        </div>
+                    </div>
+                </div>
+            <div class="user-profile">
+                <a href="profil.php" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:12px;">
+                    <div class="avatar">
+                        <?php if (isset($userFoto) && $userFoto): ?>
+                            <img src="../uploads/profil/<?= htmlspecialchars(basename($userFoto)) ?>" alt="Profil">
+                        <?php elseif (isset($foto) && $foto): ?>
+                            <img src="../uploads/profil/<?= htmlspecialchars(basename($foto)) ?>" alt="Profil">
+                        <?php else: ?>
+                            <?= strtoupper(substr($namaUser ?? 'P', 0, 1)) ?>
+                        <?php endif; ?>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name"><?= htmlspecialchars($namaUser) ?></span>
+                        <span class="user-role">Penghuni Kos</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </header>
   <main class="content">
 
 <?php if($activeTab==='view'): ?>
@@ -368,4 +405,5 @@ function togglePw(id,btn) {
     lucide.createIcons();
 }
 </script>
+<script src="../assets/js/notifikasi.js"></script>
 </body></html>
