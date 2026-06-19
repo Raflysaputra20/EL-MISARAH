@@ -38,7 +38,7 @@ $jenisSql = $hasJenis ? "p.jenis_pembayaran," : "'Penuh' as jenis_pembayaran,";
 
 // Fetch booking data
 $sql = "
-    SELECT b.*, u.nama, u.no_hp, u.email, u.alamat, u.no_ktp, u.role as current_role,
+    SELECT b.*, u.nama, u.no_hp, u.email, u.alamat, u.no_ktp,
            k.tipe, k.harga as harga_per_bulan, k.nomor_kamar,
            p.jumlah, $jenisSql p.status as status_bayar, p.created_at as payment_time, p.metode, p.bukti_bayar
     FROM booking b
@@ -68,13 +68,13 @@ $isVerified = ($booking['status_bayar'] === 'valid' || in_array($booking['status
 $isSelesai = in_array($booking['status'], ['aktif', 'selesai']);
 
 // WhatsApp Link Generator
-$adminWA = "6283821463041"; // Admin WhatsApp Number
+$adminWA = "6289634566662"; // Admin WhatsApp Number
 $waMsg = "Halo Admin, saya telah melakukan pembayaran untuk booking ID #" . $bookingId . " atas nama " . $booking['nama'] . ". Mohon konfirmasinya. Terima kasih.";
 $waUrl = "https://wa.me/" . $adminWA . "?text=" . urlencode($waMsg);
 ?>
 <style>
     body { background-color: #EEEADF; }
-    .status-container { max-width: 600px; margin: 40px auto 100px; }
+    .status-container { max-width: 600px; margin: 40px auto 100px; padding: 0 16px; }
     .page-title { text-align: center; font-size: 20px; font-weight: 800; color: #172554; margin-bottom: 8px; }
     .page-subtitle { text-align: center; font-size: 14px; color: #64748b; margin-bottom: 30px; }
     .status-banner { background-color: #e6ce92; border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 16px; margin-bottom: 24px; border: 1px solid #d4b872; }

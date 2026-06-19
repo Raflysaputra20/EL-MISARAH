@@ -29,11 +29,11 @@
                 <h4>Alamat</h4>
                 <p>Komplek PDK, Jl. Perjuangan blok A No.34, Sunyaragi, Kec. Kesambi, Kota Cirebon, Jawa Barat 45132</p>
             </div>
-            <a href="https://wa.me/6285933675790" target="_blank" style="text-decoration: none; color: inherit; display: block;">
+            <a href="https://wa.me/6289634566662" target="_blank" style="text-decoration: none; color: inherit; display: block;">
                 <div class="lokasi-info-card-home">
                     <div class="icon"><i data-lucide="message-circle"></i></div>
                     <h4>Whatsapp</h4>
-                    <p>0859-3367-5790</p>
+                    <p>+62 896-3456-6662</p>
                 </div>
             </a>
         </div>

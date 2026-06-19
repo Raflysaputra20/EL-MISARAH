@@ -37,6 +37,11 @@ body {
     z-index: 30;
 }
 
+.app-navbar.navbar-subpage {
+    position: relative !important;
+    background-color: #11a654 !important;
+}
+
 .nav-inner {
     width: min(1140px, calc(100% - 40px));
     height: 70px;
@@ -496,7 +501,7 @@ body {
 
 .room-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
 }
 
@@ -951,5 +956,17 @@ body {
 @media (max-width: 600px) {
     .room-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 991px) {
+    #notifDropdown {
+        position: fixed !important;
+        left: 16px !important;
+        right: 16px !important;
+        width: auto !important;
+        max-width: calc(100% - 32px) !important;
+        top: 70px !important;
+        z-index: 10000 !important;
     }
 }

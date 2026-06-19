@@ -483,7 +483,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <div class="sum-timer" id="dana_info" style="display:none; text-align: center; flex-direction:column; background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; color: #1f2937;">
                     <div style="font-size: 14px; margin-bottom: 5px; font-weight: 600;">Transfer ke DANA</div>
-                    <div style="font-size: 20px; font-weight: 800; letter-spacing: 1px;">085933675790</div>
+                    <div style="font-size: 20px; font-weight: 800; letter-spacing: 1px;">0896-3456-6662</div>
                     <div style="font-size: 13px; margin-top: 5px; color: #6b7280;">a/n ABD KHOLIK</div>
                 </div>
 

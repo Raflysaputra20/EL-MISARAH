@@ -7,7 +7,7 @@
         <?php else: ?>
             <div class="room-grid">
                 <?php 
-                $displayKamar = array_slice($kamar, 0, 2);
+                $displayKamar = array_slice($kamar, 0, 3);
                 foreach ($displayKamar as $k): 
                     $foto = !empty($k['foto']) && file_exists(__DIR__ . '/../assets/image/' . $k['foto']) 
                         ? 'frontend/assets/image/' . $k['foto'] 

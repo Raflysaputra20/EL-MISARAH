@@ -10,7 +10,7 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "penghuni") {
 
 $userId   = $_SESSION["user_id"];
 $namaUser = $_SESSION["nama"] ?? "Penghuni";
-$adminWA  = "083821463041";
+$adminWA  = "6289634566662";
 
 // ═══ AUTO-SYNC: Sinkronisasi status kamar dengan data penghuni aktif ═══
 try {
@@ -414,7 +414,7 @@ try {
                     </div>
                     <div>
                         <div style="font-size:11px;color:#6b7280;margin-bottom:4px;text-transform:uppercase;font-weight:600;">E-Wallet DANA</div>
-                        <div class="bank-acc" style="font-size:20px;color:#1f2937;margin-bottom:2px;">085933675790</div>
+                        <div class="bank-acc" style="font-size:20px;color:#1f2937;margin-bottom:2px;">0896-3456-6662</div>
                         <div style="font-size:12px;color:#6b7280;">a/n ABD KHOLIK</div>
                     </div>
                 </div>
@@ -441,7 +441,7 @@ try {
                     </div>
                     <div>
                         <div style="font-size:11px;color:#6b7280;margin-bottom:4px;text-transform:uppercase;font-weight:600;">E-Wallet DANA</div>
-                        <div class="bank-acc" style="font-size:20px;color:#1f2937;margin-bottom:2px;">085933675790</div>
+                        <div class="bank-acc" style="font-size:20px;color:#1f2937;margin-bottom:2px;">0896-3456-6662</div>
                         <div style="font-size:12px;color:#6b7280;">a/n ABD KHOLIK</div>
                     </div>
                 </div>

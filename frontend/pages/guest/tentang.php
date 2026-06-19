@@ -145,63 +145,6 @@
     }
 }
 
-/* ═══════════════════════════════════════════════════
-   2. EKOSISTEM PRODUK RUKITA STYLE (5 Columns)
-   ═══════════════════════════════════════════════════ */
-.tt-eco-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
-}
-.tt-eco-card {
-    background-color: var(--bg-cream-light);
-    border-radius: 16px;
-    overflow: hidden;
-    text-align: center;
-    padding-bottom: 24px;
-    border: 1px solid transparent;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-}
-.tt-eco-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(15, 157, 154, 0.08);
-    border-color: var(--rukita-teal);
-}
-.tt-eco-img {
-    width: 100%;
-    height: 140px;
-    object-fit: cover;
-}
-.tt-eco-logo {
-    font-weight: 800;
-    font-size: 16px;
-    color: var(--dark-text);
-    margin: 20px 0 8px;
-    letter-spacing: -0.5px;
-}
-.tt-eco-logo span {
-    color: var(--rukita-teal);
-}
-.tt-eco-desc {
-    font-size: 13px;
-    color: var(--muted-text);
-    padding: 0 16px;
-    line-height: 1.5;
-    flex-grow: 1;
-}
-
-@media (max-width: 992px) {
-    .tt-eco-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-@media (max-width: 600px) {
-    .tt-eco-grid {
-        grid-template-columns: 1fr;
-    }
-}
 
 /* ═══════════════════════════════════════════════════
    3. KEUNTUNGAN TINGGAL (Rukita Layout: Image + Text)
@@ -246,53 +189,6 @@
     }
 }
 
-/* ═══════════════════════════════════════════════════
-   4. PENCAPAIAN KAMI
-   ═══════════════════════════════════════════════════ */
-.tt-stats-container {
-    background-color: var(--bg-cream);
-    border-radius: 24px;
-    padding: 50px 40px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
-    text-align: center;
-}
-.tt-stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.tt-stat-num {
-    font-size: 46px;
-    font-weight: 800;
-    color: var(--rukita-teal);
-    margin-bottom: 10px;
-    line-height: 1;
-}
-.tt-stat-label {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--dark-text);
-    margin-bottom: 6px;
-}
-.tt-stat-desc {
-    font-size: 13px;
-    color: var(--muted-text);
-    line-height: 1.5;
-    max-width: 200px;
-}
-
-@media (max-width: 992px) {
-    .tt-stats-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-@media (max-width: 600px) {
-    .tt-stats-container {
-        grid-template-columns: 1fr;
-    }
-}
 
 /* ═══════════════════════════════════════════════════
    5. KATA PENGHUNI (Rukita Testimoni Box & Slider)
@@ -594,42 +490,6 @@
         <div class="tt-hero-right"></div>
     </div>
 
-    <!-- 2. EKOSISTEM PRODUK (5 Columns, Center Text) -->
-    <section class="tt-section">
-        <div class="tt-container">
-            <div class="tt-section-header">
-                <h2 class="tt-section-title">Ekosistem Produk Elmi Sarah</h2>
-                <p class="tt-section-sub">Solusi ekosistem hunian mahasiswi putri terpadu untuk kebutuhan harian, jangka pendek, maupun jangka panjang.</p>
-            </div>
-            <div class="tt-eco-grid">
-                <div class="tt-eco-card">
-                    <img src="frontend/assets/image/demo_kamar_1.png" alt="Elmi Sarah Apartment" class="tt-eco-img">
-                    <div class="tt-eco-logo">Elmi Sarah <span>Apartment</span></div>
-                    <p class="tt-eco-desc">Serviced apartment dengan furnitur lengkap dan layanan menyeluruh.</p>
-                </div>
-                <div class="tt-eco-card">
-                    <img src="frontend/assets/image/demo_kamar_2.png" alt="Elmi Sarah CoLiving" class="tt-eco-img">
-                    <div class="tt-eco-logo">Elmi Sarah <span>CoLiving</span></div>
-                    <p class="tt-eco-desc">Coliving eksklusif dengan fasilitas bintang lima di lokasi strategis.</p>
-                </div>
-                <div class="tt-eco-card">
-                    <img src="frontend/assets/image/demo_kamar_3.png" alt="Elmi Sarah Residence" class="tt-eco-img">
-                    <div class="tt-eco-logo">Elmi Sarah <span>Residence</span></div>
-                    <p class="tt-eco-desc">Hunian kost harian, mingguan, atau bulanan dengan kemudahan akses penuh.</p>
-                </div>
-                <div class="tt-eco-card">
-                    <img src="frontend/assets/image/desain_kamar1.png" alt="Elmi Sarah Partner" class="tt-eco-img">
-                    <div class="tt-eco-logo">Elmi Sarah <span>Partner</span></div>
-                    <p class="tt-eco-desc">Layanan pemasaran untuk apartemen dan kost eksklusif putri di Indonesia.</p>
-                </div>
-                <div class="tt-eco-card">
-                    <img src="frontend/assets/image/desain_kamar2.png" alt="Elmi Sarah Finance" class="tt-eco-img">
-                    <div class="tt-eco-logo">Elmi Sarah <span>Finance</span></div>
-                    <p class="tt-eco-desc">Bantuan pembiayaan dan transaksi digital aman untuk ekspansi sewa properti.</p>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- 3. KEUNTUNGAN TINGGAL (Rukita Layout: Image + Text) -->
     <section class="tt-section alternate">
@@ -674,33 +534,6 @@
         </div>
     </section>
 
-    <!-- 4. PENCAPAIAN KAMI -->
-    <section class="tt-section">
-        <div class="tt-container">
-            <div class="tt-stats-container">
-                <div class="tt-stat-item">
-                    <span class="tt-stat-num">100+</span>
-                    <span class="tt-stat-label">Mahasiswi Aktif</span>
-                    <span class="tt-stat-desc">Mahasiswi dari berbagai universitas yang mempercayakan huniannya pada kami.</span>
-                </div>
-                <div class="tt-stat-item">
-                    <span class="tt-stat-num">30+</span>
-                    <span class="tt-stat-label">Pilihan Kamar</span>
-                    <span class="tt-stat-desc">Variasi tipe kamar khusus putri yang terawat dan siap huni.</span>
-                </div>
-                <div class="tt-stat-item">
-                    <span class="tt-stat-num">4.8 ★</span>
-                    <span class="tt-stat-label">Rating Kepuasan</span>
-                    <span class="tt-stat-desc">Penilaian berdasarkan ulasan asli mahasiswi mengenai kebersihan & pelayanan.</span>
-                </div>
-                <div class="tt-stat-item">
-                    <span class="tt-stat-num">100%</span>
-                    <span class="tt-stat-label">Terpercaya</span>
-                    <span class="tt-stat-desc">Berkomitmen menjaga keamanan, ketertiban, dan transparansi administrasi.</span>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- 5. KATA PENGHUNI (RUKITA TESTIMONI SLIDER) -->
     <?php
@@ -730,7 +563,7 @@
         ? 'uploads/ulasan/' . htmlspecialchars($ulasan_data[0]['foto_ulasan']) 
         : 'frontend/assets/image/kost.png';
     ?>
-    <section class="tt-section alternate">
+    <section class="tt-section">
         <div class="tt-container">
             <div class="tt-testi-box">
                 <!-- Sisi Kiri: Foto kamar dengan badge -->
@@ -783,7 +616,7 @@
     </section>
 
     <!-- 6. SEKILAS & CORE VALUES -->
-    <section class="tt-section">
+    <section class="tt-section alternate">
         <div class="tt-container tt-value-section">
             <div class="tt-value-left">
                 <h2>Sekilas Tentang Elmi Sarah</h2>
@@ -819,31 +652,31 @@
 
 
 
-    <!-- 8. ATURAN KOST -->
+    <!-- 8. ATURAN PENGINAPAN -->
     <section class="tt-section">
         <div class="tt-container">
             <div class="tt-section-header">
-                <h2 class="tt-section-title">Aturan Kost Elmi Sarah</h2>
-                <p class="tt-section-sub">Demi kenyamanan, ketertiban, dan keharmonisan bersama, seluruh penghuni diharapkan mematuhi aturan berikut.</p>
+                <h2 class="tt-section-title">Aturan Penginapan Elmi Sarah</h2>
+                <p class="tt-section-sub">Demi kenyamanan, ketertiban, dan keharmonisan bersama, seluruh tamu diharapkan mematuhi aturan berikut.</p>
             </div>
 
             <div class="tt-aturan-grid">
                 <div class="tt-aturan-card">
-                    <h4>Check-in / Check-out</h4>
-                    <p>Check-in dapat dilakukan mulai pukul 08.00 WIB hingga 20.00 WIB. Calon penghuni diwajibkan melapor terlebih dahulu kepada pengelola kost sebelum menempati kamar.</p>
-                    <p>Proses check-out paling lambat dilakukan pukul 12.00 WIB pada hari terakhir masa sewa. Pastikan melakukan koordinasi penyerahan kunci dengan pengelola.</p>
+                    <h4>Ketertiban & Kenyamanan</h4>
+                    <p>• <strong>Batas Jam Berkunjung:</strong> Batas menerima tamu berkunjung di area penginapan maksimal hingga pukul 22.00 WIB.</p>
+                    <p>• <strong>Menjaga Ketenangan:</strong> Tidak membuat kegaduhan, kebisingan, atau menyalakan musik terlalu keras yang dapat mengganggu tamu lainnya.</p>
                 </div>
                 
                 <div class="tt-aturan-card">
-                    <h4>Kebijakan Deposit</h4>
-                    <p>Dalam proses booking kamar di Kost Elmi Sarah, calon penghuni diwajibkan menyetorkan deposit sebesar 30% dari total sewa sebagai tanda jadi pemesanan.</p>
-                    <p>Pelunasan sisa biaya sewa kamar dapat dilakukan saat dalam perjalanan menuju lokasi kost, atau ketika telah tiba dan siap menempati kamar.</p>
+                    <h4>Penggunaan Fasilitas</h4>
+                    <p>• <strong>Hemat Energi:</strong> Matikan AC, lampu, keran air, dan alat elektronik lainnya ketika Anda meninggalkan kamar penginapan.</p>
+                    <p>• <strong>Kebersihan & Keamanan:</strong> Menjaga kebersihan kamar serta bertanggung jawab penuh atas segala bentuk kerusakan fasilitas akibat kelalaian.</p>
                 </div>
 
                 <div class="tt-aturan-card">
-                    <h4>Informasi Pembatalan</h4>
-                    <p>Apabila calon penghuni membatalkan pesanan secara sepihak setelah menyetor deposit, maka dana deposit yang telah masuk tidak dapat dikembalikan.</p>
-                    <p>Jika ada kendala khusus atau force majeure yang mendesak, mohon segera komunikasikan dengan pihak pengelola kost untuk solusi terbaik.</p>
+                    <h4>Larangan & Keamanan</h4>
+                    <p>• <strong>Dilarang Merokok:</strong> Dilarang keras merokok di dalam kamar. Merokok hanya diperkenankan pada area terbuka yang sudah disediakan.</p>
+                    <p>• <strong>Barang Terlarang:</strong> Dilarang membawa hewan peliharaan, serta dilarang membawa narkoba, senjata tajam, maupun barang ilegal lainnya.</p>
                 </div>
             </div>
         </div>

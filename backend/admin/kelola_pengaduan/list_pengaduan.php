@@ -7,9 +7,61 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "admin") {
     exit;
 }
 
-// Fetch pengaduan from DB
+// 1. Pagination settings
+$limit = 5; // 5 complaints per page
+$pageNumber = isset($_GET['p']) ? (int)$_GET['p'] : 1;
+if ($pageNumber < 1) $pageNumber = 1;
+$offset = ($pageNumber - 1) * $limit;
+
+// 2. Count total rows
 try {
-    $stmt = $conn->query("
+    $totalCount = $conn->query("SELECT COUNT(*) FROM pengaduan")->fetchColumn();
+    $totalPages = ceil($totalCount / $limit);
+    if ($totalPages < 1) $totalPages = 1;
+    if ($pageNumber > $totalPages) {
+        $pageNumber = $totalPages;
+        $offset = ($pageNumber - 1) * $limit;
+    }
+} catch (Exception $e) {
+    $totalCount = 0;
+    $totalPages = 1;
+}
+
+// 3. Count stats from DB (Total across all pages)
+try {
+    $stmtStats = $conn->query("SELECT status, COUNT(*) as count FROM pengaduan GROUP BY status");
+    $stats = $stmtStats->fetchAll(PDO::FETCH_KEY_PAIR);
+    
+    $countBaru = 0;
+    foreach ($stats as $statusKey => $val) {
+        $sk = strtolower($statusKey);
+        if ($sk === 'baru' || $sk === 'masuk') {
+            $countBaru += $val;
+        }
+    }
+    
+    $countDiproses = 0;
+    foreach ($stats as $statusKey => $val) {
+        if (strtolower($statusKey) === 'diproses') {
+            $countDiproses = $val;
+        }
+    }
+    
+    $countSelesai = 0;
+    foreach ($stats as $statusKey => $val) {
+        if (strtolower($statusKey) === 'selesai') {
+            $countSelesai = $val;
+        }
+    }
+} catch (Exception $e) {
+    $countBaru = 0;
+    $countDiproses = 0;
+    $countSelesai = 0;
+}
+
+// 4. Fetch only the current page of pengaduan
+try {
+    $stmt = $conn->prepare("
         SELECT 
             pengaduan.*,
             users.nama,
@@ -17,21 +69,19 @@ try {
         FROM pengaduan
         JOIN users ON pengaduan.user_id = users.id
         ORDER BY pengaduan.id DESC
+        LIMIT :limit OFFSET :offset
     ");
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
     $pengaduan = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
     $pengaduan = [];
 }
 
-// If DB empty, just use empty array, no dummy data
 if (empty($pengaduan)) {
     $pengaduan = [];
 }
-
-// Count stats
-$countBaru     = count(array_filter($pengaduan, fn($p) => in_array(strtolower($p['status']), ['baru','masuk'])));
-$countDiproses = count(array_filter($pengaduan, fn($p) => strtolower($p['status']) === 'diproses'));
-$countSelesai  = count(array_filter($pengaduan, fn($p) => strtolower($p['status']) === 'selesai'));
 
 // Helper: status config
 function statusConfig(string $s): array {
@@ -408,6 +458,30 @@ function statusConfig(string $s): array {
                 </div>
             </div>
             <?php endforeach; ?>
+
+            <!-- Pagination UI -->
+            <?php if ($totalPages > 1): ?>
+                <nav aria-label="Navigasi Halaman" class="mt-4">
+                    <ul class="pagination justify-content-center" style="gap: 4px;">
+                        <!-- Previous Button -->
+                        <li class="page-item <?= ($pageNumber <= 1) ? 'disabled' : '' ?>">
+                            <a class="page-link" href="?p=<?= $pageNumber - 1 ?>" style="border-radius: 8px; color: var(--admin-text-dark); border: 1px solid #e5e7eb; font-size: 13px; font-weight: 500; padding: 6px 14px;">Sebelumnya</a>
+                        </li>
+                        
+                        <!-- Page Numbers -->
+                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                            <li class="page-item <?= ($pageNumber === $i) ? 'active' : '' ?>">
+                                <a class="page-link" href="?p=<?= $i ?>" style="border-radius: 8px; font-size: 13px; font-weight: 600; padding: 6px 14px; <?= ($pageNumber === $i) ? 'background-color: var(--admin-green) !important; border-color: var(--admin-green) !important; color: white !important;' : 'color: var(--admin-text-dark); border: 1px solid #e5e7eb; background: white;' ?>"><?= $i ?></a>
+                            </li>
+                        <?php endfor; ?>
+                        
+                        <!-- Next Button -->
+                        <li class="page-item <?= ($pageNumber >= $totalPages) ? 'disabled' : '' ?>">
+                            <a class="page-link" href="?p=<?= $pageNumber + 1 ?>" style="border-radius: 8px; color: var(--admin-text-dark); border: 1px solid #e5e7eb; font-size: 13px; font-weight: 500; padding: 6px 14px;">Berikutnya</a>
+                        </li>
+                    </ul>
+                </nav>
+            <?php endif; ?>
         <?php endif; ?>
 
     </main>

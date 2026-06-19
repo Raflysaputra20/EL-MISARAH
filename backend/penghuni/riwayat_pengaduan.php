@@ -9,10 +9,35 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "penghuni") {
 $userId   = $_SESSION["user_id"];
 $namaUser = $_SESSION["nama"] ?? "Penghuni";
 
+// Pagination settings
+$limit = 5; // 5 complaints per page
+$pageNumber = isset($_GET['p']) ? (int)$_GET['p'] : 1;
+if ($pageNumber < 1) $pageNumber = 1;
+$offset = ($pageNumber - 1) * $limit;
+
+// Count total rows for this user
+try {
+    $stmtCount = $conn->prepare("SELECT COUNT(*) FROM pengaduan WHERE user_id = ?");
+    $stmtCount->execute([$userId]);
+    $totalCount = $stmtCount->fetchColumn();
+    $totalPages = ceil($totalCount / $limit);
+    if ($totalPages < 1) $totalPages = 1;
+    if ($pageNumber > $totalPages) {
+        $pageNumber = $totalPages;
+        $offset = ($pageNumber - 1) * $limit;
+    }
+} catch (Exception $e) {
+    $totalCount = 0;
+    $totalPages = 1;
+}
+
 $pengaduan = [];
 try {
-    $stmt = $conn->prepare("SELECT * FROM pengaduan WHERE user_id = ? ORDER BY id DESC");
-    $stmt->execute([$userId]);
+    $stmt = $conn->prepare("SELECT * FROM pengaduan WHERE user_id = :userId ORDER BY id DESC LIMIT :limit OFFSET :offset");
+    $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
     $pengaduan = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {}
 
@@ -234,7 +259,32 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dk);overf
         </div>
       </div>
       <?php endforeach; ?>
+
+      <!-- Pagination UI -->
+      <?php if ($totalPages > 1): ?>
+        <nav aria-label="Navigasi Halaman" style="margin-top: 24px;">
+          <ul style="display: flex; justify-content: center; list-style: none; gap: 6px; padding: 0;">
+            <!-- Previous Button -->
+            <li class="<?= ($pageNumber <= 1) ? 'disabled' : '' ?>">
+              <a href="?p=<?= $pageNumber - 1 ?>" style="display: inline-block; border-radius: 8px; color: var(--dk); border: 1px solid var(--bd); background: white; font-size: 13px; font-weight: 500; padding: 8px 16px; text-decoration: none; <?= ($pageNumber <= 1) ? 'pointer-events: none; opacity: 0.5;' : '' ?>">Sebelumnya</a>
+            </li>
+            
+            <!-- Page Numbers -->
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+              <li>
+                <a href="?p=<?= $i ?>" style="display: inline-block; border-radius: 8px; font-size: 13px; font-weight: 600; padding: 8px 16px; text-decoration: none; <?= ($pageNumber === $i) ? 'background-color: var(--g) !important; border-color: var(--g) !important; color: white !important;' : 'color: var(--dk); border: 1px solid var(--bd); background: white;' ?>"><?= $i ?></a>
+              </li>
+            <?php endfor; ?>
+            
+            <!-- Next Button -->
+            <li class="<?= ($pageNumber >= $totalPages) ? 'disabled' : '' ?>">
+              <a href="?p=<?= $pageNumber + 1 ?>" style="display: inline-block; border-radius: 8px; color: var(--dk); border: 1px solid var(--bd); background: white; font-size: 13px; font-weight: 500; padding: 8px 16px; text-decoration: none; <?= ($pageNumber >= $totalPages) ? 'pointer-events: none; opacity: 0.5;' : '' ?>">Berikutnya</a>
+            </li>
+          </ul>
+        </nav>
+      <?php endif; ?>
     <?php endif; ?>
+
   </main>
 </div>
 <script src="https://unpkg.com/lucide@latest"></script>

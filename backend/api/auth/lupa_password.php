@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
-$adminWA = "6283821463041";
+$adminWA = "6289634566662";
 $waMsg = "Halo Admin Kost Elmi Sarah, saya mengalami kendala lupa kata sandi akun saya. Mohon bantuannya untuk mereset akun.";
 $waUrl = "https://wa.me/" . $adminWA . "?text=" . urlencode($waMsg);
 ?>

@@ -129,11 +129,11 @@
                     </a>
                 </div>
                 <div class="col-6">
-                    <a href="https://wa.me/6285933675790" target="_blank" style="text-decoration: none; display: block; height: 100%;">
+                    <a href="https://wa.me/6289634566662" target="_blank" style="text-decoration: none; display: block; height: 100%;">
                         <div class="contact-card">
                             <i data-lucide="message-circle" class="contact-icon"></i>
                             <h6 class="contact-title">Whatsapp</h6>
-                            <p class="contact-text">0859-3367-5790</p>
+                            <p class="contact-text">+62 896-3456-6662</p>
                         </div>
                     </a>
                 </div>
@@ -159,8 +159,14 @@
             </div>
 
             <!-- MAP -->
-            <div>
-                <img src="frontend/assets/image/kontak_maps.png" alt="Map" class="w-100" style="border-radius: 12px; border: 1px solid #e5e7eb; object-fit: cover; height: 200px;">
+            <div style="border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; height: 200px; width: 100%;">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d396.75969285597114!2d108.5342117!3d-6.7335593!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6f1d595f6c29ad%3A0x1611318a8f504622!2sPondok%20ELMISARAH!5e0!3m2!1sid!2sid!4v1699999999999!5m2!1sid!2sid"
+                    style="width: 100%; height: 100%; border: 0;"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
             </div>
         </div>
 
@@ -207,7 +213,7 @@ function sendToWhatsApp(e) {
     const subjek = document.querySelector('input[name="subjek"]').value;
     const pesan = document.querySelector('textarea[name="pesan"]').value;
 
-    const targetWA = "6285933675790";
+    const targetWA = "6289634566662";
     const text = `Halo Admin Kost Elmi Sarah,
 
 Saya ingin mengirimkan pesan dengan detail berikut:

@@ -1,4 +1,4 @@
-<nav class="app-navbar">
+<nav class="app-navbar <?= (isset($page) && $page !== 'home') ? 'navbar-subpage' : '' ?>">
     <div class="nav-inner">
 
         <!-- LOGO -->
